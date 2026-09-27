@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 
@@ -18,9 +19,16 @@ def clean_preop_env(monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv(name, raising=False)
 
 
-@pytest.fixture
-def sample_submission() -> dict[str, object]:
-    """The first sample case's submission, as the harness passes it (a plain dict)."""
+@pytest.fixture(scope="session")
+def dataset() -> list[dict[str, object]]:
+    """All sample rows (case_id, submission, expected_output), in file order."""
 
     with DATA_PATH.open(encoding="utf-8") as handle:
-        return json.loads(handle.readline())["submission"]
+        return [json.loads(line) for line in handle if line.strip()]
+
+
+@pytest.fixture
+def sample_submission(dataset: list[dict[str, object]]) -> dict[str, object]:
+    """The first sample case's submission, as the harness passes it (a plain dict)."""
+
+    return copy.deepcopy(dataset[0]["submission"])  # type: ignore[return-value]

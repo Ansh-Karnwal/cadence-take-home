@@ -12,7 +12,7 @@ import pytest
 from pydantic import ValidationError
 
 import core
-from core import PatientSubmission, triage_submission
+from core import PatientSubmission, TriageOutput, triage_submission
 from preop_triage import engine
 from preop_triage.settings import ENV_NO_CACHE, ENV_OFFLINE, Settings
 
@@ -42,11 +42,27 @@ def test_signature_matches_harness_call_shape() -> None:
     assert params["settings"].default is None
 
 
-def test_harness_call_shape_currently_raises_not_implemented(
+def test_default_mode_raises_until_llm_resolver_exists(
     sample_submission: dict[str, object],
 ) -> None:
+    """Default (non-offline) mode builds LLMResolver, still a stub until milestone 3.
+
+    Milestone 3 replaces this test: default mode will then return a TriageOutput.
+    """
+
     with pytest.raises(NotImplementedError):
         triage_submission(submission=sample_submission, model="test-model")
+
+
+def test_offline_mode_returns_triage_output_for_harness_call_shape(
+    monkeypatch: pytest.MonkeyPatch, sample_submission: dict[str, object]
+) -> None:
+    monkeypatch.setenv(ENV_OFFLINE, "1")
+
+    output = triage_submission(submission=sample_submission, model="test-model")
+
+    assert isinstance(output, TriageOutput)
+    assert TriageOutput.model_validate(output.model_dump()) == output
 
 
 def test_invalid_submission_fails_validation_before_engine(
