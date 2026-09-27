@@ -1,0 +1,12 @@
+# Local-only targets. The harness Makefile is never modified.
+# Usage: make -f Makefile.local score-offline [INPUT=...] [OUTPUT=...]
+
+INPUT ?= data/patients_sample_50.jsonl
+OUTPUT ?= data/baseline_outputs.jsonl
+
+.PHONY: score-offline
+
+score-offline:
+	uv run score_offline.py \
+		--input $(INPUT) \
+		--outputs $(OUTPUT)

@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import json
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import AliasChoices, BaseModel, Field
+
+if TYPE_CHECKING:
+    from preop_triage.settings import Settings
 
 # -------------------------
 # Policy + system prompt
@@ -210,42 +213,22 @@ def triage_submission(
     submission: dict[str, object] | PatientSubmission,
     *,
     model: str,
+    settings: Settings | None = None,
 ) -> TriageOutput:
-    """Naive baseline implementation: single LLM call with JSON response output."""
+    """Triage one submission package with the rules engine and LLM fallback.
 
-    # Import lazily so core utilities remain usable without OpenAI installed.
-    from openai import OpenAI
+    ``model`` is passed through to the LLM fallback. ``settings`` overrides the
+    ``PREOP_*`` environment flags; when None they are read from the environment.
+    """
+
+    # Import lazily: the engine imports schemas from this module.
+    from preop_triage import engine
+    from preop_triage.settings import Settings
 
     if isinstance(submission, PatientSubmission):
-        submission_payload = submission.model_dump()
+        validated = submission
     else:
-        submission_payload = PatientSubmission.model_validate(submission).model_dump()
+        validated = PatientSubmission.model_validate(submission)
 
-    client = OpenAI()
-    request_kwargs: dict[str, object] = {
-        "model": model,
-        "instructions": BASELINE_SYSTEM_PROMPT,
-        "input": [
-            {
-                "type": "message",
-                "role": "user",
-                "content": [
-                    {
-                        "type": "input_text",
-                        "text": build_user_prompt(submission_payload),
-                    }
-                ],
-            }
-        ],
-        "text": {
-            "format": {
-                "type": "json_schema",
-                "name": "preop_triage_output",
-                "schema": triage_output_json_schema(),
-                "strict": False,
-            }
-        },
-    }
-
-    response = client.responses.create(**request_kwargs)
-    return TriageOutput.model_validate_json(response.output_text)
+    resolved = Settings.from_env() if settings is None else settings
+    return engine.evaluate(validated, model=model, settings=resolved)
