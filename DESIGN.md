@@ -38,15 +38,20 @@ submission (dict | PatientSubmission)
    |                 (each title classified once per evaluation)
    |         text  -> consent signed? -> POS | NEG | UNPLACED
    |                  plan clear for drug X? -> NEG | UNPLACED (never POS)
+   |         medication (active true or null) -> KNOWN_ANTICOAG
+   |                 | KNOWN_OTHER | UNKNOWN (each name asked once)
    v
 [rules]      missing-data gates, Rule 1 (docs), Rule 2 (labs),
    |         Rule 3 (anticoagulation, once per active anticoagulant),
    |         Rule 4 (vitals)
-   |         (only UNKNOWN titles / UNPLACED texts leave this layer)
+   |         (only UNKNOWN titles and medications, UNPLACED texts, and
+   |         keyword-POSITIVE consents leave this layer)
    v
-[LLM fallback]  default mode: classify UNKNOWN titles and UNPLACED texts,
+[LLM fallback]  default mode: classify UNKNOWN titles and medications,
+   |            judge UNPLACED texts, confirm keyword-POSITIVE consents;
    |            strict JSON schema, temperature 0, in-memory cache
-   |            offline mode: UNKNOWN -> not a required type;
+   |            offline mode: UNKNOWN title -> not a required type;
+   |                          UNKNOWN medication -> not an anticoagulant;
    |                          UNPLACED -> negative (so offline never
    |                          finds an anticoagulation plan clear)
    v
@@ -67,8 +72,8 @@ not scored (see section 4) but keeps diffs readable.
 ### D1. Hybrid architecture, rules first
 
 A deterministic Python rules engine evaluates every rule. An LLM is used only
-as a fallback for inputs the rules cannot place, and to confirm
-keyword-positive consents (D2). An `offline` flag disables the LLM entirely.
+as a fallback for inputs the rules cannot place (titles, texts, and
+medication names), and to confirm keyword-positive consents (D2). An `offline` flag disables the LLM entirely.
 
 Rationale: every rule is date arithmetic or a threshold on a structured
 field. The only fuzzy inputs are document titles and short free-text passages.
@@ -97,9 +102,15 @@ a patient: keywords can add an issue but never remove one.
   says signed. UNPLACED goes to the LLM.
 - Plan clarity (D4): keywords can only say NEGATIVE or UNPLACED; only the LLM
   can say clear.
+- Medications (section 4): a name on the anticoagulant list or the known
+  non-anticoagulant list is final and never sent to the LLM. An UNKNOWN name
+  goes to the LLM; a "yes" adds it to the drugs Rule 3 evaluates (including
+  the `active: null` missing-data path), and a "no" changes nothing. The LLM
+  can add an anticoagulant but never remove one.
 
-Offline mode has no LLM, so it trusts keyword-POSITIVE consents and never
-finds a plan clear (section 5).
+Offline mode has no LLM, so it trusts keyword-POSITIVE consents, never finds a
+plan clear, and treats an UNKNOWN medication as not an anticoagulant
+(section 5).
 
 Rules out: the LLM overriding a keyword NEGATIVE; the LLM re-labelling a
 title the rules placed; ensemble voting between rules and LLM.
@@ -393,6 +404,22 @@ the generic or any of its brands, so a medication listed as Eliquis finds a
 plan that says "hold apixaban". Assumption: the policy does not define the
 class, so this list is ours, and it is finite.
 
+Decision (round 4): medications are classified like titles, with three
+outcomes, for every medication whose `active` is true or null (`active:
+false` is never classified or sent). KNOWN_ANTICOAG: the list above; final.
+KNOWN_OTHER: lisinopril (case_00000) and metformin (case_00006), the names the
+sample shows are not anticoagulants, and deliberately nothing more; final.
+UNKNOWN: everything else. Default mode asks the LLM whether the name, as
+listed, is an anticoagulant (cache question `anticoag`, keyed on the
+lowercased, whitespace-collapsed name, asked once per evaluation). A "yes"
+adds the medication to Rule 3 with the first word of its normalized name as
+its drug identity for plan matching and the plan question ("Tinzaparin 4500
+IU" becomes "tinzaparin"; known cost: "low molecular weight heparin" becomes
+"low"); the issue details say the model identified it. A "no" changes
+nothing. Offline mode treats UNKNOWN as not an anticoagulant, which is the
+earlier behavior and a documented limitation (section 5). The sample has no
+UNKNOWN medication, so default mode asks no medication question on it.
+
 **Anticoagulation plan documents.** VERIFIED that all seven plan-bearing
 cases (0, 4, 6, 21, 26, 38, 42) have a vague plan and all are flagged with
 identical description and details. CORRECTED on source attribution: the
@@ -555,6 +582,10 @@ anything else resolves to nothing and falls through to the fuzzy path.
    offline mode has no model, so a signed-looking text that is not in fact a
    valid patient signature, and that no tier 1 or tier 2 negative catches,
    clears offline.
+7. **Offline mode misses an unlisted anticoagulant (limitation).** A
+   medication on neither list is not an anticoagulant offline, so Rule 3
+   never runs for it and the patient can clear. Default mode asks the model
+   about every such name (D2).
 
 ## 6. Blast radius: what the LLM can and cannot change
 
@@ -568,6 +599,9 @@ The LLM can:
 - Decline to confirm a keyword-POSITIVE consent. This can add a "consent not
   clearly signed" issue; it can never remove one, because a keyword-NEGATIVE
   consent is final (D2).
+- Identify an unlisted medication as an anticoagulant, which adds an
+  anticoagulation issue (or the missing-data issue when `active` is null). It
+  can never un-list one: a name on either list is final.
 - Declare a plan clear for a drug. Under D4 this is the only way any
   anticoagulation issue is ever removed. On this dataset one of the seven
   plan texts is UNPLACED (case_00000), so one anticoagulation outcome rests
@@ -581,21 +615,26 @@ The LLM cannot:
   returns an enum from a strict schema; the rules layer writes the issue.
 - Override a keyword NEGATIVE or a title the rules placed. Its only power
   over a keyword POSITIVE consent is to add the issue.
-- Change the decision except through the two issue types above. It can never
+- Change the decision except through the issue types above. It can never
   produce or remove an ACUTE_SAFETY_EXCLUSION, so it can never flip a case
   into or out of NOT_CLEARED.
 
 Outage behavior: on any API error the resolver retries twice with a short
 backoff, then returns the offline answer for that item (title OTHER, consent
-not signed, plan not clear), writes one line to stderr naming the item and the
+not signed, plan not clear, medication not an anticoagulant), writes one line
+to stderr naming the item and the
 error, and does not cache that answer. A failed consent confirmation returns
 the keyword answer. The engine appends one sentence to the explanation ("LLM
 fallback unavailable for N item(s); conservative offline answers were used.")
 and never raises. An outage therefore degrades to offline behavior. Offline
 is not strictly more conservative: when the newest document has an
 unrecognized title, classifying it as OTHER means an older recognized
-document is judged instead, which can remove an issue as well as add one. A
-missing API key is recorded once and not retried. If
+document is judged instead, which can remove an issue as well as add one. The
+medication question is the one question where an outage degrades toward
+clearance: offline has no conservative answer for an unknown drug short of
+flagging every medication, so a failed medication question leaves an unlisted
+anticoagulant unrecognized and Rule 3 does not run for it. A missing API key
+is recorded once and not retried. If
 the model rejects `temperature`, the resolver retries that call once without
 it and stops sending it for the rest of the process; the stability report
 states whether it was accepted.
@@ -657,6 +696,14 @@ wrong "clear" answer would drop the issue and cost the category point.
    sight of the keyword lists, were run against the keyword rules as they
    stood before each fix, the rules at the final commit, and both models
    (`results/probes-*/`), as the nearest thing to held-out data in the repo.
+6. **Model-assisted anticoagulant recognition (round 4).** The anticoagulant
+   list was the one policy input with no fallback, and it failed toward READY
+   in both modes. Medications gained the same three-outcome treatment as
+   titles (D2, section 4): lists first, the model for unknown names, and the
+   model can add an anticoagulant but never remove one. The default-mode runs,
+   stability, probes (now including five unlisted medication names), and
+   mutation report were regenerated; the offline run was kept because a fresh
+   offline run was byte-identical.
 
 ## 8. Rejected findings
 

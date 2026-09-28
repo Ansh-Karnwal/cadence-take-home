@@ -19,7 +19,7 @@ PREOP_OFFLINE=1 make baseline
 make -f Makefile.local score-offline
 ```
 
-**Default mode, with a key.** Unknown document titles, ambiguous texts, and consent confirmations go to the model named by `MODEL`, which defaults to the Makefile's value. `make evals` always creates a remote OpenAI eval, so it needs the key in both modes.
+**Default mode, with a key.** Unknown document titles, ambiguous texts, consent confirmations, and unlisted medication names go to the model named by `MODEL`, which defaults to the Makefile's value. `make evals` always creates a remote OpenAI eval, so it needs the key in both modes.
 
 ```bash
 export OPENAI_API_KEY="<your_api_key>"
@@ -34,7 +34,7 @@ make report
 
 | Variable | Effect |
 |---|---|
-| `PREOP_OFFLINE` | Never call the LLM. Unknown titles count as not required, ambiguous texts as negative, and keyword-signed consents as signed. |
+| `PREOP_OFFLINE` | Never call the LLM. Unknown titles count as not required, ambiguous texts as negative, keyword-signed consents as signed, and unlisted medications as not anticoagulants. |
 | `PREOP_NO_CACHE` | Bypass the in-process LLM answer cache. |
 | `PREOP_FORCE_LLM` | Measurement only: send every title and text to the LLM and discard the rules' answer. Ignored when offline. |
 
@@ -73,15 +73,20 @@ submission (dict | PatientSubmission)
    |                 (each title classified once per evaluation)
    |         text  -> consent signed? -> POS | NEG | UNPLACED
    |                  plan clear for drug X? -> NEG | UNPLACED (never POS)
+   |         medication (active true or null) -> KNOWN_ANTICOAG
+   |                 | KNOWN_OTHER | UNKNOWN (each name asked once)
    v
 [rules]      missing-data gates, Rule 1 (docs), Rule 2 (labs),
    |         Rule 3 (anticoagulation, once per active anticoagulant),
    |         Rule 4 (vitals)
-   |         (only UNKNOWN titles / UNPLACED texts leave this layer)
+   |         (only UNKNOWN titles and medications, UNPLACED texts, and
+   |         keyword-POSITIVE consents leave this layer)
    v
-[LLM fallback]  default mode: classify UNKNOWN titles and UNPLACED texts,
+[LLM fallback]  default mode: classify UNKNOWN titles and medications,
+   |            judge UNPLACED texts, confirm keyword-POSITIVE consents;
    |            strict JSON schema, temperature 0, in-memory cache
-   |            offline mode: UNKNOWN -> not a required type;
+   |            offline mode: UNKNOWN title -> not a required type;
+   |                          UNKNOWN medication -> not an anticoagulant;
    |                          UNPLACED -> negative (so offline never
    |                          finds an anticoagulation plan clear)
    v
@@ -92,12 +97,12 @@ submission (dict | PatientSubmission)
 
 **The rules cover everything the policy states as a fact about structured fields.** Windows are date arithmetic. Tests are codes and dates, and safety exclusions are thresholds. Missing data is a null check. None of that benefits from a model, and all of it must be exact and repeatable, so the rules evaluate every rule and write every issue.
 
-**The model exists for the two fuzzy inputs:** document titles, and short free-text judgments. The judgments are whether a consent is signed and whether an anticoagulation plan is clear. The rules classify both with explicit patterns and keywords. The model sees only what they cannot settle, and returns one label through a strict JSON schema. One asymmetry governs every judgment that could clear a patient: keywords can add an issue but never remove one. A keyword-negative consent is final, and a keyword-positive consent clears only if the model confirms it. Only the model can call a plan clear.
+**The model exists for the three fuzzy inputs:** document titles, short free-text judgments, and medication names on neither of the rules' lists. The judgments are whether a consent is signed and whether an anticoagulation plan is clear. The rules classify all three with explicit patterns, keywords, and lists. The model sees only what they cannot settle, and returns one label through a strict JSON schema. One asymmetry governs every judgment that could clear a patient: keywords can add an issue but never remove one. A keyword-negative consent is final, and a keyword-positive consent clears only if the model confirms it. Only the model can call a plan clear. The model can add an unlisted medication to the anticoagulants but never remove a listed one.
 
 **Measured on this sample:**
 - **Offline and default scores.** Offline mode scores 100.0. Default mode scores 99.43 on both models, and case_00002 is the only case that differs from offline (see Known divergences).
 - **Consent confirmation.** It changed no case on either model; the only failing case in each default run is case_00002.
-- **Items sent to the model.** Default mode sends 15 distinct items to the model: 9 unknown titles, 5 consent confirmations, and 1 unplaced plan text. gpt-4.1-mini gave the same label on every run for 14 of 15. It split on the consent "Signed consent scanned and verified before scheduling.", which it called signed on 4 runs and unsigned on 1. gpt-6-luna gave the same label on every run for all 15.
+- **Items sent to the model.** Default mode sends 15 distinct items to the model: 9 unknown titles, 5 consent confirmations, 1 unplaced plan text, and 0 unknown medication names. gpt-4.1-mini gave the same label on every run for all 15. gpt-6-luna gave the same label on every run for all 15.
 - **Model disagreement on unknown titles.** The two models give a different label to 5 of the 9 unknown titles. None of them changes an output, because in each of those cases a newer recognized H&P exists.
 
 The decisions behind every rule, with the evidence for each, are in [DESIGN.md](DESIGN.md).
@@ -120,18 +125,19 @@ The naive rows are the starter's single LLM call, kept as the before measurement
 
 | Run | Model | Items | Runs | Self-agreement (%) | Rules agreement (% of rule-placed items) | API calls | Failures | Temperature 0 accepted | Default-mode items stable | Disagreements |
 |---|---|---|---|---|---|---|---|---|---|---|
-| stability-gpt-4.1-mini | gpt-4.1-mini | 120 | 5 | 99.17 | 98.18 of 110 | 600 | 0 | True | 14 of 15 | 2 |
-| stability-gpt-6-luna | gpt-6-luna | 120 | 5 | 98.33 | 97.27 of 110 | 601 | 0 | False | 15 of 15 | 3 |
+| stability-gpt-4.1-mini | gpt-4.1-mini | 124 | 5 | 100.0 | 98.25 of 114 | 620 | 0 | True | 15 of 15 | 2 |
+| stability-gpt-6-luna | gpt-6-luna | 124 | 5 | 98.39 | 97.37 of 114 | 621 | 0 | False | 15 of 15 | 3 |
 
 Self-agreement is the share of items whose label was identical on every run.
 Rules agreement is the share of rule-placed items whose most common model label
 equals the rule label. Default-mode items are the ones default mode actually
 sends to the model (unknown titles, consent confirmations and unplaced consents,
-unplaced plans); the column counts how many were stable on every run.
+unplaced plans, unknown medication names); the column counts how many were stable
+on every run.
 
-The stability script asks each model about every distinct title, consent text, and plan-and-drug pair in the dataset, five times with the cache off. It uses temperature 0 where the model accepts it. gpt-6-luna rejected the parameter and ran at its default, which accounts for its one extra API call.
+The stability script asks each model about every distinct title, consent text, plan-and-drug pair, and medication name in the dataset, five times with the cache off. It uses temperature 0 where the model accepts it. gpt-6-luna rejected the parameter and ran at its default, which accounts for its one extra API call.
 
-Both models disagree with the rules on the same two titles. On "Consent Counseling Note" the oracle sides with the rules: cases 12 and 44 judge that document as the consent. On "Cardiology Progress Note - Anticoag" the oracle's citation of the note in case_00021 is explained by its text, which names an anticoagulant, so it does not show the oracle treats the title as a plan. gpt-6-luna also split on "H&P Update". The direct support for the rules there is the document's own text, "H&P completed". The indirect support is case_00049, where the oracle raises no H&P issue although the older H&P is out of window; that is weakened because the case has no procedure risk, and the oracle may skip every rule then. The rules place all three titles, so default mode never sends them to the model.
+Both models disagree with the rules on the same two titles. On "Consent Counseling Note" the oracle sides with the rules: cases 12 and 44 judge that document as the consent. On "Cardiology Progress Note - Anticoag" the oracle's citation of the note in case_00021 is explained by its text, which names an anticoagulant, so it does not show the oracle treats the title as a plan. gpt-6-luna also disagreed on "Perioperative Medication Review" (OTHER on 4 and ANTICOAG_PLAN on 1 runs). The oracle cites that document in cases 26 and 38, but both texts name an anticoagulant ("Anticoagulant noted in medication list" and "Apixaban listed"), so, as with the cardiology note, the citation is explained by the text rather than the title. Neither model disagreed with the medication lists: both called apixaban and warfarin anticoagulants and lisinopril and metformin not, on every run. The rules place every title above, so default mode never sends them to the model.
 
 `stability-gpt-4.1-mini`:
 
@@ -142,27 +148,27 @@ Both models disagree with the rules on the same two titles. On "Consent Counseli
 
 - title "Cardiology Progress Note - Anticoag": rules say ANTICOAG_PLAN, model says OTHER x5 (cases: case_00021)
 - title "Consent Counseling Note": rules say CONSENT, model says OTHER x5 (cases: case_00004, case_00012, case_00020, case_00028, case_00036, case_00044)
-- title "H&P Update": rules say H_AND_P, model says H_AND_P x2, OTHER x3 (cases: case_00049)
+- title "Perioperative Medication Review": rules say ANTICOAG_PLAN, model says ANTICOAG_PLAN x1, OTHER x4 (cases: case_00026, case_00038)
 
-gpt-4.1-mini split 4 to 1 on the consent "Signed consent scanned and verified before scheduling.", which default mode sends for confirmation. Because keyword-signed consents are now model-confirmed, a split on a consent text means the outcome depends on which answer a process draws first: the committed harness run drew "signed", but a run that drew "unsigned" would flag the consent in all 9 cases that carry this text. That is the cost of the confirmation step, and it errs toward follow-up. For a reproducible default-mode run, use `MODEL=gpt-6-luna`, which was stable on every item default mode sends. On `gpt-4.1-mini`, the harness default, one consent text drew 'unsigned' in 1 of 5 stability runs; a harness run that draws it would flag 9 cases and drop case_00012 from READY. gpt-6-luna split 3 to 2 on the titles "H&P Update" and "Perioperative Medication Review", which the rules place, so default mode never asks the model about them.
+In this regeneration both models gave the same label on every run for every item default mode sends, so either `MODEL` gives a reproducible default-mode run on this sample. Consent confirmation is still the item most exposed to run-to-run variation: the previous regeneration, at commit `6d40968`, saw gpt-4.1-mini, the harness default, call the consent "Signed consent scanned and verified before scheduling." unsigned on one run, and a harness run that drew that answer would flag every case carrying the text, including case_00012, one of the three READY cases. gpt-6-luna split 3 to 2 on the title "H&P Update", which the rules place, so default mode never asks the model about it. gpt-6-luna split 4 to 1 on the title "Perioperative Medication Review", which the rules place, so default mode never asks the model about it.
 
 `stability-gpt-4.1-mini`:
 
-- consent "Signed consent scanned and verified before scheduling.": false x1, true x4 (sent in default mode)
+- None.
 
 `stability-gpt-6-luna`:
 
-- title "H&P Update": H_AND_P x2, OTHER x3 (rule-placed, not sent in default mode)
-- title "Perioperative Medication Review": ANTICOAG_PLAN x3, OTHER x2 (rule-placed, not sent in default mode)
+- title "H&P Update": H_AND_P x3, OTHER x2 (rule-placed, not sent in default mode)
+- title "Perioperative Medication Review": ANTICOAG_PLAN x1, OTHER x4 (rule-placed, not sent in default mode)
 
 ### Generalization probes
 
 | Run | Model | Pre-fix rules correct | HEAD rules correct | Model correct (majority) | Model strings with split answers | Failures |
 |---|---|---|---|---|---|---|
-| probes-gpt-4.1-mini | gpt-4.1-mini | 0 of 21 | 21 of 21 | 19 of 19 | 1 | 0 |
-| probes-gpt-6-luna | gpt-6-luna | 0 of 21 | 21 of 21 | 18 of 19 | 0 | 0 |
+| probes-gpt-4.1-mini | gpt-4.1-mini | 3 of 26 | 26 of 26 | 26 of 26 | 2 | 0 |
+| probes-gpt-6-luna | gpt-6-luna | 3 of 26 | 26 of 26 | 25 of 26 | 1 | 0 |
 
-These 21 strings were written by the two reviewers, without seeing the keyword lists, to find inputs the rules of the day got wrong, and each one is now a test. The pre-fix rules are the honest comparison, because the HEAD rules were extended in response to these exact strings, so the HEAD score of 21 of 21 is fitted and the pre-fix score of 0 is zero by construction; of those pre-fix errors, 16 would wrongly clear a patient and 5, all titles, would over-flag. Unaided, gpt-4.1-mini gave the correct majority label on 19 of 19 strings it can be asked about but split 3 to 2 on "Consent signed by patient. Patient later withdrew consent.", calling it signed on 2 of 5 runs, and gpt-6-luna got 18 of 19, calling "Patient signed consent for left knee arthroscopy; new consent required for planned procedure." signed on 5 of 5 runs; the model catches most of what the old keywords missed, but not all, which is why a keyword negative stays final.
+These 26 strings are the probes the two reviewers wrote without seeing the keyword lists, to find inputs the rules of the day got wrong, plus five unlisted medication names added in the final round to test the medication question; each one is now a test. The pre-fix rules are the honest comparison, because the HEAD rules were extended in response to these exact strings, so the HEAD score of 26 of 26 is fitted; the pre-fix rules got 3, all of them the non-anticoagulant medication names they already ignored, and of their errors 18 would wrongly clear a patient and 5, all titles, would over-flag. Unaided, gpt-4.1-mini gave the correct majority label on 26 of 26, splitting on "Consent signed by patient. Patient later withdrew consent." (not signed on 4, signed on 1) and splitting on "Patient signed consent for left knee arthroscopy; new consent required for planned procedure." (not signed on 3, signed on 2); gpt-6-luna gave the correct majority label on 25 of 26, missing "Patient signed consent for left knee arthroscopy; new consent required for planned procedure." (signed on 5 of 5 runs) and splitting on "Consent Withdrawn" (OTHER on 4, CONSENT on 1). Neither model missed a medication name. The model catches most of what the old keywords missed, but not all, which is why a keyword negative stays final.
 
 ## Determinism
 
@@ -179,6 +185,7 @@ The LLM can:
 - Label an unknown title as an H&P, a consent, an anticoagulation plan, or other. That can add or remove a documentation or anticoagulation issue.
 - Judge an ambiguous consent text signed or not.
 - Decline to confirm a keyword-signed consent, which adds a consent issue. It can never remove one, because a keyword-negative consent is final.
+- Identify an unlisted medication as an anticoagulant, which adds an anticoagulation issue; it can never un-list one.
 - Declare a plan clear for a drug. This is the only way an anticoagulation issue is ever removed.
 
 The LLM cannot:
@@ -188,7 +195,7 @@ The LLM cannot:
 - Override a keyword-negative consent or a title the rules recognized.
 - Add or remove a safety exclusion, so it can never move a case into or out of `NOT_CLEARED`.
 
-On an API error the resolver retries twice with a short backoff, then uses the offline answer for that item. A failed consent confirmation keeps the keyword answer. It writes one line to stderr and appends a note to the explanation, and the engine never raises because of the API. An outage therefore degrades to offline behavior. Offline is not strictly more conservative. When the newest document has an unrecognized title, classifying it as other means an older recognized document is judged instead, which can remove an issue as well as add one.
+On an API error the resolver retries twice with a short backoff, then uses the offline answer for that item. A failed consent confirmation keeps the keyword answer. It writes one line to stderr and appends a note to the explanation, and the engine never raises because of the API. An outage therefore degrades to offline behavior. Offline is not strictly more conservative. When the newest document has an unrecognized title, classifying it as other means an older recognized document is judged instead, which can remove an issue as well as add one. The medication question is the one place an outage degrades toward clearance: offline has no conservative answer for an unknown drug short of flagging every medication, so an unlisted anticoagulant goes unrecognized and its plan is never checked.
 
 ## Known divergences
 
@@ -198,7 +205,7 @@ On an API error the resolver retries twice with a short backoff, then uses the o
 ## Assumptions and limitations
 
 - **Policy source and H&P completeness.** The policy appendix of the take-home PDF is the only source of truth, and [DESIGN.md](DESIGN.md) records how each rule was read. The starter's prompt copy of the policy was removed from `core.py`. The H&P's "completed within" window is read against its date; clinical completeness is not judged from its text.
-- **Anticoagulant list.** The policy does not define the class, so the list is ours and finite. It covers apixaban, rivaroxaban, edoxaban, dabigatran, warfarin, enoxaparin, dalteparin, fondaparinux, and heparin, with their common brand names. Names are matched by word inside the medication name, and a drug named only in document text is not a current medication.
+- **Anticoagulant list.** The policy does not define the class, so the list is ours and finite. It covers apixaban, rivaroxaban, edoxaban, dabigatran, warfarin, enoxaparin, dalteparin, fondaparinux, and heparin, with their common brand names. Names are matched by word inside the medication name, and a drug named only in document text is not a current medication. A name on neither this list nor the known non-anticoagulants (lisinopril, metformin) goes to the model in default mode and counts as not an anticoagulant offline.
 - **Inclusive windows.** "Within N days" includes a gap of exactly N days. An H&P or lab dated after the procedure is outside the window.
 - **Dates.** Day counts use each item's own calendar date, dropping any UTC offset, because the procedure date is a local date. Ordering uses the full timestamp, with date-only values at midnight UTC. An item date that is present but unparseable raises a missing-data issue and is not selected.
 - **Consent titles.** A title containing "consent" is the surgical consent. It is not if it also names anesthesia, anaesthesia, research, blood, transfusion, photo, withdrawn, refused, or revoked, unless it also names surgery.
@@ -214,20 +221,20 @@ On an API error the resolver retries twice with a short backoff, then uses the o
 
 | Suite | Tests |
 |---|---|
-| `tests/test_classify.py` | 97 |
-| `tests/test_synthetic.py` | 93 |
+| `tests/test_classify.py` | 112 |
+| `tests/test_synthetic.py` | 102 |
 | `tests/test_normalize.py` | 69 |
 | `tests/test_settings.py` | 51 |
-| `tests/test_llm.py` | 35 |
+| `tests/test_llm.py` | 40 |
 | `tests/test_contract.py` | 10 |
 | `tests/test_golden.py` | 7 |
 | `tests/test_determinism.py` | 1 |
-| **Total** | **363** |
+| **Total** | **392** |
 
 - **Golden.** Runs all sample cases in offline mode. It checks that the decision and the category set match the oracle. It also matches every issue both ways on category, source, and description, with one documented exception for case_00042's source. A separate check runs the harness's own per-case scorer, including grounding.
 - **Synthetic.** Each test builds a minimal package for one path. Paths include exact window and threshold boundaries, same-day vitals, offsets, unparseable dates, lab status, and multiple consents. They also cover combined consent titles, per-drug and brand-name anticoagulation, the reviewers' probe strings, empty collections, and fully empty packages. Consent confirmation is tested through an injected resolver.
 - **LLM layer.** A fake client records every call. The tests cover the strict schema, prompts, cache hits, bypassing the cache, force mode, retries, and the outage fallback, including a failed consent confirmation. They also cover rejected temperature and ten-call determinism. No test touches the network.
-- **Mutation checks.** `scripts/mutation_check.py` applies 26 deliberate bugs to a temporary copy of the repo and runs the suite against each. The suite caught 26. The report, with the per-suite counts above, is in `results/mutation/mutation_report.json`.
+- **Mutation checks.** `scripts/mutation_check.py` applies 29 deliberate bugs to a temporary copy of the repo and runs the suite against each. The suite caught 29. The report, with the per-suite counts above, is in `results/mutation/mutation_report.json`.
 
 ## Process
 
