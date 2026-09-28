@@ -4,11 +4,11 @@ Model `gpt-6-luna`, 5 runs per string, cache off.
 
 | Answer source | Correct |
 |---|---|
-| Keyword rules before each string's fix | 0 of 21 |
-| Keyword rules at HEAD | 21 of 21 |
-| Model alone (majority label) | 18 of 19 |
+| Keyword rules before each string's fix | 3 of 26 |
+| Keyword rules at HEAD | 26 of 26 |
+| Model alone (majority label) | 25 of 26 |
 
-Pre-fix errors that wrongly clear a patient: 16. Pre-fix errors that over-flag: 5.
+Pre-fix errors that wrongly clear a patient: 18. Pre-fix errors that over-flag: 5.
 
 | Review | Kind | String | Correct | Pre-fix rules (commit) | HEAD rules | Model majority (split) |
 |---|---|---|---|---|---|---|
@@ -24,17 +24,23 @@ Pre-fix errors that wrongly clear a patient: 16. Pre-fix errors that over-flag: 
 | first | title | H & P | H_AND_P | OTHER (UNKNOWN, deferred) WRONG (b3940c6) | H_AND_P (REQUIRED:H_AND_P) ok | H_AND_P (H_AND_P x5) ok |
 | first | title | Interval H&P | H_AND_P | OTHER (UNKNOWN, deferred) WRONG (b3940c6) | H_AND_P (REQUIRED:H_AND_P) ok | H_AND_P (H_AND_P x5) ok |
 | first | title | H&P Addendum | H_AND_P | OTHER (UNKNOWN, deferred) WRONG (b3940c6) | H_AND_P (REQUIRED:H_AND_P) ok | H_AND_P (H_AND_P x5) ok |
-| first | title | Consent Withdrawn | OTHER | CONSENT (REQUIRED:CONSENT) WRONG (b3940c6) | OTHER (KNOWN_OTHER) ok | OTHER (OTHER x5) ok |
+| first | title | Consent Withdrawn | OTHER | CONSENT (REQUIRED:CONSENT) WRONG (b3940c6) | OTHER (KNOWN_OTHER) ok | OTHER (CONSENT x1, OTHER x4) ok |
 | second | consent | Consent form signed by surgeon; patient signature outstanding. | false | true (POSITIVE) WRONG (432bea9) | false (NEGATIVE) ok | false (false x5) ok |
 | second | consent | Consent signed by patient. Patient later withdrew consent. | false | true (POSITIVE) WRONG (432bea9) | false (NEGATIVE) ok | false (false x5) ok |
 | second | consent | Signed consent rescinded by patient on 2026-02-22. | false | true (POSITIVE) WRONG (432bea9) | false (NEGATIVE) ok | false (false x5) ok |
 | second | consent | Patient consent form. Signed: ______________ Date: ________ | false | true (POSITIVE) WRONG (432bea9) | false (NEGATIVE) ok | false (false x5) ok |
 | second | consent | Patient signed consent for left knee arthroscopy; new consent required for planned procedure. | false | true (POSITIVE) WRONG (432bea9) | false (NEGATIVE) ok | true (true x5) WRONG |
-| second | medication | Eliquis 5 mg BID | recognized | not recognized (none) WRONG (432bea9) | recognized (apixaban) ok | n/a (no model question) |
-| second | medication | Xarelto 20 mg daily | recognized | not recognized (none) WRONG (432bea9) | recognized (rivaroxaban) ok | n/a (no model question) |
+| second | medication | Eliquis 5 mg BID | recognized | not recognized (none) WRONG (432bea9) | recognized (KNOWN_ANTICOAG:apixaban) ok | recognized (recognized x5) ok |
+| second | medication | Xarelto 20 mg daily | recognized | not recognized (none) WRONG (432bea9) | recognized (KNOWN_ANTICOAG:rivaroxaban) ok | recognized (recognized x5) ok |
+| second | medication | Pradaxa 150 mg | recognized | not recognized (none) WRONG (432bea9) | recognized (KNOWN_ANTICOAG:dabigatran) ok | recognized (recognized x5) ok |
+| second | medication | Lovenox 40 mg SC daily | recognized | not recognized (none) WRONG (432bea9) | recognized (KNOWN_ANTICOAG:enoxaparin) ok | recognized (recognized x5) ok |
+| second | medication | clopidogrel | not recognized | not recognized (none) ok (432bea9) | not recognized (UNKNOWN, deferred) ok | not recognized (not recognized x5) ok |
+| second | medication | aspirin 81 mg | not recognized | not recognized (none) ok (432bea9) | not recognized (UNKNOWN, deferred) ok | not recognized (not recognized x5) ok |
+| second | medication | amlodipine | not recognized | not recognized (none) ok (432bea9) | not recognized (UNKNOWN, deferred) ok | not recognized (not recognized x5) ok |
 | second | title | Surgical and Anesthesia Consent | CONSENT | OTHER (KNOWN_OTHER) WRONG (432bea9) | CONSENT (REQUIRED:CONSENT) ok | CONSENT (CONSENT x5) ok |
 
 A rules answer is graded by the decision offline mode would make: an UNPLACED consent
 is not signed, an UNPLACED plan is not clear, an UNKNOWN title is OTHER. Deferred
-answers are marked. Medication names have no model question and are excluded from
-the model's total. The pre-fix rules come from a git worktree of the named commit.
+answers are marked; an UNKNOWN medication is not recognized. The model answers
+medication names through the medication question. The pre-fix rules come from a
+git worktree of the named commit.

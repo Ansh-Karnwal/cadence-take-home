@@ -2,15 +2,15 @@
   "model": "gpt-4.1-mini",
   "runs": 5,
   "temperature_accepted": true,
-  "api_calls": 95,
+  "api_calls": 130,
   "failures": 0,
   "totals": {
-    "strings": 21,
-    "prefix_rules_correct": 0,
-    "head_rules_correct": 21,
-    "model_strings": 19,
-    "model_correct": 19,
-    "prefix_wrongly_clears": 16,
+    "strings": 26,
+    "prefix_rules_correct": 3,
+    "head_rules_correct": 26,
+    "model_strings": 26,
+    "model_correct": 26,
+    "prefix_wrongly_clears": 18,
     "prefix_over_flags": 5
   },
   "probes": [
@@ -527,14 +527,14 @@
       "model": {
         "labels": [
           "false",
-          "true",
+          "false",
           "false",
           "false",
           "true"
         ],
         "split": {
-          "false": 3,
-          "true": 2
+          "false": 4,
+          "true": 1
         },
         "majority": "false"
       },
@@ -634,12 +634,13 @@
         "labels": [
           "false",
           "false",
-          "false",
-          "false",
+          "true",
+          "true",
           "false"
         ],
         "split": {
-          "false": 5
+          "false": 3,
+          "true": 2
         },
         "majority": "false"
       },
@@ -660,13 +661,25 @@
       "prefix_correct": false,
       "prefix_direction": "wrongly clears",
       "head_rules": {
-        "raw": "apixaban",
+        "raw": "KNOWN_ANTICOAG:apixaban",
         "effective": "recognized",
         "deferred": false
       },
       "head_correct": true,
-      "model": null,
-      "model_correct": null
+      "model": {
+        "labels": [
+          "recognized",
+          "recognized",
+          "recognized",
+          "recognized",
+          "recognized"
+        ],
+        "split": {
+          "recognized": 5
+        },
+        "majority": "recognized"
+      },
+      "model_correct": true
     },
     {
       "review": "second",
@@ -683,13 +696,200 @@
       "prefix_correct": false,
       "prefix_direction": "wrongly clears",
       "head_rules": {
-        "raw": "rivaroxaban",
+        "raw": "KNOWN_ANTICOAG:rivaroxaban",
         "effective": "recognized",
         "deferred": false
       },
       "head_correct": true,
-      "model": null,
-      "model_correct": null
+      "model": {
+        "labels": [
+          "recognized",
+          "recognized",
+          "recognized",
+          "recognized",
+          "recognized"
+        ],
+        "split": {
+          "recognized": 5
+        },
+        "majority": "recognized"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "second",
+      "kind": "medication",
+      "text": "Pradaxa 150 mg",
+      "drug": null,
+      "correct": "recognized",
+      "prefix_commit": "432bea9",
+      "prefix_rules": {
+        "raw": "none",
+        "effective": "not recognized",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "KNOWN_ANTICOAG:dabigatran",
+        "effective": "recognized",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "recognized",
+          "recognized",
+          "recognized",
+          "recognized",
+          "recognized"
+        ],
+        "split": {
+          "recognized": 5
+        },
+        "majority": "recognized"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "second",
+      "kind": "medication",
+      "text": "Lovenox 40 mg SC daily",
+      "drug": null,
+      "correct": "recognized",
+      "prefix_commit": "432bea9",
+      "prefix_rules": {
+        "raw": "none",
+        "effective": "not recognized",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "KNOWN_ANTICOAG:enoxaparin",
+        "effective": "recognized",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "recognized",
+          "recognized",
+          "recognized",
+          "recognized",
+          "recognized"
+        ],
+        "split": {
+          "recognized": 5
+        },
+        "majority": "recognized"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "second",
+      "kind": "medication",
+      "text": "clopidogrel",
+      "drug": null,
+      "correct": "not recognized",
+      "prefix_commit": "432bea9",
+      "prefix_rules": {
+        "raw": "none",
+        "effective": "not recognized",
+        "deferred": false
+      },
+      "prefix_correct": true,
+      "prefix_direction": "correct",
+      "head_rules": {
+        "raw": "UNKNOWN",
+        "effective": "not recognized",
+        "deferred": true
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "not recognized",
+          "not recognized",
+          "not recognized",
+          "not recognized",
+          "not recognized"
+        ],
+        "split": {
+          "not recognized": 5
+        },
+        "majority": "not recognized"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "second",
+      "kind": "medication",
+      "text": "aspirin 81 mg",
+      "drug": null,
+      "correct": "not recognized",
+      "prefix_commit": "432bea9",
+      "prefix_rules": {
+        "raw": "none",
+        "effective": "not recognized",
+        "deferred": false
+      },
+      "prefix_correct": true,
+      "prefix_direction": "correct",
+      "head_rules": {
+        "raw": "UNKNOWN",
+        "effective": "not recognized",
+        "deferred": true
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "not recognized",
+          "not recognized",
+          "not recognized",
+          "not recognized",
+          "not recognized"
+        ],
+        "split": {
+          "not recognized": 5
+        },
+        "majority": "not recognized"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "second",
+      "kind": "medication",
+      "text": "amlodipine",
+      "drug": null,
+      "correct": "not recognized",
+      "prefix_commit": "432bea9",
+      "prefix_rules": {
+        "raw": "none",
+        "effective": "not recognized",
+        "deferred": false
+      },
+      "prefix_correct": true,
+      "prefix_direction": "correct",
+      "head_rules": {
+        "raw": "UNKNOWN",
+        "effective": "not recognized",
+        "deferred": true
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "not recognized",
+          "not recognized",
+          "not recognized",
+          "not recognized",
+          "not recognized"
+        ],
+        "split": {
+          "not recognized": 5
+        },
+        "majority": "not recognized"
+      },
+      "model_correct": true
     },
     {
       "review": "second",

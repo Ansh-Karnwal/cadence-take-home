@@ -30,25 +30,26 @@ Notes:
 
 | Run | Model | Items | Runs | Self-agreement (%) | Rules agreement (% of rule-placed items) | API calls | Failures | Temperature 0 accepted | Default-mode items stable | Disagreements |
 |---|---|---|---|---|---|---|---|---|---|---|
-| stability-gpt-4.1-mini | gpt-4.1-mini | 120 | 5 | 99.17 | 98.18 of 110 | 600 | 0 | True | 14 of 15 | 2 |
-| stability-gpt-6-luna | gpt-6-luna | 120 | 5 | 98.33 | 97.27 of 110 | 601 | 0 | False | 15 of 15 | 3 |
+| stability-gpt-4.1-mini | gpt-4.1-mini | 124 | 5 | 100.0 | 98.25 of 114 | 620 | 0 | True | 15 of 15 | 2 |
+| stability-gpt-6-luna | gpt-6-luna | 124 | 5 | 98.39 | 97.37 of 114 | 621 | 0 | False | 15 of 15 | 3 |
 
 Self-agreement is the share of items whose label was identical on every run.
 Rules agreement is the share of rule-placed items whose most common model label
 equals the rule label. Default-mode items are the ones default mode actually
 sends to the model (unknown titles, consent confirmations and unplaced consents,
-unplaced plans); the column counts how many were stable on every run.
+unplaced plans, unknown medication names); the column counts how many were stable
+on every run.
 
 ### Items with split labels
 
 `stability-gpt-4.1-mini`:
 
-- consent "Signed consent scanned and verified before scheduling.": false x1, true x4 (sent in default mode)
+- None.
 
 `stability-gpt-6-luna`:
 
-- title "H&P Update": H_AND_P x2, OTHER x3 (rule-placed, not sent in default mode)
-- title "Perioperative Medication Review": ANTICOAG_PLAN x3, OTHER x2 (rule-placed, not sent in default mode)
+- title "H&P Update": H_AND_P x3, OTHER x2 (rule-placed, not sent in default mode)
+- title "Perioperative Medication Review": ANTICOAG_PLAN x1, OTHER x4 (rule-placed, not sent in default mode)
 
 ### Unknown titles where the models disagree
 
@@ -71,19 +72,21 @@ unplaced plans); the column counts how many were stable on every run.
 
 - title "Cardiology Progress Note - Anticoag": rules say ANTICOAG_PLAN, model says OTHER x5 (cases: case_00021)
 - title "Consent Counseling Note": rules say CONSENT, model says OTHER x5 (cases: case_00004, case_00012, case_00020, case_00028, case_00036, case_00044)
-- title "H&P Update": rules say H_AND_P, model says H_AND_P x2, OTHER x3 (cases: case_00049)
+- title "Perioperative Medication Review": rules say ANTICOAG_PLAN, model says ANTICOAG_PLAN x1, OTHER x4 (cases: case_00026, case_00038)
 
 
 ## Generalization probes (reviewer strings)
 
 | Run | Model | Pre-fix rules correct | HEAD rules correct | Model correct (majority) | Model strings with split answers | Failures |
 |---|---|---|---|---|---|---|
-| probes-gpt-4.1-mini | gpt-4.1-mini | 0 of 21 | 21 of 21 | 19 of 19 | 1 | 0 |
-| probes-gpt-6-luna | gpt-6-luna | 0 of 21 | 21 of 21 | 18 of 19 | 0 | 0 |
+| probes-gpt-4.1-mini | gpt-4.1-mini | 3 of 26 | 26 of 26 | 26 of 26 | 2 | 0 |
+| probes-gpt-6-luna | gpt-6-luna | 3 of 26 | 26 of 26 | 25 of 26 | 1 | 0 |
 
-Pre-fix rule errors: 16 would wrongly clear a patient and 5 would over-flag. Medication names have no model question and are excluded from the model's total.
+Pre-fix rule errors: 18 would wrongly clear a patient and 5 would over-flag. The model answers medication names through the medication question.
 
 Model misses and split answers:
 
-- `probes-gpt-4.1-mini` consent "Consent signed by patient. Patient later withdrew consent.": correct false, model false x3, true x2 (correct majority).
+- `probes-gpt-4.1-mini` consent "Consent signed by patient. Patient later withdrew consent.": correct false, model false x4, true x1 (correct majority).
+- `probes-gpt-4.1-mini` consent "Patient signed consent for left knee arthroscopy; new consent required for planned procedure.": correct false, model false x3, true x2 (correct majority).
+- `probes-gpt-6-luna` title "Consent Withdrawn": correct OTHER, model CONSENT x1, OTHER x4 (correct majority).
 - `probes-gpt-6-luna` consent "Patient signed consent for left knee arthroscopy; new consent required for planned procedure.": correct false, model true x5 (wrong majority).

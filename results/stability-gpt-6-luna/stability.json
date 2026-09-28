@@ -2,16 +2,22 @@
   "model": "gpt-6-luna",
   "runs": 5,
   "temperature_accepted": false,
-  "api_calls": 601,
+  "api_calls": 621,
   "failures": 0,
   "summary": {
     "default_route_items": 15,
     "default_route_stable": 15,
-    "items": 120,
-    "self_agreement_pct": 98.33,
-    "rule_placed_items": 110,
-    "rules_agreement_pct": 97.27,
+    "items": 124,
+    "self_agreement_pct": 98.39,
+    "rule_placed_items": 114,
+    "rules_agreement_pct": 97.37,
     "by_question_type": {
+      "anticoag": {
+        "items": 4,
+        "stable": 4,
+        "rule_placed": 4,
+        "rule_agree": 4
+      },
       "consent": {
         "items": 8,
         "stable": 8,
@@ -67,14 +73,15 @@
       },
       {
         "question": "title",
-        "text": "H&P Update",
-        "rule_label": "H_AND_P",
+        "text": "Perioperative Medication Review",
+        "rule_label": "ANTICOAG_PLAN",
         "model_labels": {
-          "OTHER": 3,
-          "H_AND_P": 2
+          "OTHER": 4,
+          "ANTICOAG_PLAN": 1
         },
         "cases": [
-          "case_00049"
+          "case_00026",
+          "case_00038"
         ]
       }
     ]
@@ -390,15 +397,15 @@
       "labels": [
         "OTHER",
         "H_AND_P",
-        "OTHER",
+        "H_AND_P",
         "OTHER",
         "H_AND_P"
       ],
       "distribution": {
-        "OTHER": 3,
-        "H_AND_P": 2
+        "OTHER": 2,
+        "H_AND_P": 3
       },
-      "modal_label": "OTHER",
+      "modal_label": "H_AND_P",
       "self_agreement": false
     },
     {
@@ -1318,15 +1325,15 @@
       "labels": [
         "OTHER",
         "OTHER",
+        "OTHER",
         "ANTICOAG_PLAN",
-        "ANTICOAG_PLAN",
-        "ANTICOAG_PLAN"
+        "OTHER"
       ],
       "distribution": {
-        "OTHER": 2,
-        "ANTICOAG_PLAN": 3
+        "OTHER": 4,
+        "ANTICOAG_PLAN": 1
       },
-      "modal_label": "ANTICOAG_PLAN",
+      "modal_label": "OTHER",
       "self_agreement": false
     },
     {
@@ -2737,6 +2744,150 @@
         "false": 5
       },
       "modal_label": "false",
+      "self_agreement": true
+    },
+    {
+      "question": "anticoag",
+      "text": "apixaban",
+      "rule_label": "true",
+      "default_route": false,
+      "cases": [
+        "case_00000",
+        "case_00004",
+        "case_00006",
+        "case_00021",
+        "case_00026",
+        "case_00038",
+        "case_00042"
+      ],
+      "labels": [
+        "true",
+        "true",
+        "true",
+        "true",
+        "true"
+      ],
+      "distribution": {
+        "true": 5
+      },
+      "modal_label": "true",
+      "self_agreement": true
+    },
+    {
+      "question": "anticoag",
+      "text": "lisinopril",
+      "rule_label": "false",
+      "default_route": false,
+      "cases": [
+        "case_00000",
+        "case_00001",
+        "case_00002",
+        "case_00003",
+        "case_00004",
+        "case_00005",
+        "case_00006",
+        "case_00007",
+        "case_00008",
+        "case_00009",
+        "case_00010",
+        "case_00011",
+        "case_00012",
+        "case_00013",
+        "case_00014",
+        "case_00015",
+        "case_00016",
+        "case_00017",
+        "case_00018",
+        "case_00019",
+        "case_00020",
+        "case_00021",
+        "case_00022",
+        "case_00023",
+        "case_00024",
+        "case_00025",
+        "case_00026",
+        "case_00027",
+        "case_00028",
+        "case_00029",
+        "case_00030",
+        "case_00031",
+        "case_00032",
+        "case_00033",
+        "case_00034",
+        "case_00035",
+        "case_00036",
+        "case_00037",
+        "case_00038",
+        "case_00039",
+        "case_00040",
+        "case_00041",
+        "case_00042",
+        "case_00043",
+        "case_00044",
+        "case_00045",
+        "case_00046",
+        "case_00047",
+        "case_00048",
+        "case_00049"
+      ],
+      "labels": [
+        "false",
+        "false",
+        "false",
+        "false",
+        "false"
+      ],
+      "distribution": {
+        "false": 5
+      },
+      "modal_label": "false",
+      "self_agreement": true
+    },
+    {
+      "question": "anticoag",
+      "text": "metformin",
+      "rule_label": "false",
+      "default_route": false,
+      "cases": [
+        "case_00006",
+        "case_00026",
+        "case_00038",
+        "case_00040"
+      ],
+      "labels": [
+        "false",
+        "false",
+        "false",
+        "false",
+        "false"
+      ],
+      "distribution": {
+        "false": 5
+      },
+      "modal_label": "false",
+      "self_agreement": true
+    },
+    {
+      "question": "anticoag",
+      "text": "warfarin",
+      "rule_label": "true",
+      "default_route": false,
+      "cases": [
+        "case_00001",
+        "case_00023",
+        "case_00037"
+      ],
+      "labels": [
+        "true",
+        "true",
+        "true",
+        "true",
+        "true"
+      ],
+      "distribution": {
+        "true": 5
+      },
+      "modal_label": "true",
       "self_agreement": true
     }
   ]
