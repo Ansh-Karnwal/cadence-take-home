@@ -1,8 +1,10 @@
 # DESIGN.md — Pre-Op Scheduling Triage
 
 Reference document for the hybrid rules-plus-LLM implementation of
-`triage_submission`. The policy text in `core.py` (`BASELINE_SYSTEM_PROMPT`) is
-the only source of truth for rules. Every data claim below was checked against
+`triage_submission`. The Cadence Surgical Center Pre-Operative Scheduling
+Policy in the appendix of the take-home PDF is the only source of truth for
+rules. `core.py`'s `BASELINE_SYSTEM_PROMPT` is a paraphrase of it; where they
+differ, the PDF wins. Every data claim below was checked against
 `data/patients_sample_50.jsonl` and the scoring logic in `run_evals.py`.
 
 ## 1. Purpose and scope
@@ -24,22 +26,28 @@ Data flow, submission to output:
 submission (dict | PatientSubmission)
    |
    v
-[normalize]  validate with PatientSubmission; parse dates (date-only, UTC);
-   |         alias lab codes (LAB-CBC->CBC, LAB-CMP->CMP); pick most-recent
-   |         item per kind (BP, temperature, CBC, CMP); strip document titles
+[normalize]  validate with PatientSubmission; day arithmetic on each item's
+   |         local calendar date; ordering by full instant; alias lab codes
+   |         (LAB-CBC->CBC, LAB-CMP->CMP); drop labs whose status is not
+   |         final/amended/corrected/null; pick most-recent item per kind
+   |         (H&P, consent, BP, temperature, CBC, CMP); strip document titles
    v
 [classify]   title -> REQUIRED (H&P | CONSENT | ANTICOAG_PLAN)
    |                 | KNOWN_OTHER | UNKNOWN
-   |         text  -> consent signed? plan clear? -> POS | NEG | UNPLACED
+   |                 (each title classified once per evaluation)
+   |         text  -> consent signed? -> POS | NEG | UNPLACED
+   |                  plan clear for drug X? -> NEG | UNPLACED (never POS)
    v
 [rules]      missing-data gates, Rule 1 (docs), Rule 2 (labs),
-   |         Rule 3 (anticoagulation), Rule 4 (vitals)
+   |         Rule 3 (anticoagulation, once per active anticoagulant),
+   |         Rule 4 (vitals)
    |         (only UNKNOWN titles / UNPLACED texts leave this layer)
    v
 [LLM fallback]  default mode: classify UNKNOWN titles and UNPLACED texts,
    |            strict JSON schema, temperature 0, in-memory cache
    |            offline mode: UNKNOWN -> not a required type;
-   |                          UNPLACED -> negative
+   |                          UNPLACED -> negative (so offline never
+   |                          finds an anticoagulation plan clear)
    v
 [assemble]   issues in fixed order, decision from issue categories,
              explanation = "CAT: desc | CAT: desc"
@@ -87,40 +95,56 @@ LLM.
 
 ### D3. Three-outcome title classification
 
-Normalize a document title: lowercase; strip known prefixes (`scanned`,
-`imported:`, `preop -`, `pre-op`, `preop`) and known suffixes (`[pdf]`,
-`(scanned)`, `(external)`, `- signed`), repeating both passes until nothing
-matches. Match the remaining core against an explicit pattern list with
-three outcomes:
+Normalize a document title: lowercase; collapse whitespace; rewrite `h & p`
+to `h&p`; strip known prefixes (`scanned`, `imported:`, `preop -`, `pre-op`,
+`preop`) and known suffixes (`[pdf]`, `(scanned)`, `(external)`, `- signed`),
+repeating both passes until nothing matches. A prefix must be followed by
+whitespace unless it ends in its own separator, so `preop` never eats
+`preoperative`. Match the remaining core against an explicit pattern list
+with three outcomes:
 
 - `REQUIRED`: H&P, surgical consent, anticoagulation plan.
 - `KNOWN_OTHER`: nursing intake, anesthesia pre-assessment, clinic follow-up
-  note, and similar. Never a required type; never sent to the LLM.
+  note, consents that name another kind (below), and similar. Never a
+  required type; never sent to the LLM.
 - `UNKNOWN`: reaches the LLM in default mode; treated as not-required in
   offline mode.
+
+Every title is classified once per evaluation, and the result is shared by
+Rules 1 and 3, so the fallback is called at most once per title.
 
 "Strict" means the pattern list is explicit. A misspelling such as
 "History & Phsyical" fails to match by construction. Repeated prefix
 stripping is required because the data contains doubled prefixes
 ("Pre-op Pre-op Evaluation [PDF]", "Pre-op Preop H&P (external)",
-case_00048, case_00034).
+case_00048, case_00009).
 
-Title families observed in the data (all 50 cases, 85 recognized H&P documents across 94 distinct titles):
+Title families (all 50 cases, 85 recognized H&P documents; 107 distinct
+titles in all):
 
 - H&P cores: `h&p`, `h+p`, `h/p`, `h and p`, `history & physical`,
   `history/physical`, `history and physical`, `hist & phys`, `hx & physical`,
-  optionally followed by `(h&p)`, `exam`, `examination`, `note`, `update`,
-  and optionally preceded by `admission`, `clinic`, `consult`, `initial`,
-  `outpatient`, `hospitalist`, `surgical`, `pre-anesthesia`, `preoperative`.
-- Consent cores: any normalized title containing `consent` (8 variants, including
-  "Consent Counseling Note" and "Pre-op Consent Discussion", which the oracle
-  treats as consent documents: case_00044 flags one, case_00012 accepts one).
-- Anticoagulation plan cores: `perioperative medication plan`,
-  `perioperative medication review`, `anticoag plan`,
-  `cardiology progress note - anticoag`. See section 4 for why the oracle's
-  source attribution for this category is text-based, not title-based.
+  optionally followed by any of `(h&p)`, `exam`, `examination`, `note`,
+  `update`, `addendum`, and optionally preceded by one of `admission`,
+  `clinic`, `consult`, `initial`, `interval`, `outpatient`, `hospitalist`,
+  `surgical`, `pre-anesthesia`, `preoperative`. `interval` and `addendum` do
+  not occur in the sample; they were added at checkpoint 1 as common
+  explicit variants.
+- Consent: any normalized title containing the word `consent` is a surgical
+  consent, unless it also contains one of `anesthesia`, `anaesthesia`,
+  `research`, `blood`, `transfusion`, `photo`, `withdrawn`, `refused`,
+  `revoked`, in which case it is KNOWN_OTHER. Assumption: the policy requires
+  a surgical consent, and a consent document that does not name another kind
+  is taken to be the surgical one. The 8 sample variants include
+  "Consent Counseling Note" (case_00044 flags one, case_00012 accepts one)
+  and "Pre-op Consent Discussion" (case_00003 accepts one).
+- Anticoagulation plan: any normalized title containing `anticoag` (which
+  covers `anticoagulation`), or starting with `perioperative medication`.
+  Sample cores: `perioperative medication plan`, `perioperative medication
+  review`, `anticoag plan`, `cardiology progress note - anticoag`. See
+  section 4 for why plan documents are located by text first.
 - KNOWN_OTHER: `anesthesia pre-assessment`, `clinic follow-up note`,
-  `nursing intake`.
+  `nursing intake`, plus the excluded consent kinds above.
 - UNKNOWN on this dataset (8 titles, always the older "prior" H&P document,
   never outcome-determining): "Medical Clearance [PDF]", "Preop Medical
   Clearance [PDF]", "Pre-op Evaluation [PDF]", "Pre-op Pre-op Evaluation
@@ -132,17 +156,45 @@ Title families observed in the data (all 50 cases, 85 recognized H&P documents a
 Rules out: fuzzy or edit-distance matching, embedding similarity, and
 classifying by document text instead of title.
 
-### D4. Text judgments use positive and negative keyword sets with word-boundary matching
+### D4. Text judgments: clause-aware consent keywords; plan clarity only by resolver
 
-Two judgments: is the consent signed, and is the anticoagulation plan clear.
+Two judgments: is the consent signed, and is the anticoagulation plan clear
+for a given drug. Both use case-insensitive word-boundary matching, and both
+split text into clauses on `.`, `;`, and `:`.
 
-- Any negative hit resolves NEGATIVE (rules decide).
-- A positive hit with no negative hit resolves POSITIVE (rules decide).
-- Neither resolves UNPLACED. Default mode sends it to the LLM. Offline mode
-  resolves it NEGATIVE, which is the policy's own rule for ambiguous plans.
-- The positive set for plan clarity requires both hold language and resume
-  language, because the policy requires management "before and after" the
-  procedure. "plan" alone is never a positive keyword.
+**Consent signed.** Sign-words: `sign`, `signed`, `signature`. Negation
+tokens: `not`, `no`, `never`, `unsigned`, `missing`, `pending`, `awaiting`,
+`to be`, `will be`, `refused`, `declined`, `withdrawn`.
+
+- A clause is NEGATIVE if it contains a sign-word and a negation token, or
+  the bare negative phrase `unsigned`.
+- A clause is POSITIVE if it contains `signed` or `signature on file` and no
+  negation token.
+- Any NEGATIVE clause makes the text NEGATIVE. Otherwise any POSITIVE clause
+  makes it POSITIVE. Otherwise it is UNPLACED.
+- Empty or missing text is NEGATIVE without a resolver call.
+
+Clauses keep a negation in one clause from cancelling a signature in
+another ("Consent signed by patient; no complications." is POSITIVE), while
+"Patient declined to sign consent." is NEGATIVE.
+
+**Plan clear.** The rules can only decide NEGATIVE or UNPLACED. There is no
+positive keyword set. A plan is clear only when a resolver says so: the LLM
+in default mode, never in offline mode.
+
+- Negative tokens: `no clear`, `not yet`, `to be finalized`, `pending`,
+  `unclear`, `whether`, `awaiting`, `tbd`.
+- A negative token counts only in a clause that also mentions the drug by
+  word, `anticoag`, `hold`, `resume`, `bridge`, or `plan`.
+- Any counted negative makes the text NEGATIVE. Otherwise it is UNPLACED.
+  Empty or missing text is NEGATIVE without a resolver call.
+
+Rationale: the policy requires a plan that "clearly describe[s] how the
+medication will be managed before and after the procedure". Any keyword test
+for clarity clears patients on text like "Cardiology to advise whether to
+hold or resume apixaban." Only a reader of the whole text can judge clarity.
+Consequence, recorded as a limitation: offline mode never clears a patient on
+an active anticoagulant.
 
 Substring traps observed in the data (word-boundary matching plus
 negative-wins handles all three):
@@ -155,20 +207,23 @@ negative-wins handles all three):
   contains both "hold" and "resume" (case_00004). The negative phrase
   "no clear" must win.
 
-Negative set for plan clarity includes "no clear", "not yet",
-"to be finalized", and "pending"; these cover six of the seven plan texts.
-Case_00000's text ("Patient takes apixaban for atrial fibrillation. Follow up
-with cardiology for peri-op recommendations.") matches neither set and goes
-UNPLACED: the LLM judges it in default mode, offline mode resolves it
-negative, and both modes reach the same flagged issue. "follow up" and
-"recommendations" are not negative keywords (section 8). Negative phrases present in the three
-unsigned consent texts: "unsigned" (all three), "awaiting", "not yet on file",
-"requested signature". Positive consent phrases: "signed", "signature on
-file". Note "signature" alone appears in both positive and negative texts and
-must not be a positive keyword on its own.
+Effect of scoping on the seven sample plan texts: three resolve NEGATIVE
+(case_00004 "no clear" beside "hold"; case_00038 "to be finalized" beside
+"plan"; case_00042 "pending" beside "plan"). Four go UNPLACED: case_00000
+("Follow up with cardiology for peri-op recommendations.") and the three
+"Anticoagulant noted in medication list; perioperative management details
+not yet documented." texts (cases 6, 21, 26), whose "not yet" clause names
+none of the anchor words. Offline mode flags all seven. In default mode four
+of the seven anticoagulation outcomes rest on the LLM's answer. "follow up"
+and "recommendations" are not negative keywords (section 8).
 
-Rules out: sentiment or embedding classifiers; treating title suffix
-"- signed" as evidence of a signed consent (it appears on H&P titles only).
+The three unsigned sample consents all contain "unsigned". "signature" alone
+appears in both positive and negative sample texts and is never positive on
+its own.
+
+Rules out: a positive keyword set for plan clarity; sentiment or embedding
+classifiers; treating title suffix "- signed" as evidence of a signed consent
+(it appears on H&P titles only).
 
 ### D5. Case_00002 diverges from the oracle on purpose
 
@@ -282,15 +337,22 @@ ANTICOAGULATION_MANAGEMENT issue. No case has an anticoagulant with
 (case_00002 and case_00012 have only LAB-CBC and no testing issue; case_00043
 reports a LAB-CBC row as "CBC" at `labs[0]`). `LAB-CMP` counts as CMP
 (case_00019 reports a LAB-CMP row as "CMP" at `labs[2]`). All 150 lab rows have
-`status: "final"`, so status filtering is UNVERIFIABLE. Labs are listed
-newest-first in every case, so "most recent by `effective_at`" is
-UNVERIFIABLE against "first in list"; the policy says most recent, so sort by
-`effective_at`.
+`status: "final"`, so status filtering is UNVERIFIABLE. Decision (checkpoint
+1): a lab counts only if `status` is null or one of `final`, `amended`,
+`corrected` (case-insensitive). Other statuses (for example `preliminary`)
+are ignored for selection and listed, marked ignored, in the missing-lab
+details. Labs are listed newest-first in every case, so "most recent by
+`effective_at`" is UNVERIFIABLE against "first in list"; the policy says most
+recent, so sort by `effective_at`.
 
-**Anticoagulants in the data.** VERIFIED. Medication names are lisinopril
+**Anticoagulants.** VERIFIED for the data: medication names are lisinopril
 (50, active), apixaban (7, active), metformin (4, active), warfarin (3, active
-null). Only apixaban and warfarin are anticoagulants; lisinopril and metformin
-are noise.
+null); lisinopril and metformin are noise. Decision (checkpoint 1): the
+anticoagulant list is apixaban, rivaroxaban, edoxaban, dabigatran, warfarin,
+enoxaparin, dalteparin, fondaparinux, heparin, matched case-insensitively by
+word boundary inside the medication `name` string, so "Apixaban 5 mg BID"
+matches. Assumption: the policy does not define the class, so this list is
+ours.
 
 **Anticoagulation plan documents.** VERIFIED that all seven plan-bearing
 cases (0, 4, 6, 21, 26, 38, 42) have a vague plan and all are flagged with
@@ -309,11 +371,25 @@ cited as `documents[i]`. On case_00042 this yields `documents[4]` where the
 oracle cites `documents`; source is not scored, so no metric is affected
 (section 5).
 
+Decision (checkpoint 1): Rule 3 runs once per active anticoagulant. A
+document is a text candidate for a drug if its text names that drug by word
+or contains `anticoag`; title-classified plan documents remain candidates for
+every drug, after the text candidates. Each drug needs its own clear plan
+(D4: only a resolver can say a plan is clear). One ANTICOAGULATION_MANAGEMENT
+issue is emitted per unmet drug, citing that drug's most recent text
+candidate, else its most recent title candidate, else `documents`. Details
+quote the medication's full `name` string, not the matched word, so the
+`documents` form grounds through the medications collection.
+
 **Consent "not clearly signed" texts.** VERIFIED. All three (cases 8, 17,
 44) contain the word "unsigned"; they also contain "awaiting", "requested
 signature", and "not yet on file" respectively. Three cases (11, 25, 33) have
 no consent document at all and get source `documents`. No case has two consent
-documents, so consent tie-breaking is UNVERIFIABLE.
+documents, so consent tie-breaking is UNVERIFIABLE. Decision (checkpoint 1):
+the most recent consent document is the one judged, same as H&P. A newer
+unsigned consent is not rescued by an older signed one. A consent has no
+date window and counts as present regardless of its date; undated consents
+are judged only when no consent has a date, and then the last one listed.
 
 **H&P selection.** VERIFIED that the oracle uses the most recent recognized
 H&P and flags it when out of window (case_00007: doc[0] 2026-01-22 is flagged
@@ -323,14 +399,22 @@ index than the older one, so "most recent by date" is UNVERIFIABLE against
 `documents`. Documents are not date-sorted (the second document is always
 older than the first), so the builder must sort by date and not by index.
 
-**Day arithmetic.** VERIFIED. Days are calendar-date differences ignoring
-time of day: case_00002 gives 32 for 2026-01-30 to 2026-03-03; case_00010
-gives 20 for `2026-02-19T09:10:00Z` to 2026-03-11. Boundaries are
+**Day arithmetic and ordering.** VERIFIED. Days are calendar-date
+differences ignoring time of day: case_00002 gives 32 for 2026-01-30 to
+2026-03-03; case_00010 gives 20 for `2026-02-19T09:10:00Z` to 2026-03-11.
+Decision (checkpoint 1): day arithmetic uses the item's own local calendar
+date, dropping any offset rather than converting it, because the procedure
+date is a local calendar date (`2026-01-31T20:00:00-05:00` is 31 days before
+2026-03-03, not 30). Ordering for "most recent" uses the full instant when a
+time is present: offsets are converted to UTC, date-only values order as
+midnight UTC, naive datetimes are taken as UTC, and ties go to the later list
+index. Boundaries are
 UNVERIFIABLE: the largest accepted H&P gap is 10 days and the smallest
 rejected is 32; the largest accepted lab gap is 8 (both risk levels) and the
 smallest rejected is 18. No document or lab is dated after its procedure date.
 Design choice: "within N days" means `0 <= gap <= N`; a future-dated item is a
-gap below zero and is treated as outside the window.
+gap below zero and is treated as outside the window. A future-dated H&P or
+lab is still the most recent and is flagged out of window.
 
 **Vitals.** VERIFIED. Most recent BP and most recent temperature are judged
 separately. The flagged BP is 184/111 in all four BP cases (3, 20, 39, 47)
@@ -339,7 +423,10 @@ temperature is 101.0 in all three temperature cases (2, 18, 30). BP and
 temperature timestamps never tie (10:12 vs 10:15), and vitals are listed
 oldest-first in every case, so tie handling and "most recent by date" versus
 "last in list" are UNVERIFIABLE. All vitals fall within 12 days of the
-procedure; no "at the time of review" date filter is testable.
+procedure; no "at the time of review" date filter is testable. Decision
+(checkpoint 1): no age limit on vitals. Policy gap: the policy says "at the
+time of pre-operative review" and sets no window, so the most recent reading
+counts however old it is.
 
 **Evidence detail shapes.** Recorded below. CORRECTED in one important
 respect: the oracle's own expected outputs, scored through
@@ -365,7 +452,7 @@ plus medications). One ungrounded issue fails the whole case's 0.5.
 | REQUIRED_DOCUMENTATION / `documents[i]` | Surgical consent not clearly signed | `Consent document text does not clearly indicate signed consent: <full text>` | yes (text) | none |
 | REQUIRED_TESTING / `labs` | CBC missing / CMP missing | `No CBC result with valid effective_at found for procedure_risk LOW` | **no** | list the labs that are present, with codes and dates |
 | REQUIRED_TESTING / `labs[i]` | CBC outside 14-day window for HIGH risk procedure | `CBC effective_at 2026-02-19T09:10:00Z vs procedure_date 2026-03-11 (20 days prior; must be within 14)` | yes (date) | none |
-| ANTICOAGULATION_MANAGEMENT / `documents[i]` or `documents` | Missing perioperative anticoagulation plan | `Active anticoagulant medication present (medications[1]) but no clear perioperative plan document found` | **no** | name the drug (grounds via medications) and quote the document text with its date when one exists |
+| ANTICOAGULATION_MANAGEMENT / `documents[i]` or `documents` | Missing perioperative anticoagulation plan | `Active anticoagulant medication present (medications[1]) but no clear perioperative plan document found` | **no** | quote the medication's full `name` string (grounds via medications) and quote the document text with its date when one exists; one issue per unmet drug |
 | ACUTE_SAFETY_EXCLUSION / `vitals[i]` | Blood pressure meets exclusion threshold | `latest BP systolic=184, diastolic=111; threshold systolic>=180 or diastolic>=110` | **no** (3-digit numbers fail the 4-character minimum) | append the vital's date |
 | ACUTE_SAFETY_EXCLUSION / `vitals[i]` | Temperature exceeds exclusion threshold | `latest temperature value_f=101.0; threshold is > 100.4` | yes ("101.0") | append the date anyway |
 
@@ -409,6 +496,12 @@ anything else resolves to nothing and falls through to the fuzzy path.
    than a recognized H&P in every case, so the output cannot change on this
    dataset. On a future case where such a document is the only or newest H&P
    candidate, default and offline modes would differ.
+5. **Offline mode never clears an active anticoagulant (limitation).** Under
+   D4 only a resolver can find a plan clear, and the offline resolver always
+   answers no. On this dataset every plan is vague, so offline matches the
+   oracle. On a case with a genuinely clear plan, offline mode returns
+   NEEDS_FOLLOW_UP where the correct answer may be READY. This is the safe
+   direction of failure.
 
 ## 6. Blast radius: what the LLM can and cannot change
 
@@ -419,6 +512,10 @@ The LLM can:
   and can change which document index is cited.
 - Turn an UNPLACED text into POSITIVE or NEGATIVE. This can add or remove a
   "consent not clearly signed" issue or an anticoagulation issue.
+- Declare a plan clear for a drug. Under D4 this is the only way any
+  anticoagulation issue is ever removed. On this dataset four of the seven
+  plan texts are UNPLACED (case_00000 and cases 6, 21, 26), so four
+  anticoagulation outcomes rest on the LLM's answer in default mode.
 
 The LLM cannot:
 
@@ -438,9 +535,10 @@ process) exercises the LLM at most once per distinct title or text; the
 stability script with `no-cache` is the real measure of model variance.
 Case_00000, the determinism record, does reach the LLM in default mode: its
 doc[1] title "Preop Pre-anesthesia Evaluation [PDF]" is UNKNOWN, and its plan
-text is UNPLACED. Either LLM answer leaves the anticoagulation issue in place
-(no hold/resume language exists to make the plan clear), so both modes reach
-the same output on this record.
+text is UNPLACED. The LLM's answer on the plan text decides whether the
+anticoagulation issue stays. The text gives no hold or resume guidance, so a
+correct answer is "not clear" and both modes then reach the same output; a
+wrong "clear" answer would drop the issue and cost the category point.
 
 ## 7. Milestone plan
 
@@ -453,7 +551,8 @@ the same output on this record.
    and missing-data gates. Golden test over all 50 cases in offline mode
    matching on decision, category set, and per-issue source and description
    (details are checked by the grounding metric, not character for
-   character). Synthetic tests for: complete anticoagulation plan, lab dated
+   character). Synthetic tests for: an anticoagulation plan with hold and
+   resume language (flagged offline, cleared only by a resolver), lab dated
    after the procedure, exact boundaries (30 days, 14 days, 180 systolic,
    110 diastolic, 100.4 F), tied vital timestamps, inactive anticoagulant,
    null document date, and the three substring-trap strings from D4.
@@ -461,7 +560,8 @@ the same output on this record.
    grounding on all 50 cases.
    **Verifier checkpoint.**
 3. **LLM layer.** Classifier for UNKNOWN titles and UNPLACED text, strict
-   schema, temperature 0, in-memory cache keyed on title and text, the
+   schema, temperature 0, in-memory cache keyed on title, and on text plus
+   drug for plan judgments, the
    `PREOP_OFFLINE`, `PREOP_NO_CACHE`, and `PREOP_FORCE_LLM` environment
    variables with the `settings` override (D1), and a
    stability script reporting self-agreement across runs and agreement with
@@ -478,7 +578,11 @@ Reasons for rejecting verifier findings are recorded here.
    (proposed during design review to keep case_00000 out of the LLM).**
    Rejected: "follow up" and "recommendations" are not negative signals about
    a plan on their own; adding them fits one string. Case_00000's plan text
-   goes UNPLACED, and both modes reach the same flagged issue.
+   goes UNPLACED; offline flags it, and default mode flags it when the LLM
+   answers correctly.
+2. **Verifier suggested scoping `awaiting` and `pending` out of consent
+   negatives to avoid false follow-ups.** Rejected: a false follow-up on
+   consent is the safe failure and the policy's own default for ambiguity.
 
 ## 9. Open questions
 
