@@ -139,7 +139,7 @@ titles in all):
   `update`, `addendum`, and optionally preceded by one of `admission`,
   `clinic`, `consult`, `initial`, `interval`, `outpatient`, `hospitalist`,
   `surgical`, `pre-anesthesia`, `preoperative`. `interval` and `addendum` do
-  not occur in the sample; they were added at checkpoint 1 as common
+  not occur in the sample; they were added after the first review as common
   explicit variants.
 - Consent: any normalized title containing the word `consent` is a surgical
   consent, unless it also contains one of `anesthesia`, `anaesthesia`,
@@ -219,7 +219,7 @@ in default mode, never in offline mode.
 - A negative token counts only in a clause that also mentions the drug by
   word, `anticoag`, `hold`, `resume`, `bridge`, `plan`, `management`,
   `perioperative`, `peri-op`, or `periop`. The last four were added after
-  checkpoint 1 so that "perioperative management details not yet
+  the first review so that "perioperative management details not yet
   documented" is rule-decided.
 - Any counted negative makes the text NEGATIVE. Otherwise it is UNPLACED.
   Empty or missing text is NEGATIVE without a resolver call.
@@ -371,8 +371,8 @@ ANTICOAGULATION_MANAGEMENT issue. No case has an anticoagulant with
 (case_00002 and case_00012 have only LAB-CBC and no testing issue; case_00043
 reports a LAB-CBC row as "CBC" at `labs[0]`). `LAB-CMP` counts as CMP
 (case_00019 reports a LAB-CMP row as "CMP" at `labs[2]`). All 150 lab rows have
-`status: "final"`, so status filtering is UNVERIFIABLE. Decision (checkpoint
-1): a lab counts only if `status` is null or one of `final`, `amended`,
+`status: "final"`, so status filtering is UNVERIFIABLE. Decision (first
+review): a lab counts only if `status` is null or one of `final`, `amended`,
 `corrected` (case-insensitive). Other statuses (for example `preliminary`)
 are ignored for selection and listed, marked ignored, in the missing-lab
 details. Labs are listed newest-first in every case, so "most recent by
@@ -381,7 +381,7 @@ recent, so sort by `effective_at`.
 
 **Anticoagulants.** VERIFIED for the data: medication names are lisinopril
 (50, active), apixaban (7, active), metformin (4, active), warfarin (3, active
-null); lisinopril and metformin are noise. Decision (checkpoint 1): the
+null); lisinopril and metformin are noise. Decision (first review): the
 anticoagulant list is apixaban, rivaroxaban, edoxaban, dabigatran, warfarin,
 enoxaparin, dalteparin, fondaparinux, heparin, plus the brand names eliquis,
 xarelto, savaysa, lixiana, pradaxa, coumadin, jantoven, lovenox, fragmin,
@@ -410,7 +410,7 @@ cited as `documents[i]`. On case_00042 this yields `documents[4]` where the
 oracle cites `documents`; source is not scored, so no metric is affected
 (section 5).
 
-Decision (checkpoint 1): Rule 3 runs once per active anticoagulant. A
+Decision (first review): Rule 3 runs once per active anticoagulant. A
 document is a text candidate for a drug if its text names that drug by word
 or contains `anticoag`; title-classified plan documents remain candidates for
 every drug, after the text candidates. Each drug needs its own clear plan
@@ -424,7 +424,7 @@ quote the medication's full `name` string, not the matched word, so the
 44) contain the word "unsigned"; they also contain "awaiting", "requested
 signature", and "not yet on file" respectively. Three cases (11, 25, 33) have
 no consent document at all and get source `documents`. No case has two consent
-documents, so consent tie-breaking is UNVERIFIABLE. Decision (checkpoint 1):
+documents, so consent tie-breaking is UNVERIFIABLE. Decision (first review):
 the most recent consent document is the one judged, same as H&P. A newer
 unsigned consent is not rescued by an older signed one. A consent has no
 date window and counts as present regardless of its date; undated consents
@@ -441,7 +441,7 @@ older than the first), so the builder must sort by date and not by index.
 **Day arithmetic and ordering.** VERIFIED. Days are calendar-date
 differences ignoring time of day: case_00002 gives 32 for 2026-01-30 to
 2026-03-03; case_00010 gives 20 for `2026-02-19T09:10:00Z` to 2026-03-11.
-Decision (checkpoint 1): day arithmetic uses the item's own local calendar
+Decision (first review): day arithmetic uses the item's own local calendar
 date, dropping any offset rather than converting it, because the procedure
 date is a local calendar date (`2026-01-31T20:00:00-05:00` is 31 days before
 2026-03-03, not 30). Ordering for "most recent" uses the full instant when a
@@ -471,7 +471,7 @@ temperature timestamps never tie (10:12 vs 10:15), and vitals are listed
 oldest-first in every case, so tie handling and "most recent by date" versus
 "last in list" are UNVERIFIABLE. All vitals fall within 12 days of the
 procedure; no "at the time of review" date filter is testable. Decision
-(checkpoint 1): no age limit on vitals. Policy gap: the policy says "at the
+(first review): no age limit on vitals. Policy gap: the policy says "at the
 time of pre-operative review" and sets no window, so the most recent reading
 counts however old it is.
 
@@ -637,8 +637,8 @@ wrong "clear" answer would drop the issue and cost the category point.
    inactive anticoagulant, a null document date, and the three substring-trap
    strings from D4. The offline scorer showed 100% decision and category match
    and 100% grounding on all 50 cases.
-   **Verifier checkpoint 1** followed; its accepted findings amended D3, D4,
-   and section 4.
+   **First review.** A separate reviewer session then checked the rules
+   engine; its accepted findings amended D3, D4, and section 4.
 3. **LLM layer.** The classifier for UNKNOWN titles and UNPLACED text was
    built with a strict schema, temperature 0 where the model accepts it, an
    in-memory module-level cache keyed on (model, question, text) where
@@ -648,10 +648,15 @@ wrong "clear" answer would drop the issue and cost the category point.
    across runs and agreement with the rules on items the rules placed.
 4. **Harness runs in both modes**, determinism in both modes, stability
    numbers, and a README with build and run instructions.
-   **Verifier checkpoint 2** followed; its accepted findings amended D2, D3,
-   D4, and sections 4 to 6 (model-confirmed consent positives, brand-name
-   anticoagulants, unparseable item dates, combined consent titles), and every
-   committed run was regenerated afterward.
+   **Second review.** A second reviewer session then did the pre-submission
+   review; its accepted findings amended D2, D3, D4, and sections 4 to 6
+   (model-confirmed consent positives, brand-name anticoagulants, unparseable
+   item dates, combined consent titles), and every committed run was
+   regenerated afterward.
+5. **Generalization probes.** The reviewers' probe strings, written without
+   sight of the keyword lists, were run against the keyword rules as they
+   stood before each fix, the rules at the final commit, and both models
+   (`results/probes-*/`), as the nearest thing to held-out data in the repo.
 
 ## 8. Rejected findings
 
