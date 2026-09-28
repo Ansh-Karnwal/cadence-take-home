@@ -57,7 +57,8 @@ class FakeClient:
 
     ``answer`` maps (question, input) to a label: question is "title",
     "consent", or "plan"; the label is a DocKind value for titles and a bool
-    otherwise. Defaults: titles OTHER, texts False. ``fail_next`` makes the
+    otherwise. Defaults: titles OTHER, consents True (a model that confirms
+    signed consents), plans False. ``fail_next`` makes the
     next N calls raise; ``reject_temperature`` makes calls carrying
     ``temperature`` raise the way the API does.
     """
@@ -65,7 +66,7 @@ class FakeClient:
     def __init__(self) -> None:
         self.calls: list[dict[str, Any]] = []
         self.answer: Callable[[str, str], object] = lambda question, _input: (
-            "OTHER" if question == "title" else False
+            "OTHER" if question == "title" else question == "consent"
         )
         self.fail_next = 0
         self.reject_temperature = False

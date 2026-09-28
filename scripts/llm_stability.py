@@ -19,6 +19,10 @@ candidate documents for each active anticoagulant. The rules' own label is
 recorded where the rules place the item (REQUIRED or KNOWN_OTHER titles;
 POSITIVE or NEGATIVE texts); UNKNOWN titles and UNPLACED texts have none.
 
+Each item is also flagged ``default_route`` when default mode actually sends
+it to the model: UNKNOWN titles, keyword-POSITIVE consents (confirmation) and
+UNPLACED consents, and UNPLACED plans.
+
 Uses its own resolver with ``no_cache`` and a private cache, so the engine's
 shared cache is never touched.
 """
@@ -115,23 +119,35 @@ def collect_items(path: Path) -> list[dict[str, Any]]:
             rule = DocKind.OTHER.value
         else:
             rule = None
-        items.append({"question": "title", "text": title, "rule_label": rule, "cases": sorted(cases)})
+        items.append(
+            {
+                "question": "title",
+                "text": title,
+                "rule_label": rule,
+                "default_route": result.outcome is TitleOutcome.UNKNOWN,
+                "cases": sorted(cases),
+            }
+        )
     for text, cases in sorted(consents.items()):
+        judgment = judge_consent_signed(text)
         items.append(
             {
                 "question": "consent",
                 "text": text,
-                "rule_label": _text_rule_label(judge_consent_signed(text)),
+                "rule_label": _text_rule_label(judgment),
+                "default_route": judgment is not TextJudgment.NEGATIVE,
                 "cases": sorted(cases),
             }
         )
     for (text, drug), cases in sorted(plans.items()):
+        judgment = judge_plan_clear(text, drug)
         items.append(
             {
                 "question": f"plan:{drug}",
                 "text": text,
                 "drug": drug,
-                "rule_label": _text_rule_label(judge_plan_clear(text, drug)),
+                "rule_label": _text_rule_label(judgment),
+                "default_route": judgment is TextJudgment.UNPLACED,
                 "cases": sorted(cases),
             }
         )
@@ -166,6 +182,9 @@ def summarize(items: list[dict[str, Any]]) -> dict[str, Any]:
         counts["items"] += 1
         stable += item["self_agreement"]
         counts["stable"] += item["self_agreement"]
+        if item["default_route"]:
+            counts["default_route"] += 1
+            counts["default_route_stable"] += item["self_agreement"]
         if item["rule_label"] is not None:
             placed += 1
             counts["rule_placed"] += 1
@@ -182,7 +201,10 @@ def summarize(items: list[dict[str, Any]]) -> dict[str, Any]:
                         "cases": item["cases"],
                     }
                 )
+    routed = [i for i in items if i["default_route"]]
     return {
+        "default_route_items": len(routed),
+        "default_route_stable": sum(i["self_agreement"] for i in routed),
         "items": len(items),
         "self_agreement_pct": round(100.0 * stable / len(items), 2) if items else 0.0,
         "rule_placed_items": placed,
@@ -204,6 +226,8 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
         f"| Items | {s['items']} |",
         f"| Self-agreement (identical labels on every run) | {s['self_agreement_pct']}% |",
         f"| Items the rules placed | {s['rule_placed_items']} |",
+        f"| Items default mode sends to the model | {s['default_route_items']} |",
+        f"| ...of which stable on every run | {s['default_route_stable']} |",
         f"| Agreement with the rules (modal label equals rule label) | {s['rules_agreement_pct']}% |",
         f"| Temperature 0 accepted | {report['temperature_accepted']} |",
         f"| API calls made | {report['api_calls']} |",
@@ -211,13 +235,14 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
         "",
         "## By question type",
         "",
-        "| Question | Items | Stable | Rule-placed | Agree with rules |",
-        "|---|---|---|---|---|",
+        "| Question | Items | Stable | Rule-placed | Agree with rules | Sent in default mode | ...stable |",
+        "|---|---|---|---|---|---|---|",
     ]
     for qtype, c in s["by_question_type"].items():
         lines.append(
             f"| {qtype} | {c.get('items', 0)} | {c.get('stable', 0)} | "
-            f"{c.get('rule_placed', 0)} | {c.get('rule_agree', 0)} |"
+            f"{c.get('rule_placed', 0)} | {c.get('rule_agree', 0)} | "
+            f"{c.get('default_route', 0)} | {c.get('default_route_stable', 0)} |"
         )
     lines += ["", "## Disagreements with the rules", ""]
     if not s["disagreements"]:
@@ -284,7 +309,9 @@ def main() -> None:
     print(
         f"items={s['items']} self_agreement={s['self_agreement_pct']}% "
         f"rules_agreement={s['rules_agreement_pct']}% "
-        f"disagreements={len(s['disagreements'])} temperature_accepted="
+        f"disagreements={len(s['disagreements'])} "
+        f"default_route={s['default_route_stable']}/{s['default_route_items']} stable "
+        f"temperature_accepted="
         f"{report['temperature_accepted']} api_calls={report['api_calls']} "
         f"failures={report['failures']}"
     )

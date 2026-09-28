@@ -190,13 +190,16 @@ def test_resolver_is_held_at_module_level_per_model_and_settings() -> None:
 # --- Only what the rules cannot place, once per evaluation -------------------------
 
 
-def test_case_00000_sends_one_title_and_one_plan(fake_client, dataset) -> None:  # type: ignore[no-untyped-def]
+def test_case_00000_sends_one_title_one_consent_confirmation_and_one_plan(fake_client, dataset) -> None:  # type: ignore[no-untyped-def]
+    # The consent is keyword-POSITIVE, so default mode asks the model to confirm it.
     _run(dataset[0]["submission"], NO_CACHE)
     assert [c["input"] for c in fake_client.calls_for("title")] == [
         "Preop Pre-anesthesia Evaluation [PDF]"
     ]
+    assert [c["input"] for c in fake_client.calls_for("consent")] == [
+        "Electronic consent obtained and signed by patient for procedure."
+    ]
     assert len(fake_client.calls_for("plan")) == 1
-    assert fake_client.calls_for("consent") == []
 
 
 def test_each_title_classified_once_and_each_text_judged_once(fake_client, dataset) -> None:  # type: ignore[no-untyped-def]
@@ -309,7 +312,9 @@ def test_engine_notes_failure_in_explanation_and_never_raises(fake_client, datas
     offline = _run(dataset[0]["submission"], Settings(offline=True))
     assert output.decision == offline.decision
     assert output.issues == offline.issues
-    assert "LLM fallback unavailable for 2 item(s)" in output.explanation
+    # Title, consent confirmation, and plan all failed; the consent confirmation
+    # fell back to the keyword answer, so the issues match offline mode.
+    assert "LLM fallback unavailable for 3 item(s)" in output.explanation
 
 
 def test_client_construction_failure_is_recorded_once(monkeypatch, capsys) -> None:  # type: ignore[no-untyped-def]
@@ -353,14 +358,15 @@ def test_ten_call_determinism_on_case_00000(fake_client, dataset) -> None:  # ty
     submission = dataset[0]["submission"]
     outputs = {_canonical(_run(copy.deepcopy(submission))) for _ in range(10)}
     assert len(outputs) == 1
-    # Only the first evaluation reached the client.
-    assert len(fake_client.calls) == 2
+    # Only the first evaluation reached the client: a title, a consent, a plan.
+    assert len(fake_client.calls) == 3
 
 
 def test_default_mode_differs_from_offline_only_on_case_00002(fake_client, dataset) -> None:  # type: ignore[no-untyped-def]
-    # A model that reads the misspelled title as an H&P and nothing else as required (D5).
+    # A model that reads the misspelled title as an H&P and nothing else as
+    # required (D5), confirms signed consents, and finds no plan clear.
     fake_client.answer = lambda q, i: (
-        ("H_AND_P" if i == "History & Phsyical" else "OTHER") if q == "title" else False
+        ("H_AND_P" if i == "History & Phsyical" else "OTHER") if q == "title" else q == "consent"
     )
     differing = []
     for row in dataset:
@@ -379,3 +385,31 @@ def test_no_model_id_in_package_or_core() -> None:
     pattern = re.compile(r"\bgpt-|\bo[134]-|\bclaude-", re.IGNORECASE)
     offenders = [str(f) for f in files if pattern.search(f.read_text())]
     assert offenders == []
+
+
+# --- Consent confirmation and outages -------------------------------------------------
+
+
+def test_outage_on_consent_confirmation_keeps_the_keyword_answer(fake_client) -> None:  # type: ignore[no-untyped-def]
+    # Keyword-POSITIVE consent: the failed confirmation falls back to "signed".
+    fake_client.fail_next = 1000
+    submission = {
+        "procedure": {"procedure_risk": "LOW", "procedure_date": "2026-03-03"},
+        "vitals": [
+            {"type": "blood_pressure", "systolic": 120, "diastolic": 80, "date": "2026-02-24"},
+            {"type": "temperature", "value_f": 98.6, "date": "2026-02-24"},
+        ],
+        "labs": [{"code": "CBC", "effective_at": "2026-02-25", "status": "final"}],
+        "documents": [
+            {"type": "History and Physical", "date": "2026-02-20", "text": "H&P done."},
+            {"type": "Surgical Consent", "date": "2026-02-21", "text": "Consent obtained; signature on file."},
+        ],
+    }
+    output = _run(submission)
+    assert output.issues == []
+    assert "LLM fallback unavailable for 1 item(s)" in output.explanation
+
+    # UNPLACED consent: the failed call falls back to "not signed".
+    submission["documents"][1]["text"] = "Consent reviewed with patient."
+    output = _run(submission)
+    assert "Surgical consent not clearly signed" in {i.description for i in output.issues}

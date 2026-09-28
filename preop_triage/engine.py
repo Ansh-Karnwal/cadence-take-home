@@ -8,7 +8,8 @@ Modes (``Settings``):
 - ``offline``: the ``OfflineResolver`` answers everything the rules leave
   open; no API call is ever made.
 - default: the process-wide ``LLMResolver`` for the model answers UNKNOWN
-  titles and UNPLACED texts only.
+  titles and UNPLACED texts, and confirms keyword-POSITIVE consents.
+  Keywords can add an issue but never remove one.
 - ``force_llm``: FOR MEASUREMENT ONLY. Every title, the judged consent text,
   and every plan candidate go to the resolver, and its answer replaces the
   rules' answer. This measures the model against the rules; it is not a
@@ -67,10 +68,18 @@ def evaluate(
 
     issues = [
         *rules.check_missing_procedure_fields(submission),
-        *rules.check_documentation(submission, procedure_date, kinds, resolver, force_llm=force),
+        *rules.check_documentation(
+            submission,
+            procedure_date,
+            kinds,
+            resolver,
+            force_llm=force,
+            confirm_positives=not settings.offline,
+        ),
         *rules.check_testing(submission, procedure_date),
         *rules.check_anticoagulation(submission, kinds, resolver, force_llm=force),
         *rules.check_vitals(submission),
+        *rules.check_unparseable_dates(submission),
     ]
     issues.sort(key=lambda issue: CATEGORY_ORDER.index(issue.category))
 

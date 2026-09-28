@@ -12,8 +12,10 @@ State is process-scoped and in memory only:
   ten determinism calls in one process share the resolver and the cache.
 
 On an API error the resolver retries twice with a short backoff, then returns
-the offline answer for that item (OTHER, False, False), writes one line to
-stderr, and counts the failure so the engine can note it. It never raises.
+the offline answer for that item (title OTHER, plan not clear, and for a
+consent the caller's ``fallback``: the keyword answer, so a confirmation of a
+keyword-POSITIVE consent falls back to "signed"), writes one line to stderr,
+and counts the failure so the engine can note it. It never raises.
 """
 
 from __future__ import annotations
@@ -218,11 +220,14 @@ class LLMResolver:
         label = self._ask("title", title, TITLE_PROMPT, title, TitleLabel)
         return DocKind.OTHER if label is None else label.kind  # type: ignore[attr-defined]
 
-    def resolve_consent_signed(self, text: str) -> bool:
-        """Ask the model whether consent ``text`` states the patient has signed."""
+    def resolve_consent_signed(self, text: str, *, fallback: bool = False) -> bool:
+        """Ask the model whether consent ``text`` states the patient has signed.
+
+        Returns ``fallback`` (the keyword answer) if the model cannot answer.
+        """
 
         label = self._ask("consent", text, CONSENT_PROMPT, text, TextLabel)
-        return False if label is None else label.answer  # type: ignore[attr-defined]
+        return fallback if label is None else label.answer  # type: ignore[attr-defined]
 
     def resolve_plan_clear(self, text: str, drug: str) -> bool:
         """Ask the model whether plan ``text`` clearly describes how ``drug`` is

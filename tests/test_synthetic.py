@@ -84,13 +84,16 @@ class FakeResolver:
         self.clear_for = clear_for
         self.plan_calls: list[tuple[str, str]] = []
         self.title_calls: list[str] = []
+        self.consent_calls: list[str] = []
+        self.consent_answer = False
 
     def resolve_title(self, title: str) -> DocKind:
         self.title_calls.append(title)
         return DocKind.OTHER
 
-    def resolve_consent_signed(self, text: str) -> bool:
-        return False
+    def resolve_consent_signed(self, text: str, *, fallback: bool = False) -> bool:
+        self.consent_calls.append(text)
+        return self.consent_answer
 
     def resolve_plan_clear(self, text: str, drug: str) -> bool:
         self.plan_calls.append((text, drug))
@@ -722,4 +725,144 @@ def test_probe_widened_hp_titles_count_as_hp(title: str) -> None:
     # a recognized title correctly gives READY. Unrecognized, it would give
     # "History and Physical document missing".
     documents = [{**HP_DOC, "type": title}, BASE["documents"][1]]
+    assert run(make(documents=documents)).decision == "READY"
+
+
+# --- Consent confirmation in default mode -----------------------------------------
+# Keywords can add an issue but never remove one: a keyword-POSITIVE consent is
+# confirmed by the resolver in default mode; a keyword-NEGATIVE one is final.
+
+
+def run_default(submission: dict[str, Any]) -> TriageOutput:
+    return triage_submission(submission=submission, model="unused", settings=Settings())
+
+
+def test_keyword_positive_consent_cleared_only_when_resolver_confirms(fake_resolver: FakeResolver) -> None:
+    fake_resolver.consent_answer = True
+    output = run_default(make())
+    assert output.issues == []
+    assert fake_resolver.consent_calls == [BASE["documents"][1]["text"]]
+
+
+def test_keyword_positive_consent_flagged_when_resolver_disagrees(fake_resolver: FakeResolver) -> None:
+    fake_resolver.consent_answer = False
+    output = run_default(make())
+    assert triples(output) == {
+        ("REQUIRED_DOCUMENTATION", "documents[1]", "Surgical consent not clearly signed")
+    }
+
+
+def test_keyword_negative_consent_never_calls_resolver(fake_resolver: FakeResolver) -> None:
+    fake_resolver.consent_answer = True
+    documents = [HP_DOC, {"type": "Surgical Consent", "date": "2026-02-21", "text": "Consent not signed."}]
+    output = run_default(make(documents=documents))
+    assert fake_resolver.consent_calls == []
+    assert "Surgical consent not clearly signed" in {i.description for i in output.issues}
+
+
+def test_offline_trusts_keyword_positive_consent(fake_resolver: FakeResolver) -> None:
+    fake_resolver.consent_answer = False
+    assert run(make()).issues == []
+    assert fake_resolver.consent_calls == []
+
+
+# --- Review probes: consents, brands, unparseable dates, combined titles -----------
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Consent form signed by surgeon; patient signature outstanding.",
+        "Consent signed by patient. Patient later withdrew consent.",
+        "Signed consent rescinded by patient on 2026-02-22.",
+        "Patient consent form. Signed: ______________ Date: ________",
+        "Patient signed consent for left knee arthroscopy; new consent required for planned procedure.",
+    ],
+)
+def test_review_consent_probe_is_flagged_offline(text: str) -> None:
+    documents = [HP_DOC, {"type": "Surgical Consent", "date": "2026-02-21", "text": text}]
+    submission = make(documents=documents)
+    output = run(submission)
+    assert output.decision == "NEEDS_FOLLOW_UP"
+    assert triples(output) == {
+        ("REQUIRED_DOCUMENTATION", "documents[1]", "Surgical consent not clearly signed")
+    }
+    assert grounded(submission, output)
+
+
+@pytest.mark.parametrize("name", ["Eliquis 5 mg BID", "Xarelto 20 mg daily"])
+def test_brand_name_anticoagulant_is_flagged_offline(name: str) -> None:
+    submission = make(medications=[{"name": "lisinopril", "active": True}, {"name": name, "active": True}])
+    output = run(submission)
+    assert triples(output) == {
+        ("ANTICOAGULATION_MANAGEMENT", "documents", "Missing perioperative anticoagulation plan")
+    }
+    assert name in output.issues[0].evidence.details
+    assert grounded(submission, output)
+
+
+def test_brand_medication_matches_plan_naming_the_generic(fake_resolver: FakeResolver) -> None:
+    meds = [{"name": "Eliquis 5 mg BID", "active": True}]
+    documents = BASE["documents"] + [
+        {"type": "Clinic Follow-up Note", "date": "2026-02-22", "text": COMPLETE_PLAN}
+    ]
+    fake_resolver.clear_for = {"apixaban"}
+    fake_resolver.consent_answer = True
+    assert run_default(make(medications=meds, documents=documents)).issues == []
+    assert fake_resolver.plan_calls == [(COMPLETE_PLAN, "apixaban")]
+
+
+@pytest.mark.parametrize(
+    ("collection", "index", "field", "overrides", "description"),
+    [
+        (
+            "vitals",
+            2,
+            "date",
+            {"vitals": BASE["vitals"] + [{"type": "blood_pressure", "systolic": 190, "diastolic": 80, "date": "Feb 30th"}]},
+            "Unparseable vital date",
+        ),
+        (
+            "labs",
+            1,
+            "effective_at",
+            {"labs": BASE["labs"] + [{"code": "CBC", "display": "CBC", "effective_at": "yesterday", "status": "final"}]},
+            "Unparseable lab date",
+        ),
+        (
+            "documents",
+            2,
+            "date",
+            {"documents": BASE["documents"] + [{"type": "Pre-op Nursing Intake", "date": "03/01/2026", "text": "Intake."}]},
+            "Unparseable document date",
+        ),
+    ],
+)
+def test_unparseable_date_is_missing_data_and_excluded(
+    collection: str, index: int, field: str, overrides: dict[str, Any], description: str
+) -> None:
+    submission = make(**overrides)
+    output = run(submission)
+    raw = submission[collection][index][field]
+    # The issue alone prevents READY; the bad-dated item is not selected (the
+    # 190 systolic reading with a bad date does not exclude the patient).
+    assert output.decision == "NEEDS_FOLLOW_UP"
+    assert triples(output) == {("MISSING_REQUIRED_DATA", f"{collection}[{index}]", description)}
+    assert repr(raw) in output.issues[0].evidence.details
+
+
+def test_blank_date_string_counts_as_unparseable() -> None:
+    documents = BASE["documents"] + [{"type": "Pre-op Nursing Intake", "date": "  ", "text": "Intake."}]
+    assert triples(run(make(documents=documents))) == {
+        ("MISSING_REQUIRED_DATA", "documents[2]", "Unparseable document date")
+    }
+
+
+def test_null_date_is_not_flagged_as_unparseable() -> None:
+    documents = BASE["documents"] + [{"type": "Pre-op Nursing Intake", "date": None, "text": "Intake."}]
+    assert run(make(documents=documents)).issues == []
+
+
+def test_combined_surgical_and_anesthesia_consent_is_the_surgical_consent() -> None:
+    documents = [HP_DOC, {"type": "Surgical and Anesthesia Consent", "date": "2026-02-21", "text": SIGNED}]
     assert run(make(documents=documents)).decision == "READY"

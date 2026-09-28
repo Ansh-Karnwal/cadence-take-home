@@ -6,6 +6,7 @@ import pytest
 
 from preop_triage.classify import (
     DocKind,
+    anticoagulant_generic,
     OfflineResolver,
     TextJudgment,
     TitleClassification,
@@ -310,3 +311,81 @@ def test_widened_titles_are_required(title: str, kind: DocKind) -> None:
 )
 def test_other_consent_kinds_are_known_other(title: str) -> None:
     assert classify_title(title) == TitleClassification(TitleOutcome.KNOWN_OTHER)
+
+
+# --- Consent negatives from the pre-submission review, verbatim --------------------
+
+REVIEW_CONSENT_NEGATIVES = (
+    "Consent form signed by surgeon; patient signature outstanding.",
+    "Consent signed by patient. Patient later withdrew consent.",
+    "Signed consent rescinded by patient on 2026-02-22.",
+    "Patient consent form. Signed: ______________ Date: ________",
+    "Patient signed consent for left knee arthroscopy; new consent required for planned procedure.",
+)
+
+
+@pytest.mark.parametrize("text", REVIEW_CONSENT_NEGATIVES)
+def test_review_consent_texts_are_negative(text: str) -> None:
+    assert judge_consent_signed(text) is TextJudgment.NEGATIVE
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        # Tier 2 bare negatives fire without a sign-word in the clause.
+        ("Consent obtained. Consent void.", TextJudgment.NEGATIVE),
+        ("Consent revoked.", TextJudgment.NEGATIVE),
+        # Tier 1 tokens need a sign-word in the same clause.
+        ("Consent reviewed; follow-up required.", TextJudgment.UNPLACED),
+        ("Consent signed; outstanding balance discussed.", TextJudgment.POSITIVE),
+        # Accepted cost of "required" as a tier 1 token: the safe direction.
+        ("Consent signed as required by policy.", TextJudgment.NEGATIVE),
+        # "voided" is not the word "void".
+        ("Consent signed; patient voided before procedure.", TextJudgment.POSITIVE),
+    ],
+)
+def test_consent_token_tiers(text: str, expected: TextJudgment) -> None:
+    assert judge_consent_signed(text) is expected
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Surgical and Anesthesia Consent",
+        "Anesthesia Consent for Surgery",
+        "Surgery and Blood Transfusion Consent",
+    ],
+)
+def test_consent_title_naming_surgery_is_surgical_consent(title: str) -> None:
+    assert classify_title(title) == TitleClassification(TitleOutcome.REQUIRED, DocKind.CONSENT)
+
+
+# --- Anticoagulant names ------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("name", "generic"),
+    [
+        ("Eliquis 5 mg BID", "apixaban"),
+        ("Xarelto 20 mg daily", "rivaroxaban"),
+        ("COUMADIN", "warfarin"),
+        ("Jantoven 5mg", "warfarin"),
+        ("Lovenox 40 mg SC", "enoxaparin"),
+        ("Savaysa", "edoxaban"),
+        ("Lixiana", "edoxaban"),
+        ("Pradaxa", "dabigatran"),
+        ("Fragmin", "dalteparin"),
+        ("Arixtra", "fondaparinux"),
+        ("heparin flush", "heparin"),
+        ("apixaban", "apixaban"),
+        ("lisinopril", None),
+        ("Eliquisx", None),
+        (None, None),
+    ],
+)
+def test_anticoagulant_generic(name: str | None, generic: str | None) -> None:
+    assert anticoagulant_generic(name) == generic
+
+
+def test_brand_name_anchors_a_plan_negative() -> None:
+    assert judge_plan_clear("Eliquis dosing unclear.", "apixaban") is TextJudgment.NEGATIVE

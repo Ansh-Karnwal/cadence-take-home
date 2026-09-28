@@ -26,7 +26,9 @@ from .classify import (
     Resolver,
     TextJudgment,
     TitleOutcome,
+    anticoagulant_generic,
     classify_title,
+    drug_name_re,
     judge_consent_signed,
     judge_plan_clear,
 )
@@ -52,25 +54,6 @@ COUNTED_LAB_STATUSES = frozenset({"final", "amended", "corrected"})
 SYSTOLIC_LIMIT = 180  # exclusion when systolic >= 180
 DIASTOLIC_LIMIT = 110  # exclusion when diastolic >= 110
 TEMPERATURE_LIMIT_F = 100.4  # exclusion when temperature > 100.4
-
-# Anticoagulants (checkpoint 1). The policy does not define the class, so this
-# list is ours. The sample has apixaban (case_00000) and warfarin (case_00001);
-# lisinopril and metformin are not anticoagulants. Matched by word inside the
-# medication name, case-insensitive, so "Apixaban 5 mg BID" matches.
-ANTICOAGULANTS = (
-    "apixaban",
-    "rivaroxaban",
-    "edoxaban",
-    "dabigatran",
-    "warfarin",
-    "enoxaparin",
-    "dalteparin",
-    "fondaparinux",
-    "heparin",
-)
-_ANTICOAGULANT_RE = re.compile(
-    r"\b(" + "|".join(re.escape(drug) for drug in ANTICOAGULANTS) + r")\b", re.IGNORECASE
-)
 
 # D6: quoted in details when the structured date is null; never compared.
 _TARGET_DATE_RE = re.compile(r"procedure date target:\s*\d{4}-\d{2}-\d{2}", re.IGNORECASE)
@@ -200,8 +183,15 @@ def check_documentation(
     resolver: Resolver,
     *,
     force_llm: bool = False,
+    confirm_positives: bool = False,
 ) -> list[TriageIssue]:
     """Rule 1: a recent H&P (within 30 days) and a signed surgical consent.
+
+    Consent judging: a keyword-NEGATIVE text is final. With
+    ``confirm_positives`` (default mode) a keyword-POSITIVE text is sent to the
+    resolver and counts as signed only if the resolver agrees; if the resolver
+    cannot answer, the keyword answer stands. Without it (offline mode) a
+    keyword-POSITIVE text is trusted. UNPLACED texts always go to the resolver.
 
     ``kinds`` is ``classify_documents`` output, one entry per document. With a
     null procedure date, only the presence checks run. An H&P counts only with
@@ -260,10 +250,16 @@ def check_documentation(
     doc = documents[index]
     judgment = judge_consent_signed(doc.text)
     has_text = bool(doc.text and doc.text.strip())
-    if judgment is TextJudgment.UNPLACED or (force_llm and has_text):
-        signed = resolver.resolve_consent_signed(doc.text or "")
+    keyword_positive = judgment is TextJudgment.POSITIVE
+    ask = (
+        judgment is TextJudgment.UNPLACED
+        or (keyword_positive and confirm_positives)
+        or (force_llm and has_text)
+    )
+    if ask:
+        signed = resolver.resolve_consent_signed(doc.text or "", fallback=keyword_positive)
     else:
-        signed = judgment is TextJudgment.POSITIVE
+        signed = keyword_positive
     if not signed:
         if doc.text and doc.text.strip():
             details = "Consent document text does not clearly indicate signed consent: " + doc.text
@@ -347,25 +343,17 @@ def check_testing(
     return issues
 
 
-def anticoagulant_in(name: str | None) -> str | None:
-    """Return the lowercase anticoagulant named in a medication ``name``, or None."""
-
-    if not name:
-        return None
-    match = _ANTICOAGULANT_RE.search(name)
-    return match.group(1).lower() if match else None
-
-
 def plan_candidates(
     submission: PatientSubmission, kinds: list[DocKind], drug: str
 ) -> tuple[list[int], list[int]]:
     """Return (text candidates, title-only candidates) for one anticoagulant.
 
-    Text candidates name ``drug`` by word or say "anticoag". Title-only
-    candidates are title-classified plan documents that are not text candidates.
+    ``drug`` is a generic name. Text candidates name the drug (generic or any
+    brand) by word or say "anticoag". Title-only candidates are
+    title-classified plan documents that are not text candidates.
     """
 
-    drug_re = re.compile(rf"\b{re.escape(drug)}\b", re.IGNORECASE)
+    drug_re = drug_name_re(drug)
     text_candidates = [
         i
         for i, doc in enumerate(submission.documents)
@@ -379,15 +367,27 @@ def plan_candidates(
     return text_candidates, title_only
 
 
-def active_anticoagulants(submission: PatientSubmission) -> list[tuple[int, str, str]]:
-    """Return (medication index, lowercase drug, full name) for active anticoagulants."""
+def anticoagulant_medications(
+    submission: PatientSubmission,
+) -> list[tuple[int, str, str, bool | None]]:
+    """Return (medication index, generic drug, full name, active) for every
+    medication naming an anticoagulant by generic or brand name."""
 
     found = []
     for i, med in enumerate(submission.medications):
-        drug = anticoagulant_in(med.name)
-        if drug is not None and med.active:
-            found.append((i, drug, med.name or drug))
+        drug = anticoagulant_generic(med.name)
+        if drug is not None:
+            found.append((i, drug, med.name or drug, med.active))
     return found
+
+
+def active_anticoagulants(submission: PatientSubmission) -> list[tuple[int, str, str]]:
+    """Return (medication index, generic drug, full name) for active anticoagulants.
+
+    The one definition shared by Rule 3 and the stability script.
+    """
+
+    return [(i, drug, name) for i, drug, name, active in anticoagulant_medications(submission) if active]
 
 
 def check_anticoagulation(
@@ -411,27 +411,19 @@ def check_anticoagulation(
     non-empty candidate goes to the resolver, including rule-NEGATIVE ones.
     """
 
-    issues: list[TriageIssue] = []
-    active: list[tuple[int, str, str]] = []  # (medication index, drug, full name)
-    for i, med in enumerate(submission.medications):
-        drug = anticoagulant_in(med.name)
-        if drug is None:
-            continue
-        if med.active is None:
-            issues.append(
-                _issue(
-                    "MISSING_REQUIRED_DATA",
-                    "Unknown anticoagulant active status",
-                    f"medications[{i}]",
-                    f"Medication {med.name} has active=null; cannot determine if "
-                    "currently taking",
-                )
-            )
-        elif med.active:
-            active.append((i, drug, med.name or drug))
+    issues: list[TriageIssue] = [
+        _issue(
+            "MISSING_REQUIRED_DATA",
+            "Unknown anticoagulant active status",
+            f"medications[{i}]",
+            f"Medication {name} has active=null; cannot determine if currently taking",
+        )
+        for i, _drug, name, is_active in anticoagulant_medications(submission)
+        if is_active is None
+    ]
 
     documents = submission.documents
-    for med_index, drug, full_name in active:
+    for med_index, drug, full_name in active_anticoagulants(submission):
         text_candidates, title_only = plan_candidates(submission, kinds, drug)
 
         clear = False
@@ -477,6 +469,38 @@ def check_anticoagulation(
                 details,
             )
         )
+    return issues
+
+
+# (collection, date field, description) for the unparseable-date check.
+_DATED_COLLECTIONS = (
+    ("vitals", "date", "Unparseable vital date"),
+    ("labs", "effective_at", "Unparseable lab date"),
+    ("documents", "date", "Unparseable document date"),
+)
+
+
+def check_unparseable_dates(submission: PatientSubmission) -> list[TriageIssue]:
+    """Flag every vital, lab, or document whose date is present but does not parse.
+
+    A null date is not flagged here. An unparseable date (including a blank
+    string) is excluded from most-recent selection like a null one, and this
+    missing-data issue is what keeps the case from being READY.
+    """
+
+    issues: list[TriageIssue] = []
+    for collection, field, description in _DATED_COLLECTIONS:
+        for i, item in enumerate(getattr(submission, collection)):
+            raw = getattr(item, field, None)
+            if raw is not None and parse_date(raw) is None:
+                issues.append(
+                    _issue(
+                        "MISSING_REQUIRED_DATA",
+                        description,
+                        f"{collection}[{i}]",
+                        f"{collection}[{i}].{field} is unparseable: {raw!r}",
+                    )
+                )
     return issues
 
 

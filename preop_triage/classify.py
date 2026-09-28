@@ -4,8 +4,12 @@ Rules decide whenever they match. Only ``UNKNOWN`` titles and ``UNPLACED``
 texts are handed to a ``Resolver``: the LLM fallback in default mode, or the
 offline resolver, which treats UNKNOWN as not-required and UNPLACED as negative.
 
-Plan clarity is never decided positive by keywords (D4, checkpoint 1): the
-rules return NEGATIVE or UNPLACED, and only a resolver can say a plan is clear.
+Keywords can add an issue but never remove one in default mode (D2, D4):
+
+- plan clarity is never decided positive by keywords; the rules return
+  NEGATIVE or UNPLACED, and only a resolver can say a plan is clear;
+- a keyword-NEGATIVE consent is final, and a keyword-POSITIVE consent is
+  confirmed by the resolver in default mode (offline mode trusts it).
 
 Matching is strict by construction. There is no fuzzy, edit-distance, or
 similarity matching: a misspelled title such as "History & Phsyical"
@@ -62,8 +66,14 @@ class Resolver(Protocol):
         """Return the document kind for an UNKNOWN title."""
         ...
 
-    def resolve_consent_signed(self, text: str) -> bool:
-        """Return True when an UNPLACED consent text indicates a signed consent."""
+    def resolve_consent_signed(self, text: str, *, fallback: bool = False) -> bool:
+        """Return True when a consent text states the patient signed.
+
+        Called for UNPLACED texts and, in default mode, to confirm keyword
+        POSITIVE texts. ``fallback`` is the answer to use if the resolver cannot
+        answer (an outage): the keyword answer, so an outage degrades to
+        offline behavior.
+        """
         ...
 
     def resolve_plan_clear(self, text: str, drug: str) -> bool:
@@ -130,6 +140,9 @@ _HP_RE = re.compile(
 # "Consent Counseling Note" (case_00044 flags one, case_00012 accepts one) and
 # "Pre-op Consent Discussion" (case_00003 accepts one).
 _CONSENT_RE = re.compile(r"\bconsent\b")
+# A title naming surgery is a surgical consent even if it also names another
+# kind: "Surgical and Anesthesia Consent" is a surgical consent.
+_SURGICAL_RE = re.compile(r"\b(?:surgical|surgery)\b")
 # ...unless it names another kind of consent, or a consent that no longer
 # stands; then it is KNOWN_OTHER (checkpoint 1, no sample case). Assumption:
 # a consent that names no other kind is the surgical one.
@@ -174,7 +187,7 @@ def classify_title(title: str | None) -> TitleClassification:
     if _HP_RE.match(core):
         return TitleClassification(TitleOutcome.REQUIRED, DocKind.H_AND_P)
     if _CONSENT_RE.search(core):
-        if _CONSENT_EXCLUSION_RE.search(core):
+        if _CONSENT_EXCLUSION_RE.search(core) and not _SURGICAL_RE.search(core):
             return TitleClassification(TitleOutcome.KNOWN_OTHER)
         return TitleClassification(TitleOutcome.REQUIRED, DocKind.CONSENT)
     if _ANTICOAG_TITLE_RE.search(core):
@@ -185,15 +198,60 @@ def classify_title(title: str | None) -> TitleClassification:
 
 
 # ---------------------------------------------------------------------------
+# Anticoagulant names. The policy does not define the class, so this list is
+# ours. Generic name -> brand names. The generic is the drug's identity (plan
+# questions, cache keys); any name counts when matching medications and text.
+# The sample has apixaban (case_00000) and warfarin (case_00001) only.
+# ---------------------------------------------------------------------------
+
+ANTICOAGULANT_NAMES: dict[str, tuple[str, ...]] = {
+    "apixaban": ("eliquis",),
+    "rivaroxaban": ("xarelto",),
+    "edoxaban": ("savaysa", "lixiana"),
+    "dabigatran": ("pradaxa",),
+    "warfarin": ("coumadin", "jantoven"),
+    "enoxaparin": ("lovenox",),
+    "dalteparin": ("fragmin",),
+    "fondaparinux": ("arixtra",),
+    "heparin": (),
+}
+_GENERIC_BY_NAME = {
+    name: generic
+    for generic, brands in ANTICOAGULANT_NAMES.items()
+    for name in (generic, *brands)
+}
+_ANY_ANTICOAGULANT_RE = re.compile(
+    r"\b(" + "|".join(re.escape(n) for n in _GENERIC_BY_NAME) + r")\b", re.IGNORECASE
+)
+
+
+def anticoagulant_generic(name: str | None) -> str | None:
+    """Return the generic anticoagulant named in ``name`` (by word, any name), or None."""
+
+    if not name:
+        return None
+    match = _ANY_ANTICOAGULANT_RE.search(name)
+    return _GENERIC_BY_NAME[match.group(1).lower()] if match else None
+
+
+def drug_name_re(generic: str) -> re.Pattern[str]:
+    """Word-boundary pattern for a drug's generic name or any of its brands."""
+
+    names = (generic, *ANTICOAGULANT_NAMES.get(generic, ()))
+    return re.compile(rf"\b(?:{_alternation(names)})\b", re.IGNORECASE)
+
+
+# ---------------------------------------------------------------------------
 # Text judgments (D4). Case-insensitive, word-boundary matching, per clause.
 # Clauses are split on ".", ";", and ":". A negative clause always wins.
 # ---------------------------------------------------------------------------
 
 _CLAUSE_SPLIT_RE = re.compile(r"[.;:]")
 
-# Consent. Sample negatives all contain "unsigned" (case_00008, case_00017,
-# case_00044); the other tokens are checkpoint 1 decisions.
+# Consent tokens come in two tiers. Sample negatives all contain "unsigned"
+# (case_00008, case_00017, case_00044); the other tokens are review decisions.
 CONSENT_SIGN_WORDS = ("sign", "signed", "signature")
+# Tier 1: negative only in a clause that also has a sign-word.
 CONSENT_NEGATION_TOKENS = (
     "not",  # case_00044: "signature not yet on file"
     "no",
@@ -207,8 +265,23 @@ CONSENT_NEGATION_TOKENS = (
     "refused",
     "declined",
     "withdrawn",
+    "outstanding",  # "Consent form signed by surgeon; patient signature outstanding."
+    "required",  # "signature required"; also rules out "signed ... as required"
 )
-CONSENT_BARE_NEGATIVE = ("unsigned",)
+# Tier 2: negative in any clause, sign-word or not, because the negation often
+# sits in a clause of its own: "Patient later withdrew consent.",
+# "new consent required for planned procedure.", "Signed: ______".
+CONSENT_BARE_NEGATIVE = (
+    "unsigned",
+    "withdrew",
+    "withdrawn",
+    "rescinded",
+    "revoked",
+    "void",
+    "new consent required",
+)
+# A blank signature line: three or more underscores.
+_BLANK_LINE_RE = re.compile(r"_{3,}")
 CONSENT_POSITIVE = (
     "signed",  # case_00000: "Electronic consent obtained and signed by patient for procedure."
     "signature on file",  # case_00003: "Consent obtained; signature on file."
@@ -217,7 +290,7 @@ CONSENT_POSITIVE = (
 # Plan clarity. Negative tokens only; there is no positive set (D4).
 PLAN_NEGATIVE = (
     "no clear",  # case_00004: "...no clear hold/resume guidance documented."
-    "not yet",  # checkpoint 1 keeps it; the sample "not yet" clauses (cases 6, 21, 26) have no anchor
+    "not yet",  # cases 6, 21, 26: "perioperative management details not yet documented."
     "to be finalized",  # case_00038: "...perioperative management plan to be finalized."
     "pending",  # case_00042: "...final plan pending specialist input."
     "unclear",
@@ -225,10 +298,10 @@ PLAN_NEGATIVE = (
     "awaiting",
     "tbd",
 )
-# A plan negative counts only in a clause that also names the drug or one of these.
-# "management", "perioperative", "peri-op", "periop" added after checkpoint 1 so
-# the "perioperative management details not yet documented" texts (cases 6, 21,
-# 26) are rule-decided NEGATIVE.
+# A plan negative counts only in a clause that also names the drug (generic or
+# brand) or one of these. "management", "perioperative", "peri-op", and "periop"
+# make the "perioperative management details not yet documented" texts (cases
+# 6, 21, 26) rule-decided NEGATIVE.
 PLAN_ANCHORS = (
     "anticoag",
     "hold",
@@ -264,11 +337,12 @@ def _clauses(text: str) -> list[str]:
 def judge_consent_signed(text: str | None) -> TextJudgment:
     """Judge whether consent text indicates a signature, clause by clause.
 
-    A clause is NEGATIVE if it has a sign-word and a negation token, or says
-    "unsigned". A clause is POSITIVE if it has "signed" or "signature on file"
-    and no negation token. Any NEGATIVE clause wins; else any POSITIVE clause;
-    else UNPLACED. Empty or missing text is NEGATIVE: nothing indicates a
-    signature, and there is nothing for a resolver to read.
+    A clause is NEGATIVE if it has a sign-word and a tier 1 negation token, or
+    any tier 2 bare negative, or a blank signature line. A clause is POSITIVE
+    if it has "signed" or "signature on file" and no negation token. Any
+    NEGATIVE clause wins; else any POSITIVE clause; else UNPLACED. Empty or
+    missing text is NEGATIVE: nothing indicates a signature, and there is
+    nothing for a resolver to read.
     """
 
     if not text or not text.strip():
@@ -276,8 +350,10 @@ def judge_consent_signed(text: str | None) -> TextJudgment:
     positive = False
     for clause in _clauses(text):
         negated = bool(_CONSENT_NEGATION_RE.search(clause))
-        if _CONSENT_BARE_NEGATIVE_RE.search(clause) or (
-            negated and _SIGN_WORD_RE.search(clause)
+        if (
+            _CONSENT_BARE_NEGATIVE_RE.search(clause)
+            or _BLANK_LINE_RE.search(clause)
+            or (negated and _SIGN_WORD_RE.search(clause))
         ):
             return TextJudgment.NEGATIVE
         if not negated and _CONSENT_POSITIVE_RE.search(clause):
@@ -288,14 +364,15 @@ def judge_consent_signed(text: str | None) -> TextJudgment:
 def judge_plan_clear(text: str | None, drug: str) -> TextJudgment:
     """Judge plan text for ``drug``: NEGATIVE or UNPLACED, never POSITIVE.
 
-    A negative token counts only in a clause that also names ``drug`` by word
-    or one of ``PLAN_ANCHORS``. Empty or missing text is NEGATIVE. Only a
-    resolver can find a plan clear.
+    ``drug`` is a generic name. A negative token counts only in a clause that
+    also names the drug (generic or brand) by word, or one of
+    ``PLAN_ANCHORS``. Empty or missing text is NEGATIVE. Only a resolver can
+    find a plan clear.
     """
 
     if not text or not text.strip():
         return TextJudgment.NEGATIVE
-    drug_re = re.compile(rf"\b{re.escape(drug)}\b", re.IGNORECASE)
+    drug_re = drug_name_re(drug)
     for clause in _clauses(text):
         if _PLAN_NEGATIVE_RE.search(clause) and (
             _PLAN_ANCHOR_RE.search(clause) or drug_re.search(clause)
@@ -307,13 +384,14 @@ def judge_plan_clear(text: str | None, drug: str) -> TextJudgment:
 class OfflineResolver:
     """Resolver used when the LLM is disabled: UNKNOWN is OTHER, UNPLACED is negative.
 
-    Consequence: offline mode never finds an anticoagulation plan clear.
+    Consequences: offline mode never finds an anticoagulation plan clear, and it
+    trusts keyword-POSITIVE consents (it is never asked to confirm them).
     """
 
     def resolve_title(self, title: str) -> DocKind:
         return DocKind.OTHER
 
-    def resolve_consent_signed(self, text: str) -> bool:
+    def resolve_consent_signed(self, text: str, *, fallback: bool = False) -> bool:
         return False
 
     def resolve_plan_clear(self, text: str, drug: str) -> bool:

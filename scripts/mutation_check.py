@@ -76,7 +76,7 @@ MUTATIONS: list[tuple[str, str, str, str]] = [
     (
         "consent title exclusions disabled",
         "preop_triage/classify.py",
-        "        if _CONSENT_EXCLUSION_RE.search(core):",
+        "        if _CONSENT_EXCLUSION_RE.search(core) and not _SURGICAL_RE.search(core):",
         "        if False:",
     ),
     # Rules
@@ -114,8 +114,8 @@ MUTATIONS: list[tuple[str, str, str, str]] = [
     (
         "only the first anticoagulant checked",
         "preop_triage/rules.py",
-        "            active.append((i, drug, med.name or drug))",
-        "            active[:0] = [] if active else [(i, drug, med.name or drug)]",
+        "    for med_index, drug, full_name in active_anticoagulants(submission):",
+        "    for med_index, drug, full_name in active_anticoagulants(submission)[:1]:",
     ),
     (
         "anticoagulation details quote the matched word, not the full name",
@@ -126,8 +126,44 @@ MUTATIONS: list[tuple[str, str, str, str]] = [
     (
         "force_llm skips the consent text",
         "preop_triage/rules.py",
-        "    if judgment is TextJudgment.UNPLACED or (force_llm and has_text):",
-        "    if judgment is TextJudgment.UNPLACED:",
+        "        or (force_llm and has_text)",
+        "        or False",
+    ),
+    (
+        "keyword-positive consents not confirmed in default mode",
+        "preop_triage/rules.py",
+        "        or (keyword_positive and confirm_positives)",
+        "        or False",
+    ),
+    (
+        "failed consent confirmation ignores the keyword answer",
+        "preop_triage/rules.py",
+        "fallback=keyword_positive)",
+        "fallback=False)",
+    ),
+    (
+        "unparseable dates not flagged",
+        "preop_triage/rules.py",
+        "            if raw is not None and parse_date(raw) is None:",
+        "            if False:",
+    ),
+    (
+        "brand names ignored",
+        "preop_triage/classify.py",
+        "    for name in (generic, *brands)",
+        "    for name in (generic,)",
+    ),
+    (
+        "consent title naming surgery still excluded",
+        "preop_triage/classify.py",
+        "if _CONSENT_EXCLUSION_RE.search(core) and not _SURGICAL_RE.search(core):",
+        "if _CONSENT_EXCLUSION_RE.search(core):",
+    ),
+    (
+        "bare consent negative 'withdrew' removed",
+        "preop_triage/classify.py",
+        '    "withdrew",\n',
+        "",
     ),
     (
         "force_llm skips rule-negative plans",
@@ -169,6 +205,22 @@ MUTATIONS: list[tuple[str, str, str, str]] = [
 ]
 
 
+COLLECT_COMMAND = TEST_COMMAND[: TEST_COMMAND.index("-q")] + ["--collect-only", "-q"]
+
+
+def collect_counts(workdir: Path) -> dict[str, int]:
+    """Per-file test counts from pytest's collection of the unmutated suite."""
+
+    env = {k: v for k, v in os.environ.items() if k != "OPENAI_API_KEY"}
+    proc = subprocess.run(COLLECT_COMMAND, cwd=workdir, env=env, capture_output=True, text=True)
+    counts: dict[str, int] = {}
+    for line in proc.stdout.splitlines():
+        if "::" in line:
+            name = line.split("::", 1)[0]
+            counts[name] = counts.get(name, 0) + 1
+    return dict(sorted(counts.items()))
+
+
 def run_tests(workdir: Path) -> tuple[str, str]:
     env = {k: v for k, v in os.environ.items() if k != "OPENAI_API_KEY"}
     try:
@@ -201,6 +253,7 @@ def main() -> None:
         baseline_status, baseline_tail = run_tests(work)
         if baseline_status != "passed":
             raise SystemExit(f"unmutated suite did not pass: {baseline_tail}")
+        test_counts = collect_counts(work)
         print(f"unmutated: {baseline_tail}", file=sys.stderr)
 
         results = []
@@ -227,6 +280,8 @@ def main() -> None:
     report = {
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "unmutated_suite": baseline_tail,
+        "tests_per_file": test_counts,
+        "tests_total": sum(test_counts.values()),
         "mutations": len(results),
         "caught": sum(r["outcome"] == "caught" for r in results),
         "survived": sum(r["outcome"] == "survived" for r in results),
