@@ -92,11 +92,20 @@ def _gap_phrase(item_date: date, procedure_date: date, window: int) -> str:
     return f"({-gap} days after the procedure; must be within {window} days prior)"
 
 
-def classify_documents(submission: PatientSubmission, resolver: Resolver) -> list[DocKind]:
-    """Classify every document title once. Only non-empty UNKNOWN titles reach the resolver."""
+def classify_documents(
+    submission: PatientSubmission, resolver: Resolver, *, force_llm: bool = False
+) -> list[DocKind]:
+    """Classify every document title once. Only non-empty UNKNOWN titles reach the resolver.
+
+    Under ``force_llm`` (measurement only) every non-empty title goes to the
+    resolver and its answer replaces the rules' answer.
+    """
 
     kinds: list[DocKind] = []
     for doc in submission.documents:
+        if force_llm and doc.type and doc.type.strip():
+            kinds.append(resolver.resolve_title(doc.type))
+            continue
         result = classify_title(doc.type)
         if result.outcome is TitleOutcome.REQUIRED and result.kind is not None:
             kinds.append(result.kind)
@@ -189,6 +198,8 @@ def check_documentation(
     procedure_date: date | None,
     kinds: list[DocKind],
     resolver: Resolver,
+    *,
+    force_llm: bool = False,
 ) -> list[TriageIssue]:
     """Rule 1: a recent H&P (within 30 days) and a signed surgical consent.
 
@@ -196,7 +207,9 @@ def check_documentation(
     null procedure date, only the presence checks run. An H&P counts only with
     a valid date. A consent counts as present whatever its date; the most
     recent consent is the one judged (the last listed when none is dated), so
-    an older signed consent does not rescue a newer unsigned one.
+    an older signed consent does not rescue a newer unsigned one. Under
+    ``force_llm`` a non-empty consent text goes to the resolver even when the
+    keywords placed it.
     """
 
     documents = submission.documents
@@ -246,7 +259,8 @@ def check_documentation(
         index = consent_indexes[-1]
     doc = documents[index]
     judgment = judge_consent_signed(doc.text)
-    if judgment is TextJudgment.UNPLACED:
+    has_text = bool(doc.text and doc.text.strip())
+    if judgment is TextJudgment.UNPLACED or (force_llm and has_text):
         signed = resolver.resolve_consent_signed(doc.text or "")
     else:
         signed = judgment is TextJudgment.POSITIVE
@@ -342,10 +356,46 @@ def anticoagulant_in(name: str | None) -> str | None:
     return match.group(1).lower() if match else None
 
 
+def plan_candidates(
+    submission: PatientSubmission, kinds: list[DocKind], drug: str
+) -> tuple[list[int], list[int]]:
+    """Return (text candidates, title-only candidates) for one anticoagulant.
+
+    Text candidates name ``drug`` by word or say "anticoag". Title-only
+    candidates are title-classified plan documents that are not text candidates.
+    """
+
+    drug_re = re.compile(rf"\b{re.escape(drug)}\b", re.IGNORECASE)
+    text_candidates = [
+        i
+        for i, doc in enumerate(submission.documents)
+        if doc.text and (_ANTICOAG_WORD_RE.search(doc.text) or drug_re.search(doc.text))
+    ]
+    title_only = [
+        i
+        for i, kind in enumerate(kinds)
+        if kind is DocKind.ANTICOAG_PLAN and i not in text_candidates
+    ]
+    return text_candidates, title_only
+
+
+def active_anticoagulants(submission: PatientSubmission) -> list[tuple[int, str, str]]:
+    """Return (medication index, lowercase drug, full name) for active anticoagulants."""
+
+    found = []
+    for i, med in enumerate(submission.medications):
+        drug = anticoagulant_in(med.name)
+        if drug is not None and med.active:
+            found.append((i, drug, med.name or drug))
+    return found
+
+
 def check_anticoagulation(
     submission: PatientSubmission,
     kinds: list[DocKind],
     resolver: Resolver,
+    *,
+    force_llm: bool = False,
 ) -> list[TriageIssue]:
     """Rule 3, once per active anticoagulant: each needs its own clear plan.
 
@@ -357,7 +407,8 @@ def check_anticoagulation(
     as a plan (title candidates). Keywords can only rule a plan NEGATIVE or
     leave it UNPLACED (D4); a plan is clear only if the resolver says so. For
     each unmet drug the issue cites its most recent text candidate, else its
-    most recent title candidate, else ``documents``.
+    most recent title candidate, else ``documents``. Under ``force_llm`` every
+    non-empty candidate goes to the resolver, including rule-NEGATIVE ones.
     """
 
     issues: list[TriageIssue] = []
@@ -380,23 +431,17 @@ def check_anticoagulation(
             active.append((i, drug, med.name or drug))
 
     documents = submission.documents
-    title_candidates = [i for i, kind in enumerate(kinds) if kind is DocKind.ANTICOAG_PLAN]
-
     for med_index, drug, full_name in active:
-        drug_re = re.compile(rf"\b{re.escape(drug)}\b", re.IGNORECASE)
-        text_candidates = [
-            i
-            for i, doc in enumerate(documents)
-            if doc.text and (_ANTICOAG_WORD_RE.search(doc.text) or drug_re.search(doc.text))
-        ]
-        title_only = [i for i in title_candidates if i not in text_candidates]
+        text_candidates, title_only = plan_candidates(submission, kinds, drug)
 
         clear = False
         for i in text_candidates + title_only:
             text = documents[i].text
-            if judge_plan_clear(text, drug) is TextJudgment.UNPLACED and (
-                resolver.resolve_plan_clear(text or "", drug)
-            ):
+            judgment = judge_plan_clear(text, drug)
+            ask = judgment is TextJudgment.UNPLACED or (
+                force_llm and bool(text and text.strip())
+            )
+            if ask and resolver.resolve_plan_clear(text or "", drug):
                 clear = True
                 break
         if clear:

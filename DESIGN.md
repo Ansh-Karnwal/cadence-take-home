@@ -530,6 +530,23 @@ The LLM cannot:
   produce or remove an ACUTE_SAFETY_EXCLUSION, so it can never flip a case
   into or out of NOT_CLEARED.
 
+Outage behavior: on any API error the resolver retries twice with a short
+backoff, then returns the offline answer for that item (title OTHER, consent
+not signed, plan not clear), writes one line to stderr naming the item and the
+error, and does not cache that answer. The engine appends one sentence to the
+explanation ("LLM fallback unavailable for N item(s); conservative offline
+answers were used.") and never raises. An outage therefore degrades to
+offline behavior, which is conservative: it can add follow-up issues but can
+never clear a patient. A missing API key is recorded once and not retried. If
+the model rejects `temperature`, the resolver retries that call once without
+it and stops sending it for the rest of the process; the stability report
+states whether it was accepted.
+
+`force_llm` exists for measurement only. It sends every title, the judged
+consent text, and every plan candidate to the model and discards the rules'
+answer, so the stability work can compare the model against the rules. It is
+ignored in offline mode and is never a production setting.
+
 Consequences: the maximum per-case damage from a wrong LLM answer is one
 category point plus the grounding half-point. With the in-memory cache, the
 harness determinism run (`make determinism`, record 0, 10 calls in one
@@ -562,8 +579,8 @@ wrong "clear" answer would drop the issue and cost the category point.
    grounding on all 50 cases.
    **Verifier checkpoint.**
 3. **LLM layer.** Classifier for UNKNOWN titles and UNPLACED text, strict
-   schema, temperature 0, in-memory cache keyed on title, and on text plus
-   drug for plan judgments, the
+   schema, temperature 0, in-memory module-level cache keyed on (model,
+   question, text) where question is `title`, `consent`, or `plan:<drug>`, the
    `PREOP_OFFLINE`, `PREOP_NO_CACHE`, and `PREOP_FORCE_LLM` environment
    variables with the `settings` override (D1), and a
    stability script reporting self-agreement across runs and agreement with

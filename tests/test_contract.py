@@ -42,16 +42,26 @@ def test_signature_matches_harness_call_shape() -> None:
     assert params["settings"].default is None
 
 
-def test_default_mode_raises_until_llm_resolver_exists(
+def test_default_mode_returns_triage_output_without_raising(
+    fake_client, sample_submission: dict[str, object]  # type: ignore[no-untyped-def]
+) -> None:
+    """Default (non-offline) mode uses the LLM resolver; with a fake client it returns."""
+
+    output = triage_submission(submission=sample_submission, model="test-model")
+
+    assert isinstance(output, TriageOutput)
+    assert fake_client.calls, "case_00000 has an UNKNOWN title and an UNPLACED plan"
+    assert "LLM fallback unavailable" not in output.explanation
+
+
+def test_default_mode_does_not_raise_when_the_api_is_down(
     sample_submission: dict[str, object],
 ) -> None:
-    """Default (non-offline) mode builds LLMResolver, still a stub until milestone 3.
+    # The autouse fixture's client raises on every call.
+    output = triage_submission(submission=sample_submission, model="test-model")
 
-    Milestone 3 replaces this test: default mode will then return a TriageOutput.
-    """
-
-    with pytest.raises(NotImplementedError):
-        triage_submission(submission=sample_submission, model="test-model")
+    assert isinstance(output, TriageOutput)
+    assert "LLM fallback unavailable" in output.explanation
 
 
 def test_offline_mode_returns_triage_output_for_harness_call_shape(
