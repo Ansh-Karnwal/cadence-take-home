@@ -144,7 +144,7 @@ Both models disagree with the rules on the same two titles. On "Consent Counseli
 - title "Consent Counseling Note": rules say CONSENT, model says OTHER x5 (cases: case_00004, case_00012, case_00020, case_00028, case_00036, case_00044)
 - title "H&P Update": rules say H_AND_P, model says H_AND_P x2, OTHER x3 (cases: case_00049)
 
-gpt-4.1-mini split 4 to 1 on the consent "Signed consent scanned and verified before scheduling.", which default mode sends for confirmation. Because keyword-signed consents are now model-confirmed, a split on a consent text means the outcome depends on which answer a process draws first: the committed harness run drew "signed", but a run that drew "unsigned" would flag the consent in all 9 cases that carry this text. That is the cost of the confirmation step, and it errs toward follow-up. gpt-6-luna split 3 to 2 on the titles "H&P Update" and "Perioperative Medication Review", which the rules place, so default mode never asks the model about them.
+gpt-4.1-mini split 4 to 1 on the consent "Signed consent scanned and verified before scheduling.", which default mode sends for confirmation. Because keyword-signed consents are now model-confirmed, a split on a consent text means the outcome depends on which answer a process draws first: the committed harness run drew "signed", but a run that drew "unsigned" would flag the consent in all 9 cases that carry this text. That is the cost of the confirmation step, and it errs toward follow-up. For a reproducible default-mode run, use `MODEL=gpt-6-luna`, which was stable on every item default mode sends. On `gpt-4.1-mini`, the harness default, one consent text drew 'unsigned' in 1 of 5 stability runs; a harness run that draws it would flag 9 cases and drop case_00012 from READY. gpt-6-luna split 3 to 2 on the titles "H&P Update" and "Perioperative Medication Review", which the rules place, so default mode never asks the model about them.
 
 `stability-gpt-4.1-mini`:
 
@@ -154,6 +154,15 @@ gpt-4.1-mini split 4 to 1 on the consent "Signed consent scanned and verified be
 
 - title "H&P Update": H_AND_P x2, OTHER x3 (rule-placed, not sent in default mode)
 - title "Perioperative Medication Review": ANTICOAG_PLAN x3, OTHER x2 (rule-placed, not sent in default mode)
+
+### Generalization probes
+
+| Run | Model | Pre-fix rules correct | HEAD rules correct | Model correct (majority) | Model strings with split answers | Failures |
+|---|---|---|---|---|---|---|
+| probes-gpt-4.1-mini | gpt-4.1-mini | 0 of 21 | 21 of 21 | 19 of 19 | 1 | 0 |
+| probes-gpt-6-luna | gpt-6-luna | 0 of 21 | 21 of 21 | 18 of 19 | 0 | 0 |
+
+These 21 strings were written by the two reviewers, without seeing the keyword lists, to find inputs the rules of the day got wrong, and each one is now a test. The pre-fix rules are the honest comparison, because the HEAD rules were extended in response to these exact strings, so the HEAD score of 21 of 21 is fitted and the pre-fix score of 0 is zero by construction; of those pre-fix errors, 16 would wrongly clear a patient and 5, all titles, would over-flag. Unaided, gpt-4.1-mini gave the correct majority label on 19 of 19 strings it can be asked about but split 3 to 2 on "Consent signed by patient. Patient later withdrew consent.", calling it signed on 2 of 5 runs, and gpt-6-luna got 18 of 19, calling "Patient signed consent for left knee arthroscopy; new consent required for planned procedure." signed on 5 of 5 runs; the model catches most of what the old keywords missed, but not all, which is why a keyword negative stays final.
 
 ## Determinism
 
