@@ -67,8 +67,8 @@ not scored (see section 4) but keeps diffs readable.
 ### D1. Hybrid architecture, rules first
 
 A deterministic Python rules engine evaluates every rule. An LLM is used only
-as a fallback for inputs the rules cannot place. An `offline` flag disables
-the LLM entirely.
+as a fallback for inputs the rules cannot place, and to confirm
+keyword-positive consents (D2). An `offline` flag disables the LLM entirely.
 
 Rationale: every rule is date arithmetic or a threshold on a structured
 field. The only fuzzy inputs are document titles and short free-text passages.
@@ -85,14 +85,24 @@ also accepts an optional keyword-only `settings` object that overrides the
 environment, for tests. `triage_submission(submission, *, model)` keeps its
 signature and gains only that optional keyword.
 
-### D2. Rules decide whenever they match; the LLM handles only what they cannot place
+### D2. Keywords can add an issue but never remove one
 
-This single principle governs both title classification (D3) and text
-judgments (D4). A rule match is final and is never sent to the LLM for
-confirmation.
+The rules decide whatever they can place, and the LLM handles what they
+cannot. In default mode one asymmetry governs every judgment that could clear
+a patient: keywords can add an issue but never remove one.
 
-Rules out: LLM-as-verifier of rule outputs; ensemble voting between rules and
-LLM.
+- Titles (D3): a rule match is final and is never sent to the LLM.
+- Consent (D4): a keyword-NEGATIVE consent is final. A keyword-POSITIVE
+  consent is sent to the LLM for confirmation and clears only if the LLM also
+  says signed. UNPLACED goes to the LLM.
+- Plan clarity (D4): keywords can only say NEGATIVE or UNPLACED; only the LLM
+  can say clear.
+
+Offline mode has no LLM, so it trusts keyword-POSITIVE consents and never
+finds a plan clear (section 5).
+
+Rules out: the LLM overriding a keyword NEGATIVE; the LLM re-labelling a
+title the rules placed; ensemble voting between rules and LLM.
 
 ### D3. Three-outcome title classification
 
@@ -134,9 +144,11 @@ titles in all):
 - Consent: any normalized title containing the word `consent` is a surgical
   consent, unless it also contains one of `anesthesia`, `anaesthesia`,
   `research`, `blood`, `transfusion`, `photo`, `withdrawn`, `refused`,
-  `revoked`, in which case it is KNOWN_OTHER. Assumption: the policy requires
-  a surgical consent, and a consent document that does not name another kind
-  is taken to be the surgical one. The 8 sample variants include
+  `revoked` (matched at word start), in which case it is KNOWN_OTHER. The
+  exclusion does not apply when the title also contains `surgical` or
+  `surgery`: "Surgical and Anesthesia Consent" is a surgical consent.
+  Assumption: the policy requires a surgical consent, and a consent document
+  that does not name another kind is taken to be the surgical one. The 8 sample variants include
   "Consent Counseling Note" (case_00044 flags one, case_00012 accepts one)
   and "Pre-op Consent Discussion" (case_00003 accepts one).
 - Anticoagulation plan: any normalized title containing `anticoag` (which
@@ -157,27 +169,46 @@ titles in all):
 Rules out: fuzzy or edit-distance matching, embedding similarity, and
 classifying by document text instead of title.
 
-### D4. Text judgments: clause-aware consent keywords; plan clarity only by resolver
+### D4. Text judgments: clause-aware consent keywords confirmed by the model; plan clarity only by resolver
 
 Two judgments: is the consent signed, and is the anticoagulation plan clear
 for a given drug. Both use case-insensitive word-boundary matching, and both
 split text into clauses on `.`, `;`, and `:`.
 
-**Consent signed.** Sign-words: `sign`, `signed`, `signature`. Negation
-tokens: `not`, `no`, `never`, `unsigned`, `missing`, `pending`, `awaiting`,
-`to be`, `will be`, `refused`, `declined`, `withdrawn`.
+**Consent signed.** Sign-words: `sign`, `signed`, `signature`. Negatives come
+in two tiers.
 
-- A clause is NEGATIVE if it contains a sign-word and a negation token, or
-  the bare negative phrase `unsigned`.
-- A clause is POSITIVE if it contains `signed` or `signature on file` and no
-  negation token.
+- Tier 1 negation tokens count only in a clause that also has a sign-word:
+  `not`, `no`, `never`, `unsigned`, `missing`, `pending`, `awaiting`,
+  `to be`, `will be`, `refused`, `declined`, `withdrawn`, `outstanding`,
+  `required`.
+- Tier 2 bare negatives count in any clause: `unsigned`, `withdrew`,
+  `withdrawn`, `rescinded`, `revoked`, `void`, `new consent required`, and a
+  blank signature line of three or more underscores. These need no sign-word
+  because the negation often sits in a clause of its own ("Patient later
+  withdrew consent.", "new consent required for planned procedure.",
+  "Signed: ______").
+- A clause is NEGATIVE if it has a sign-word and a tier 1 token, or any tier
+  2 negative. A clause is POSITIVE if it contains `signed` or `signature on
+  file` and no tier 1 token.
 - Any NEGATIVE clause makes the text NEGATIVE. Otherwise any POSITIVE clause
   makes it POSITIVE. Otherwise it is UNPLACED.
 - Empty or missing text is NEGATIVE without a resolver call.
+- Accepted cost of `required` as a tier 1 token: "Consent signed as required
+  by policy." is NEGATIVE. A false follow-up is the safe direction.
+
+In default mode the judged consent (the most recent) is then routed by D2: a
+keyword-NEGATIVE text is final; a keyword-POSITIVE text goes to the LLM and
+clears only if the LLM also says signed; an UNPLACED text goes to the LLM. If
+the LLM call fails, the keyword answer stands, so an outage during a
+confirmation keeps the consent signed, which is exactly offline behavior.
+Offline mode trusts keyword positives.
 
 Clauses keep a negation in one clause from cancelling a signature in
 another ("Consent signed by patient; no complications." is POSITIVE), while
-"Patient declined to sign consent." is NEGATIVE.
+"Patient declined to sign consent." is NEGATIVE. Keyword positives are still
+model-confirmed in default mode because no keyword set can list every way a
+signed-looking text is not a valid patient signature.
 
 **Plan clear.** The rules can only decide NEGATIVE or UNPLACED. There is no
 positive keyword set. A plan is clear only when a resolver says so: the LLM
@@ -267,16 +298,16 @@ in all 46 dated cases, but it is not the policy's field).
 
 The offline scorer imports `_local_metrics_for_row` and
 `_summarize_local_rows` from `run_evals.py` rather than copying them, so
-offline numbers are provably the official numbers. Note that importing
-`run_evals` imports `openai` at module load, so the package must be installed
-even though the offline scorer makes no network call. `make evals` itself
-always creates a remote OpenAI eval and needs an API key; the offline scorer
-is what makes keyless iteration possible.
+offline numbers are provably the official numbers. Importing `run_evals`
+imports `openai` at module load, so the package had to be installed even
+though the offline scorer makes no network call. `make evals` itself always
+creates a remote OpenAI eval and needs an API key; the offline scorer is what
+made keyless iteration possible.
 
-The existing tests in `tests/test_triage_submission.py` test the baseline's
-exact API call (Responses API kwargs, prompt shape, schema `strict: False`),
-not the harness contract. They will be replaced with tests of the new
-contract, not deleted.
+The starter's tests in `tests/test_triage_submission.py` tested the
+baseline's exact API call (Responses API kwargs, prompt shape, schema
+`strict: False`), not the harness contract. They were replaced with tests of
+the new contract, not simply deleted.
 
 Rules out: forking or vendoring the harness; a second scoring implementation.
 
@@ -352,10 +383,15 @@ recent, so sort by `effective_at`.
 (50, active), apixaban (7, active), metformin (4, active), warfarin (3, active
 null); lisinopril and metformin are noise. Decision (checkpoint 1): the
 anticoagulant list is apixaban, rivaroxaban, edoxaban, dabigatran, warfarin,
-enoxaparin, dalteparin, fondaparinux, heparin, matched case-insensitively by
-word boundary inside the medication `name` string, so "Apixaban 5 mg BID"
-matches. Assumption: the policy does not define the class, so this list is
-ours.
+enoxaparin, dalteparin, fondaparinux, heparin, plus the brand names eliquis,
+xarelto, savaysa, lixiana, pradaxa, coumadin, jantoven, lovenox, fragmin,
+arixtra, each mapped to its generic. Names are matched case-insensitively by
+word boundary inside the medication `name` string, so "Apixaban 5 mg BID" and
+"Eliquis 5 mg BID" both match. The generic is the drug's identity for the
+plan question and the cache key; plan candidates and plan scope words accept
+the generic or any of its brands, so a medication listed as Eliquis finds a
+plan that says "hold apixaban". Assumption: the policy does not define the
+class, so this list is ours, and it is finite.
 
 **Anticoagulation plan documents.** VERIFIED that all seven plan-bearing
 cases (0, 4, 6, 21, 26, 38, 42) have a vague plan and all are flagged with
@@ -418,6 +454,14 @@ smallest rejected is 18. No document or lab is dated after its procedure date.
 Design choice: "within N days" means `0 <= gap <= N`; a future-dated item is a
 gap below zero and is treated as outside the window. A future-dated H&P or
 lab is still the most recent and is flagged out of window.
+
+**Unparseable item dates.** No sample item has one. Decision: a vital, lab,
+or document whose date field is present but does not parse (including a
+blank string) raises a MISSING_REQUIRED_DATA issue with source at that item
+("Unparseable vital date", "Unparseable lab date", "Unparseable document
+date") and details quoting the raw value. The item is excluded from
+most-recent selection, and the issue is what keeps the case from READY. A
+null date keeps its behavior: excluded from selection, no issue of its own.
 
 **Vitals.** VERIFIED. Most recent BP and most recent temperature are judged
 separately. The flagged BP is 184/111 in all four BP cases (3, 20, 39, 47)
@@ -499,12 +543,18 @@ anything else resolves to nothing and falls through to the fuzzy path.
    than a recognized H&P in every case, so the output cannot change on this
    dataset. On a future case where such a document is the only or newest H&P
    candidate, default and offline modes would differ.
-5. **Offline mode never clears an active anticoagulant (limitation).** Under
-   D4 only a resolver can find a plan clear, and the offline resolver always
-   answers no. On this dataset every plan is vague, so offline matches the
+5. **Offline mode never clears a patient on a recognized anticoagulant
+   (limitation).** "Recognized" means on the finite list in section 4, which
+   is ours. Under D4 only a resolver can find a plan clear, and the offline
+   resolver always answers no. On this dataset every plan is vague, so offline matches the
    oracle. On a case with a genuinely clear plan, offline mode returns
    NEEDS_FOLLOW_UP where the correct answer may be READY. This is the safe
    direction of failure.
+6. **Offline mode trusts keyword-positive consents (limitation).** Default
+   mode sends a keyword-POSITIVE consent to the model for confirmation (D2);
+   offline mode has no model, so a signed-looking text that is not in fact a
+   valid patient signature, and that no tier 1 or tier 2 negative catches,
+   clears offline.
 
 ## 6. Blast radius: what the LLM can and cannot change
 
@@ -515,6 +565,9 @@ The LLM can:
   and can change which document index is cited.
 - Turn an UNPLACED text into POSITIVE or NEGATIVE. This can add or remove a
   "consent not clearly signed" issue or an anticoagulation issue.
+- Decline to confirm a keyword-POSITIVE consent. This can add a "consent not
+  clearly signed" issue; it can never remove one, because a keyword-NEGATIVE
+  consent is final (D2).
 - Declare a plan clear for a drug. Under D4 this is the only way any
   anticoagulation issue is ever removed. On this dataset one of the seven
   plan texts is UNPLACED (case_00000), so one anticoagulation outcome rests
@@ -526,7 +579,8 @@ The LLM cannot:
   gate.
 - Produce, edit, or reorder issues, descriptions, sources, or details. It
   returns an enum from a strict schema; the rules layer writes the issue.
-- Override a rule match. Anything the rules placed is final.
+- Override a keyword NEGATIVE or a title the rules placed. Its only power
+  over a keyword POSITIVE consent is to add the issue.
 - Change the decision except through the two issue types above. It can never
   produce or remove an ACUTE_SAFETY_EXCLUSION, so it can never flip a case
   into or out of NOT_CLEARED.
@@ -534,11 +588,14 @@ The LLM cannot:
 Outage behavior: on any API error the resolver retries twice with a short
 backoff, then returns the offline answer for that item (title OTHER, consent
 not signed, plan not clear), writes one line to stderr naming the item and the
-error, and does not cache that answer. The engine appends one sentence to the
-explanation ("LLM fallback unavailable for N item(s); conservative offline
-answers were used.") and never raises. An outage therefore degrades to
-offline behavior, which is conservative: it can add follow-up issues but can
-never clear a patient. A missing API key is recorded once and not retried. If
+error, and does not cache that answer. A failed consent confirmation returns
+the keyword answer. The engine appends one sentence to the explanation ("LLM
+fallback unavailable for N item(s); conservative offline answers were used.")
+and never raises. An outage therefore degrades to offline behavior. Offline
+is not strictly more conservative: when the newest document has an
+unrecognized title, classifying it as OTHER means an older recognized
+document is judged instead, which can remove an issue as well as add one. A
+missing API key is recorded once and not retried. If
 the model rejects `temperature`, the resolver retries that call once without
 it and stops sending it for the rest of the process; the stability report
 states whether it was accepted.
@@ -554,41 +611,47 @@ harness determinism run (`make determinism`, record 0, 10 calls in one
 process) exercises the LLM at most once per distinct title or text; the
 stability script with `no-cache` is the real measure of model variance.
 Case_00000, the determinism record, does reach the LLM in default mode: its
-doc[1] title "Preop Pre-anesthesia Evaluation [PDF]" is UNKNOWN, and its plan
-text is UNPLACED. The LLM's answer on the plan text decides whether the
+doc[1] title "Preop Pre-anesthesia Evaluation [PDF]" is UNKNOWN, its
+keyword-POSITIVE consent is sent for confirmation, and its plan text is
+UNPLACED. The LLM's answer on the plan text decides whether the
 anticoagulation issue stays. The text gives no hold or resume guidance, so a
 correct answer is "not clear" and both modes then reach the same output; a
 wrong "clear" answer would drop the issue and cost the category point.
 
-## 7. Milestone plan
+## 7. Milestone plan (as carried out)
 
-1. **Baseline capture and scaffold.** Naive run committed to `results/naive/`
-   via `make baseline evals determinism OUTPUT=... REPORT=...
-   DETERMINISM_REPORT=...`. Package layout. `triage_submission` signature
-   preserved (`submission`, keyword-only `model`). Offline scorer importing
-   from `run_evals`. Replacement tests.
-2. **Rules engine.** Normalization, three-outcome classifier, rules 1 to 4
-   and missing-data gates. Golden test over all 50 cases in offline mode
-   matching on decision, category set, and per-issue source and description
-   (details are checked by the grounding metric, not character for
-   character). Synthetic tests for: an anticoagulation plan with hold and
-   resume language (flagged offline, cleared only by a resolver), lab dated
-   after the procedure, exact boundaries (30 days, 14 days, 180 systolic,
-   110 diastolic, 100.4 F), tied vital timestamps, inactive anticoagulant,
-   null document date, and the three substring-trap strings from D4.
-   Offline scorer must show 100% decision and category match and 100%
-   grounding on all 50 cases.
-   **Verifier checkpoint.**
-3. **LLM layer.** Classifier for UNKNOWN titles and UNPLACED text, strict
-   schema, temperature 0, in-memory module-level cache keyed on (model,
-   question, text) where question is `title`, `consent`, or `plan:<drug>`, the
-   `PREOP_OFFLINE`, `PREOP_NO_CACHE`, and `PREOP_FORCE_LLM` environment
-   variables with the `settings` override (D1), and a
-   stability script reporting self-agreement across runs and agreement with
-   the rules on documents the rules placed.
-4. **Harness run in both modes**, determinism in both modes, stability
-   numbers, README with build and run instructions.
-   **Verifier checkpoint.**
+1. **Baseline capture and scaffold.** The naive run was committed to
+   `results/naive/` via `make baseline evals determinism OUTPUT=...
+   REPORT=... DETERMINISM_REPORT=...`, before any code change. The package
+   layout was scaffolded, `triage_submission` kept its signature
+   (`submission`, keyword-only `model`), the offline scorer imported from
+   `run_evals`, and the starter's tests were replaced.
+2. **Rules engine.** Normalization, the three-outcome classifier, rules 1 to
+   4, and the missing-data gates were built. A golden test ran all 50 cases
+   in offline mode, matching on decision, category set, and per-issue source
+   and description (details were checked by the grounding metric, not
+   character for character). Synthetic tests covered an anticoagulation plan
+   with hold and resume language (flagged offline, cleared only by a
+   resolver), a lab dated after the procedure, exact boundaries (30 days, 14
+   days, 180 systolic, 110 diastolic, 100.4 F), tied vital timestamps, an
+   inactive anticoagulant, a null document date, and the three substring-trap
+   strings from D4. The offline scorer showed 100% decision and category match
+   and 100% grounding on all 50 cases.
+   **Verifier checkpoint 1** followed; its accepted findings amended D3, D4,
+   and section 4.
+3. **LLM layer.** The classifier for UNKNOWN titles and UNPLACED text was
+   built with a strict schema, temperature 0 where the model accepts it, an
+   in-memory module-level cache keyed on (model, question, text) where
+   question is `title`, `consent`, or `plan:<drug>`, the `PREOP_OFFLINE`,
+   `PREOP_NO_CACHE`, and `PREOP_FORCE_LLM` environment variables with the
+   `settings` override (D1), and a stability script reporting self-agreement
+   across runs and agreement with the rules on items the rules placed.
+4. **Harness runs in both modes**, determinism in both modes, stability
+   numbers, and a README with build and run instructions.
+   **Verifier checkpoint 2** followed; its accepted findings amended D2, D3,
+   D4, and sections 4 to 6 (model-confirmed consent positives, brand-name
+   anticoagulants, unparseable item dates, combined consent titles), and every
+   committed run was regenerated afterward.
 
 ## 8. Rejected findings
 
@@ -600,9 +663,21 @@ Reasons for rejecting verifier findings are recorded here.
    a plan on their own; adding them fits one string. Case_00000's plan text
    goes UNPLACED; offline flags it, and default mode flags it when the LLM
    answers correctly.
-2. **Verifier suggested scoping `awaiting` and `pending` out of consent
-   negatives to avoid false follow-ups.** Rejected: a false follow-up on
-   consent is the safe failure and the policy's own default for ambiguity.
+2. **`awaiting` and `pending` as consent negatives.** The reviewer noted that
+   these tokens cause false follow-ups and did not propose a change. Kept:
+   a false follow-up on consent is the safe failure and the policy's own
+   default for ambiguity.
+3. **Judge H&P completeness from its text.** Rejected. "Completed within 30
+   days" is read as the completion date. Judging clinical completeness from
+   free text is outside the policy; presence and date are what Rule 1
+   specifies.
+4. **Treat an anticoagulant named only in document text as current.**
+   Rejected. The medication list is the policy's source for "currently
+   taking"; a drug named only in narrative text is not a current medication
+   record.
+5. **Order a date-only value after same-day timestamps.** Kept at midnight.
+   Any placement of a date-only value within its day is arbitrary; midnight
+   is documented as the assumption.
 
 ## 9. Open questions
 

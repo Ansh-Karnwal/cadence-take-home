@@ -114,8 +114,8 @@ def _with_plan(text: str, title: str = "Perioperative Medication Plan") -> list[
 
 
 def test_complete_plan_is_flagged_offline() -> None:
-    # Checkpoint 1 (D4): keywords never call a plan clear, and the offline
-    # resolver never does either. Offline never clears an active anticoagulant.
+    # D4: keywords never call a plan clear, and the offline resolver never does
+    # either. Offline never clears a patient on a recognized anticoagulant.
     assert judge_plan_clear(COMPLETE_PLAN, "apixaban") is TextJudgment.UNPLACED
     submission = make(medications=APIXABAN_ACTIVE, documents=_with_plan(COMPLETE_PLAN))
     output = run(submission)
@@ -504,7 +504,7 @@ def test_issue_order_explanation_and_not_cleared_keeps_other_issues() -> None:
     )
 
 
-# --- Verifier probes, end to end (checkpoint 1), verbatim -----------------------
+# --- Verifier probe strings, end to end, verbatim -------------------------------
 # Each must produce NEEDS_FOLLOW_UP or NOT_CLEARED in offline mode. Plan probes
 # are (document type, text), each added with active apixaban.
 

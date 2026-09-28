@@ -48,7 +48,8 @@ TESTING_REQUIREMENTS: dict[str, tuple[int, tuple[str, ...]]] = {
     "MODERATE": (30, ("CBC",)),
     "HIGH": (14, ("CBC", "CMP")),
 }
-# A lab counts only with one of these statuses, or no status (checkpoint 1).
+# A lab counts only with one of these statuses, or no status; a preliminary or
+# cancelled result is not a result the policy can rely on.
 # All 150 sample labs are "final".
 COUNTED_LAB_STATUSES = frozenset({"final", "amended", "corrected"})
 SYSTOLIC_LIMIT = 180  # exclusion when systolic >= 180

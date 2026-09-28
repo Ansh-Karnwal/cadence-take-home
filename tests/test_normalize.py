@@ -132,7 +132,7 @@ def test_canonical_lab_code(code: str | None, expected: str | None) -> None:
         # Whitespace collapsed, case folded.
         ("  History   and\tPhysical  ", "history and physical"),
         ("History & Phsyical", "history & phsyical"),
-        # "h & p" is rewritten to "h&p" (checkpoint 1).
+        # "h & p" is rewritten to "h&p".
         ("H & P", "h&p"),
         ("Interval H &P Addendum", "interval h&p addendum"),
         # "- signed" needs a preceding space; "[pdf]" alone is a bare suffix.
@@ -157,7 +157,7 @@ def test_most_recent_ignores_unparseable_dates() -> None:
 
 
 def test_most_recent_same_day_orders_by_time() -> None:
-    # Checkpoint 1 fix: on the same date the later time wins, whatever the order.
+    # On the same date the later time wins, whatever the list order.
     items = ["2026-02-24T10:12:00Z", "2026-02-24T08:00:00Z", "2026-02-01"]
     assert most_recent(items, parse_instant) == (0, "2026-02-24T10:12:00Z")
 

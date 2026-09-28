@@ -30,7 +30,7 @@ _TITLE_PREFIXES = ("imported:", "preop -", "pre-op", "preop", "scanned")
 _TITLE_SUFFIXES = ("[pdf]", "(scanned)", "(external)", "- signed")
 
 _WHITESPACE_RE = re.compile(r"\s+")
-# "h & p" and "H &P" become "h&p" before matching (checkpoint 1).
+# "h & p" and "H &P" become "h&p" before matching, so spaced forms reach the H&P patterns.
 _H_AND_P_SPACED_RE = re.compile(r"\bh\s*&\s*p\b")
 
 

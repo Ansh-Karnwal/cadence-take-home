@@ -114,7 +114,7 @@ def test_case_00000_plan_text_is_unplaced() -> None:
     assert judge_plan_clear(text, "apixaban") is TextJudgment.UNPLACED
 
 
-# --- Verifier probes (checkpoint 1), verbatim ----------------------------------
+# --- Verifier probe strings, verbatim -------------------------------------------
 # Every one of these was cleared or accepted by the milestone 2 keyword rules.
 # None may be rule-POSITIVE. UNPLACED plans reach the resolver; offline they
 # resolve not-clear.
@@ -196,8 +196,8 @@ def test_consent_is_judged_per_clause(text: str, expected: TextJudgment) -> None
 
 
 def test_signature_alone_is_not_positive() -> None:
-    # Checkpoint 1: "awaiting" and "signature" are in different clauses, so the
-    # first text is no longer NEGATIVE. Neither text is POSITIVE.
+    # "awaiting" and "signature" are in different clauses, so the clause rule
+    # does not make the first text NEGATIVE. Neither text is POSITIVE.
     assert judge_consent_signed("Consent form awaiting review; signature line present.") is (
         TextJudgment.UNPLACED
     )
@@ -223,7 +223,7 @@ def test_vague_plan_with_anchor_is_negative() -> None:
 
 def test_perioperative_management_not_yet_is_negative() -> None:
     # Cases 6, 21, 26: "not yet" sits beside "perioperative management", which
-    # are scope words since the checkpoint 1 carry-over.
+    # are plan scope words.
     text = (
         "Anticoagulant noted in medication list; "
         "perioperative management details not yet documented."
@@ -251,8 +251,8 @@ def test_negative_counts_with_drug_name_as_anchor() -> None:
 @pytest.mark.parametrize(
     "text",
     [
-        # Checkpoint 1: there is no positive keyword set. Even a complete plan
-        # is UNPLACED; only a resolver can call it clear.
+        # There is no positive keyword set for plans. Even a complete plan is
+        # UNPLACED; only a resolver can call it clear.
         "Hold apixaban 48 hours before surgery; resume 24 hours after if hemostasis secured.",
         "Hold apixaban 48 hours before surgery.",
         "Resume apixaban the day after surgery.",
@@ -277,7 +277,7 @@ def test_offline_resolver_defaults() -> None:
     assert resolver.resolve_plan_clear("anything", "apixaban") is False
 
 
-# --- Titles widened at checkpoint 1 -------------------------------------------
+# --- Widened title patterns ----------------------------------------------------
 
 
 @pytest.mark.parametrize(

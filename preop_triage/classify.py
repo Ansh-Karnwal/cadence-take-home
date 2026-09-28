@@ -105,8 +105,8 @@ _HP_CORES = (
 # Optional word before the core. First cases: admission (case_00011), clinic
 # (case_00022), consult (case_00014), initial (case_00019), outpatient
 # (case_00021), hospitalist (case_00037), surgical (case_00020), pre-anesthesia
-# (case_00010), preoperative (case_00019). "interval" is not in the sample;
-# added at checkpoint 1.
+# (case_00010), preoperative (case_00019). "interval" is not in the sample; it
+# is a common explicit variant ("Interval H&P").
 _HP_QUALIFIERS = (
     "admission",
     "clinic",
@@ -121,8 +121,8 @@ _HP_QUALIFIERS = (
 )
 # Optional words after the core, repeatable ("History & Physical Exam (H&P)").
 # First cases: (h&p) (case_00005), exam (case_00002), examination (case_00002),
-# note (case_00001), update (case_00023). "addendum" is not in the sample;
-# added at checkpoint 1.
+# note (case_00001), update (case_00023). "addendum" is not in the sample; it
+# is a common explicit variant ("H&P Addendum").
 _HP_FOLLOWERS = ("(h&p)", "exam", "examination", "note", "update", "addendum")
 
 
@@ -140,12 +140,12 @@ _HP_RE = re.compile(
 # "Consent Counseling Note" (case_00044 flags one, case_00012 accepts one) and
 # "Pre-op Consent Discussion" (case_00003 accepts one).
 _CONSENT_RE = re.compile(r"\bconsent\b")
-# A title naming surgery is a surgical consent even if it also names another
-# kind: "Surgical and Anesthesia Consent" is a surgical consent.
-_SURGICAL_RE = re.compile(r"\b(?:surgical|surgery)\b")
 # ...unless it names another kind of consent, or a consent that no longer
-# stands; then it is KNOWN_OTHER (checkpoint 1, no sample case). Assumption:
-# a consent that names no other kind is the surgical one.
+# stands; then it is KNOWN_OTHER (no sample case has one). Assumption: a
+# consent that names no other kind is the surgical one. The exclusion does not
+# apply when the title also names surgery: "Surgical and Anesthesia Consent" is
+# a surgical consent.
+_SURGICAL_RE = re.compile(r"\b(?:surgical|surgery)\b")
 CONSENT_TITLE_EXCLUSIONS = (
     "anesthesia",
     "anaesthesia",
