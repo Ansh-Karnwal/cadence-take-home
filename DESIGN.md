@@ -3,8 +3,9 @@
 Reference document for the hybrid rules-plus-LLM implementation of
 `triage_submission`. The Cadence Surgical Center Pre-Operative Scheduling
 Policy in the appendix of the take-home PDF is the only source of truth for
-rules. `core.py`'s `BASELINE_SYSTEM_PROMPT` is a paraphrase of it; where they
-differ, the PDF wins. Every data claim below was checked against
+rules. The starter's `BASELINE_SYSTEM_PROMPT` in `core.py` paraphrased it and
+was removed in milestone 4 once nothing referenced it; where they differed,
+the PDF won. Every data claim below was checked against
 `data/patients_sample_50.jsonl` and the scoring logic in `run_evals.py`.
 
 ## 1. Purpose and scope

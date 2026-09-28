@@ -1,59 +1,17 @@
-"""Shared policy, schema, and prompt helpers for the pre-op triage scripts."""
+"""Shared schemas and the triage_submission entry point for the pre-op triage scripts.
+
+The policy lives in the take-home PDF's appendix and in DESIGN.md; the rules
+engine is in preop_triage.
+"""
 
 from __future__ import annotations
 
-import json
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import AliasChoices, BaseModel, Field
 
 if TYPE_CHECKING:
     from preop_triage.settings import Settings
-
-# -------------------------
-# Policy + system prompt
-# -------------------------
-
-BASELINE_SYSTEM_PROMPT = """
-You are a clinical operations assistant for pre-op scheduling triage.
-Use only the policy below. Do not use outside medical knowledge.
-
-Cadence Surgical Center Pre-Operative Scheduling Policy (effective Jan 1, 2026)
-
-Output exactly one status:
-- READY
-- NEEDS_FOLLOW_UP
-- NOT_CLEARED
-
-Rule 1: Required documentation
-- History and Physical (H&P) must exist and be completed within 30 days of procedure date.
-- Signed Surgical Consent must exist.
-If documentation is missing/outdated -> NEEDS_FOLLOW_UP.
-
-Rule 2: Required testing by procedure risk
-- LOW or MODERATE risk: CBC within 30 days of procedure date.
-- HIGH risk: CBC within 14 days and CMP within 14 days.
-Use only the most recent result for each required test.
-If a required test is missing or outside window -> NEEDS_FOLLOW_UP.
-
-Rule 3: Anticoagulation management
-If the patient is currently taking an anticoagulant, a perioperative anticoagulation plan must be documented and clear.
-If no clear plan is documented -> NEEDS_FOLLOW_UP.
-
-Rule 4: Acute safety exclusions
-If any of the following are present at review time -> NOT_CLEARED:
-- Systolic BP >= 180 mmHg
-- Diastolic BP >= 110 mmHg
-- Temperature > 100.4 F
-Use the most recent relevant vital.
-
-Final determination
-- READY only if all required criteria are satisfied and no exclusions are present.
-- If a required field needed to evaluate a rule is missing/unknown -> NEEDS_FOLLOW_UP.
-
-Output requirements
-- Return exactly one JSON object.
-""".strip()
 
 Decision = Literal["READY", "NEEDS_FOLLOW_UP", "NOT_CLEARED"]
 ProcedureRisk = Literal["LOW", "MODERATE", "HIGH"]
@@ -183,30 +141,6 @@ class PreparedPatientCase(BaseModel):
     case_id: str
     submission: PatientSubmission
     expected_output: TriageOutput
-
-
-def triage_output_json_schema() -> dict[str, object]:
-    """Return the JSON schema used for structured model outputs."""
-
-    schema = TriageOutput.model_json_schema()
-    return schema
-
-
-# -------------------------
-# Prompt helpers
-# -------------------------
-
-
-def build_user_prompt(submission: dict[str, object]) -> str:
-    """Format a single submission package as user input."""
-
-    sections = [
-        "Evaluate this patient package for pre-op scheduling readiness using the provided policy.",
-        "Return your response as JSON.",
-        "Submission JSON:",
-        json.dumps(submission, sort_keys=True),
-    ]
-    return "\n".join(sections)
 
 
 def triage_submission(

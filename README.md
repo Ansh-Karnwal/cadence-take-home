@@ -119,7 +119,7 @@ Self-agreement is the share of items whose label was identical on every run.
 Rules agreement is the share of rule-placed items whose most common model label
 equals the rule label.
 
-The stability script asks each model about every distinct title, consent text, and plan-and-drug pair in the dataset, with the cache off. Both models disagree with the rules on the same two titles, "Cardiology Progress Note - Anticoag" and "Consent Counseling Note", and the oracle sides with the rules on both: case_00021 cites the cardiology note as its plan document, and cases 12 and 44 judge the counseling note as the consent. gpt-6-luna also split on "H&P Update" in case_00049, where the oracle raises no H&P issue even though the older H&P there is out of window, so it too counts "H&P Update" as the H&P. The rules place all three titles, so in default mode the model never sees them. gpt-6-luna rejected `temperature`, so the resolver retried that first call once without it and stopped sending it, which is the one extra API call in its row.
+The stability script asks each model about every distinct title, consent text, and plan-and-drug pair in the dataset, with the cache off. Both models disagree with the rules on the same two titles, "Cardiology Progress Note - Anticoag" and "Consent Counseling Note", and the oracle sides with the rules on both: case_00021 cites the cardiology note as its plan document, and cases 12 and 44 judge the counseling note as the consent. gpt-6-luna also split on "H&P Update" in case_00049. There the oracle raises no H&P issue even though the older H&P is out of window, which is consistent with treating "H&P Update" as the H&P; that case has no procedure risk, so the evidence is indirect. The rules place all three titles, so in default mode the model never sees them. gpt-6-luna rejected `temperature`, so the resolver retried that first call once without it and stopped sending it, which is the one extra API call in its row.
 
 `stability-gpt-4.1-mini`:
 
@@ -164,7 +164,7 @@ On an API error the resolver retries twice with a short backoff, then uses the o
 
 ## Assumptions and limitations
 
-- **Policy source.** The policy appendix of the take-home PDF is the only source of truth. [DESIGN.md](DESIGN.md) records how each rule was read.
+- **Policy source.** The policy appendix of the take-home PDF is the only source of truth, and [DESIGN.md](DESIGN.md) records how each rule was read. The starter's prompt copy of the policy in `core.py` was removed with the other unused baseline helpers, so the policy now lives only in the PDF and `DESIGN.md`.
 - **Anticoagulant list.** The policy does not define the class, so the list is ours: apixaban, rivaroxaban, edoxaban, dabigatran, warfarin, enoxaparin, dalteparin, fondaparinux, heparin. Names are matched by word inside the medication name.
 - **Inclusive windows.** "Within N days" includes a gap of exactly N days. An H&P or lab dated after the procedure is outside the window.
 - **Local calendar dates.** Day counts use each item's own calendar date, dropping any UTC offset, because the procedure date is a local date. Ordering uses the full timestamp.
