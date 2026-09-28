@@ -18,18 +18,18 @@ A fourth planner session drafted every prompt the other three received and triag
 
 | # | Session | Prompt | Commits |
 |---|---|---|---|
-| 1 | Designer | Write `DESIGN.md` from the planner's decisions; verify every oracle claim against the 50 cases | `59ec619` |
+| 1 | Designer | Write `DESIGN.md` from the planner's decisions; verify every oracle claim against the 50 cases | `48bde72` |
 | 2 | Designer | Record the resolutions to its open questions | (same file, before commit) |
-| 3 | Builder | Milestone 1: capture the naive baseline on two models, scaffold the package, offline scorer, contract tests | `452aba6`, `7554253` |
-| 4 | Builder | Milestone 2: rules engine, golden test over all 50 cases, synthetic edge cases | `84d05b9`, `1cdbe1a` |
+| 3 | Builder | Milestone 1: capture the naive baseline on two models, scaffold the package, offline scorer, contract tests | `bbe365f`, `e5fde7d` |
+| 4 | Builder | Milestone 2: rules engine, golden test over all 50 cases, synthetic edge cases | `844665b`, `69d1e4c` |
 | 5 | Validator | Checkpoint 1: review the rules against the policy, probe for wrong READYs | none |
-| 6 | Builder | Fix round 1: the accepted checkpoint 1 findings, with D4 rewritten | `a8dd1cf`, `2dd43b1` |
-| 7 | Builder | Milestone 3: LLM fallback resolver, cache, flags, stability script | `c41f1df`, `0eb76f7` |
-| 8 | Builder | Milestone 4: committed runs on both models, README, cleanup | `ecf2a25` to `00cddbe` |
+| 6 | Builder | Fix round 1: the accepted checkpoint 1 findings, with D4 rewritten | `fe1e6c3`, `3fa02fa` |
+| 7 | Builder | Milestone 3: LLM fallback resolver, cache, flags, stability script | `3f4dbd1`, `b423d4b` |
+| 8 | Builder | Milestone 4: committed runs on both models, README, cleanup | `4dd48f9` to `26b091d` |
 | 9 | Validator | Checkpoint 2: pre-submission review, every README number traced to a report | none |
-| 10 | Builder | Fix round 2: model-confirmed consents, brand-name anticoagulants, unparseable dates, regenerate runs | `ab7bbb5` to `35e141c` |
-| 11 | Builder | Generalization probes on the reviewers' strings, exposure statement | `009da1a` to `8bc286e` |
-| 12 | Builder | Model-assisted anticoagulant recognition, regenerate runs | `2ec3f22` to `d54caac` |
+| 10 | Builder | Fix round 2: model-confirmed consents, brand-name anticoagulants, unparseable dates, regenerate runs | `a585eeb` to `1e5062c` |
+| 11 | Builder | Generalization probes on the reviewers' strings, exposure statement | `e7a92a6` to `df1717e` |
+| 12 | Builder | Model-assisted anticoagulant recognition, regenerate runs | `66ad597` to `6a134fc` |
 
 Between prompts 5 and 6, and again between 9 and 10, the planner triaged each validator finding with the owner; accepted findings became decisions in the next builder prompt, and rejected ones were recorded with reasons in `DESIGN.md` section 8.
 
@@ -83,7 +83,7 @@ make -f Makefile.local mutation
 python3 scripts/summarize_results.py
 ```
 
-The starter's naive single-call implementation is at commit `62c2413`. The `naive` rows below were measured from it before any code changed.
+The starter's naive single-call implementation is at commit `b8cff31`. The `naive` rows below were measured from it before any code changed.
 
 ## Architecture
 
@@ -195,7 +195,7 @@ Both models disagree with the rules on the same two titles. On "Consent Counseli
 - title "Consent Counseling Note": rules say CONSENT, model says OTHER x5 (cases: case_00004, case_00012, case_00020, case_00028, case_00036, case_00044)
 - title "Perioperative Medication Review": rules say ANTICOAG_PLAN, model says ANTICOAG_PLAN x1, OTHER x4 (cases: case_00026, case_00038)
 
-In this regeneration both models gave the same label on every run for every item default mode sends, so either `MODEL` gives a reproducible default-mode run on this sample. Consent confirmation is still the item most exposed to run-to-run variation: the previous regeneration, at commit `ec7e2d0`, saw gpt-4.1-mini, the harness default, call the consent "Signed consent scanned and verified before scheduling." unsigned on one run, and a harness run that drew that answer would flag every case carrying the text, including case_00012, one of the three READY cases. gpt-6-luna split 3 to 2 on the title "H&P Update", which the rules place, so default mode never asks the model about it. gpt-6-luna split 4 to 1 on the title "Perioperative Medication Review", which the rules place, so default mode never asks the model about it.
+In this regeneration both models gave the same label on every run for every item default mode sends, so either `MODEL` gives a reproducible default-mode run on this sample. Consent confirmation is still the item most exposed to run-to-run variation: the previous regeneration, at commit `94b916d`, saw gpt-4.1-mini, the harness default, call the consent "Signed consent scanned and verified before scheduling." unsigned on one run, and a harness run that drew that answer would flag every case carrying the text, including case_00012, one of the three READY cases. gpt-6-luna split 3 to 2 on the title "H&P Update", which the rules place, so default mode never asks the model about it. gpt-6-luna split 4 to 1 on the title "Perioperative Medication Review", which the rules place, so default mode never asks the model about it.
 
 `stability-gpt-4.1-mini`:
 

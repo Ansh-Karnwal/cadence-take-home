@@ -46,8 +46,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 DEFAULT_MODEL = "gpt-4.1-mini"  # mirrors the Makefile's MODEL default
-FIRST_REVIEW_PREFIX = "1cdbe1a"
-SECOND_REVIEW_PREFIX = "00cddbe"
+FIRST_REVIEW_PREFIX = "69d1e4c"
+SECOND_REVIEW_PREFIX = "26b091d"
 
 # (review, kind, text, drug or None, correct label, pre-fix commit)
 # Correct labels: consent/plan "false" (not signed / not clear); titles a DocKind
