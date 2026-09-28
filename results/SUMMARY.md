@@ -72,3 +72,18 @@ unplaced plans); the column counts how many were stable on every run.
 - title "Cardiology Progress Note - Anticoag": rules say ANTICOAG_PLAN, model says OTHER x5 (cases: case_00021)
 - title "Consent Counseling Note": rules say CONSENT, model says OTHER x5 (cases: case_00004, case_00012, case_00020, case_00028, case_00036, case_00044)
 - title "H&P Update": rules say H_AND_P, model says H_AND_P x2, OTHER x3 (cases: case_00049)
+
+
+## Generalization probes (reviewer strings)
+
+| Run | Model | Pre-fix rules correct | HEAD rules correct | Model correct (majority) | Model strings with split answers | Failures |
+|---|---|---|---|---|---|---|
+| probes-gpt-4.1-mini | gpt-4.1-mini | 0 of 21 | 21 of 21 | 19 of 19 | 1 | 0 |
+| probes-gpt-6-luna | gpt-6-luna | 0 of 21 | 21 of 21 | 18 of 19 | 0 | 0 |
+
+Pre-fix rule errors: 16 would wrongly clear a patient and 5 would over-flag. Medication names have no model question and are excluded from the model's total.
+
+Model misses and split answers:
+
+- `probes-gpt-4.1-mini` consent "Consent signed by patient. Patient later withdrew consent.": correct false, model false x3, true x2 (correct majority).
+- `probes-gpt-6-luna` consent "Patient signed consent for left knee arthroscopy; new consent required for planned procedure.": correct false, model true x5 (wrong majority).

@@ -1,0 +1,729 @@
+{
+  "model": "gpt-6-luna",
+  "runs": 5,
+  "temperature_accepted": false,
+  "api_calls": 96,
+  "failures": 0,
+  "totals": {
+    "strings": 21,
+    "prefix_rules_correct": 0,
+    "head_rules_correct": 21,
+    "model_strings": 19,
+    "model_correct": 18,
+    "prefix_wrongly_clears": 16,
+    "prefix_over_flags": 5
+  },
+  "probes": [
+    {
+      "review": "first",
+      "kind": "plan",
+      "text": "Home meds reviewed incl. apixaban. Hold metformin morning of surgery; resume diet after.",
+      "drug": "apixaban",
+      "correct": "false",
+      "prefix_commit": "b3940c6",
+      "prefix_rules": {
+        "raw": "POSITIVE",
+        "effective": "true",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "UNPLACED",
+        "effective": "false",
+        "deferred": true
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "false",
+          "false",
+          "false",
+          "false",
+          "false"
+        ],
+        "split": {
+          "false": 5
+        },
+        "majority": "false"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "first",
+      "kind": "plan",
+      "text": "Cardiology to advise whether to hold or resume apixaban.",
+      "drug": "apixaban",
+      "correct": "false",
+      "prefix_commit": "b3940c6",
+      "prefix_rules": {
+        "raw": "POSITIVE",
+        "effective": "true",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "NEGATIVE",
+        "effective": "false",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "false",
+          "false",
+          "false",
+          "false",
+          "false"
+        ],
+        "split": {
+          "false": 5
+        },
+        "majority": "false"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "first",
+      "kind": "plan",
+      "text": "Unclear whether to hold apixaban; will resume later.",
+      "drug": "apixaban",
+      "correct": "false",
+      "prefix_commit": "b3940c6",
+      "prefix_rules": {
+        "raw": "POSITIVE",
+        "effective": "true",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "NEGATIVE",
+        "effective": "false",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "false",
+          "false",
+          "false",
+          "false",
+          "false"
+        ],
+        "split": {
+          "false": 5
+        },
+        "majority": "false"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "first",
+      "kind": "plan",
+      "text": "Patient on apixaban. Hold and resume per cardiology.",
+      "drug": "apixaban",
+      "correct": "false",
+      "prefix_commit": "b3940c6",
+      "prefix_rules": {
+        "raw": "POSITIVE",
+        "effective": "true",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "UNPLACED",
+        "effective": "false",
+        "deferred": true
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "false",
+          "false",
+          "false",
+          "false",
+          "false"
+        ],
+        "split": {
+          "false": 5
+        },
+        "majority": "false"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "first",
+      "kind": "consent",
+      "text": "Consent not signed.",
+      "drug": null,
+      "correct": "false",
+      "prefix_commit": "b3940c6",
+      "prefix_rules": {
+        "raw": "POSITIVE",
+        "effective": "true",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "NEGATIVE",
+        "effective": "false",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "false",
+          "false",
+          "false",
+          "false",
+          "false"
+        ],
+        "split": {
+          "false": 5
+        },
+        "majority": "false"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "first",
+      "kind": "consent",
+      "text": "Patient has not signed consent.",
+      "drug": null,
+      "correct": "false",
+      "prefix_commit": "b3940c6",
+      "prefix_rules": {
+        "raw": "POSITIVE",
+        "effective": "true",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "NEGATIVE",
+        "effective": "false",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "false",
+          "false",
+          "false",
+          "false",
+          "false"
+        ],
+        "split": {
+          "false": 5
+        },
+        "majority": "false"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "first",
+      "kind": "consent",
+      "text": "Consent to be signed on day of surgery.",
+      "drug": null,
+      "correct": "false",
+      "prefix_commit": "b3940c6",
+      "prefix_rules": {
+        "raw": "POSITIVE",
+        "effective": "true",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "NEGATIVE",
+        "effective": "false",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "false",
+          "false",
+          "false",
+          "false",
+          "false"
+        ],
+        "split": {
+          "false": 5
+        },
+        "majority": "false"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "first",
+      "kind": "consent",
+      "text": "Consent form signed by witness; patient signature missing.",
+      "drug": null,
+      "correct": "false",
+      "prefix_commit": "b3940c6",
+      "prefix_rules": {
+        "raw": "POSITIVE",
+        "effective": "true",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "NEGATIVE",
+        "effective": "false",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "false",
+          "false",
+          "false",
+          "false",
+          "false"
+        ],
+        "split": {
+          "false": 5
+        },
+        "majority": "false"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "first",
+      "kind": "title",
+      "text": "Anticoagulation Plan",
+      "drug": null,
+      "correct": "ANTICOAG_PLAN",
+      "prefix_commit": "b3940c6",
+      "prefix_rules": {
+        "raw": "UNKNOWN",
+        "effective": "OTHER",
+        "deferred": true
+      },
+      "prefix_correct": false,
+      "prefix_direction": "over-flags",
+      "head_rules": {
+        "raw": "REQUIRED:ANTICOAG_PLAN",
+        "effective": "ANTICOAG_PLAN",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "ANTICOAG_PLAN",
+          "ANTICOAG_PLAN",
+          "ANTICOAG_PLAN",
+          "ANTICOAG_PLAN",
+          "ANTICOAG_PLAN"
+        ],
+        "split": {
+          "ANTICOAG_PLAN": 5
+        },
+        "majority": "ANTICOAG_PLAN"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "first",
+      "kind": "title",
+      "text": "H & P",
+      "drug": null,
+      "correct": "H_AND_P",
+      "prefix_commit": "b3940c6",
+      "prefix_rules": {
+        "raw": "UNKNOWN",
+        "effective": "OTHER",
+        "deferred": true
+      },
+      "prefix_correct": false,
+      "prefix_direction": "over-flags",
+      "head_rules": {
+        "raw": "REQUIRED:H_AND_P",
+        "effective": "H_AND_P",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "H_AND_P",
+          "H_AND_P",
+          "H_AND_P",
+          "H_AND_P",
+          "H_AND_P"
+        ],
+        "split": {
+          "H_AND_P": 5
+        },
+        "majority": "H_AND_P"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "first",
+      "kind": "title",
+      "text": "Interval H&P",
+      "drug": null,
+      "correct": "H_AND_P",
+      "prefix_commit": "b3940c6",
+      "prefix_rules": {
+        "raw": "UNKNOWN",
+        "effective": "OTHER",
+        "deferred": true
+      },
+      "prefix_correct": false,
+      "prefix_direction": "over-flags",
+      "head_rules": {
+        "raw": "REQUIRED:H_AND_P",
+        "effective": "H_AND_P",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "H_AND_P",
+          "H_AND_P",
+          "H_AND_P",
+          "H_AND_P",
+          "H_AND_P"
+        ],
+        "split": {
+          "H_AND_P": 5
+        },
+        "majority": "H_AND_P"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "first",
+      "kind": "title",
+      "text": "H&P Addendum",
+      "drug": null,
+      "correct": "H_AND_P",
+      "prefix_commit": "b3940c6",
+      "prefix_rules": {
+        "raw": "UNKNOWN",
+        "effective": "OTHER",
+        "deferred": true
+      },
+      "prefix_correct": false,
+      "prefix_direction": "over-flags",
+      "head_rules": {
+        "raw": "REQUIRED:H_AND_P",
+        "effective": "H_AND_P",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "H_AND_P",
+          "H_AND_P",
+          "H_AND_P",
+          "H_AND_P",
+          "H_AND_P"
+        ],
+        "split": {
+          "H_AND_P": 5
+        },
+        "majority": "H_AND_P"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "first",
+      "kind": "title",
+      "text": "Consent Withdrawn",
+      "drug": null,
+      "correct": "OTHER",
+      "prefix_commit": "b3940c6",
+      "prefix_rules": {
+        "raw": "REQUIRED:CONSENT",
+        "effective": "CONSENT",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "KNOWN_OTHER",
+        "effective": "OTHER",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "OTHER",
+          "OTHER",
+          "OTHER",
+          "OTHER",
+          "OTHER"
+        ],
+        "split": {
+          "OTHER": 5
+        },
+        "majority": "OTHER"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "second",
+      "kind": "consent",
+      "text": "Consent form signed by surgeon; patient signature outstanding.",
+      "drug": null,
+      "correct": "false",
+      "prefix_commit": "432bea9",
+      "prefix_rules": {
+        "raw": "POSITIVE",
+        "effective": "true",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "NEGATIVE",
+        "effective": "false",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "false",
+          "false",
+          "false",
+          "false",
+          "false"
+        ],
+        "split": {
+          "false": 5
+        },
+        "majority": "false"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "second",
+      "kind": "consent",
+      "text": "Consent signed by patient. Patient later withdrew consent.",
+      "drug": null,
+      "correct": "false",
+      "prefix_commit": "432bea9",
+      "prefix_rules": {
+        "raw": "POSITIVE",
+        "effective": "true",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "NEGATIVE",
+        "effective": "false",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "false",
+          "false",
+          "false",
+          "false",
+          "false"
+        ],
+        "split": {
+          "false": 5
+        },
+        "majority": "false"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "second",
+      "kind": "consent",
+      "text": "Signed consent rescinded by patient on 2026-02-22.",
+      "drug": null,
+      "correct": "false",
+      "prefix_commit": "432bea9",
+      "prefix_rules": {
+        "raw": "POSITIVE",
+        "effective": "true",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "NEGATIVE",
+        "effective": "false",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "false",
+          "false",
+          "false",
+          "false",
+          "false"
+        ],
+        "split": {
+          "false": 5
+        },
+        "majority": "false"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "second",
+      "kind": "consent",
+      "text": "Patient consent form. Signed: ______________ Date: ________",
+      "drug": null,
+      "correct": "false",
+      "prefix_commit": "432bea9",
+      "prefix_rules": {
+        "raw": "POSITIVE",
+        "effective": "true",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "NEGATIVE",
+        "effective": "false",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "false",
+          "false",
+          "false",
+          "false",
+          "false"
+        ],
+        "split": {
+          "false": 5
+        },
+        "majority": "false"
+      },
+      "model_correct": true
+    },
+    {
+      "review": "second",
+      "kind": "consent",
+      "text": "Patient signed consent for left knee arthroscopy; new consent required for planned procedure.",
+      "drug": null,
+      "correct": "false",
+      "prefix_commit": "432bea9",
+      "prefix_rules": {
+        "raw": "POSITIVE",
+        "effective": "true",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "NEGATIVE",
+        "effective": "false",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "true",
+          "true",
+          "true",
+          "true",
+          "true"
+        ],
+        "split": {
+          "true": 5
+        },
+        "majority": "true"
+      },
+      "model_correct": false
+    },
+    {
+      "review": "second",
+      "kind": "medication",
+      "text": "Eliquis 5 mg BID",
+      "drug": null,
+      "correct": "recognized",
+      "prefix_commit": "432bea9",
+      "prefix_rules": {
+        "raw": "none",
+        "effective": "not recognized",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "apixaban",
+        "effective": "recognized",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": null,
+      "model_correct": null
+    },
+    {
+      "review": "second",
+      "kind": "medication",
+      "text": "Xarelto 20 mg daily",
+      "drug": null,
+      "correct": "recognized",
+      "prefix_commit": "432bea9",
+      "prefix_rules": {
+        "raw": "none",
+        "effective": "not recognized",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "wrongly clears",
+      "head_rules": {
+        "raw": "rivaroxaban",
+        "effective": "recognized",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": null,
+      "model_correct": null
+    },
+    {
+      "review": "second",
+      "kind": "title",
+      "text": "Surgical and Anesthesia Consent",
+      "drug": null,
+      "correct": "CONSENT",
+      "prefix_commit": "432bea9",
+      "prefix_rules": {
+        "raw": "KNOWN_OTHER",
+        "effective": "OTHER",
+        "deferred": false
+      },
+      "prefix_correct": false,
+      "prefix_direction": "over-flags",
+      "head_rules": {
+        "raw": "REQUIRED:CONSENT",
+        "effective": "CONSENT",
+        "deferred": false
+      },
+      "head_correct": true,
+      "model": {
+        "labels": [
+          "CONSENT",
+          "CONSENT",
+          "CONSENT",
+          "CONSENT",
+          "CONSENT"
+        ],
+        "split": {
+          "CONSENT": 5
+        },
+        "majority": "CONSENT"
+      },
+      "model_correct": true
+    }
+  ]
+}

@@ -7,6 +7,7 @@ Every number comes from a committed report file:
   written by ``make -f Makefile.local final`` also hold run_info.json, whose
   PREOP_OFFLINE value gives the mode ("offline" or "default").
 - Stability folders hold stability.json from scripts/llm_stability.py.
+- Probe folders hold probes.json from scripts/probe_generalization.py.
 
 Other folders (for example results/mutation) are ignored. Run:
 
@@ -190,6 +191,73 @@ def _cross_model_lines(results: Path) -> list[str]:
     return lines
 
 
+def _probe_lines(results: Path) -> list[str]:
+    """Totals table for the generalization probes, plus every model miss or split."""
+
+    reports = {
+        folder.name: _load(folder / "probes.json")
+        for folder in sorted(results.iterdir())
+        if folder.is_dir() and (folder / "probes.json").exists()
+    }
+    if not reports:
+        return []
+    header = [
+        "Run",
+        "Model",
+        "Pre-fix rules correct",
+        "HEAD rules correct",
+        "Model correct (majority)",
+        "Model strings with split answers",
+        "Failures",
+    ]
+    lines = [
+        "",
+        "## Generalization probes (reviewer strings)",
+        "",
+        "| " + " | ".join(header) + " |",
+        "|" + "---|" * len(header),
+    ]
+    notes = []
+    for name, r in reports.items():
+        t = r["totals"]
+        split = [p for p in r["probes"] if p["model"] and len(p["model"]["split"]) > 1]
+        lines.append(
+            "| "
+            + " | ".join(
+                str(c)
+                for c in [
+                    name,
+                    r["model"],
+                    f"{t['prefix_rules_correct']} of {t['strings']}",
+                    f"{t['head_rules_correct']} of {t['strings']}",
+                    f"{t['model_correct']} of {t['model_strings']}",
+                    len(split),
+                    r["failures"],
+                ]
+            )
+            + " |"
+        )
+        for p in r["probes"]:
+            if p["model"] and (not p["model_correct"] or len(p["model"]["split"]) > 1):
+                labels = ", ".join(f"{k} x{v}" for k, v in sorted(p["model"]["split"].items()))
+                verdict = "correct majority" if p["model_correct"] else "wrong majority"
+                notes.append(
+                    f"- `{name}` {p['kind']} \"{p['text']}\": correct {p['correct']}, "
+                    f"model {labels} ({verdict})."
+                )
+    first = next(iter(reports.values()))["totals"]
+    lines += [
+        "",
+        f"Pre-fix rule errors: {first['prefix_wrongly_clears']} would wrongly clear a patient and "
+        f"{first['prefix_over_flags']} would over-flag. Medication names have no model question and "
+        "are excluded from the model's total.",
+        "",
+    ]
+    if notes:
+        lines += ["Model misses and split answers:", "", *notes, ""]
+    return lines
+
+
 def build_summary(results: Path = RESULTS) -> str:
     run_header = (
         ["Run", "Mode", "Model", "Primary score (%)"]
@@ -251,6 +319,7 @@ def build_summary(results: Path = RESULTS) -> str:
             "",
             *lists,
         ]
+    lines += _probe_lines(results)
     return "\n".join(lines).rstrip("\n") + "\n"
 
 
