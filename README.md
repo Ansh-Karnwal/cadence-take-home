@@ -14,6 +14,26 @@ The AI sessions that produced this repo are exported in full at the repo root:
 
 A fourth planner session drafted every prompt the other three received and triaged the validator's findings; it has no separate export, and its prompts appear verbatim as the user turns in the three files. The exports come from Claude Code's `/export`, which records every prompt, reply, and tool command but not tool outputs, so those show as "(No output)"; the outputs live in this repo and under `results/`.
 
+**Prompt order.** Each prompt went to one session and ended in the commits listed. Every builder prompt had the same six parts: where we are, decisions already made, task, constraints, acceptance criteria, report back. Every validator prompt had the rule: report, never fix.
+
+| # | Session | Prompt | Commits |
+|---|---|---|---|
+| 1 | Designer | Write `DESIGN.md` from the planner's decisions; verify every oracle claim against the 50 cases | `4bd438f` |
+| 2 | Designer | Record the resolutions to its open questions | (same file, before commit) |
+| 3 | Builder | Milestone 1: capture the naive baseline on two models, scaffold the package, offline scorer, contract tests | `0442db7`, `f78b223` |
+| 4 | Builder | Milestone 2: rules engine, golden test over all 50 cases, synthetic edge cases | `f89c8c5`, `b3940c6` |
+| 5 | Validator | Checkpoint 1: review the rules against the policy, probe for wrong READYs | none |
+| 6 | Builder | Fix round 1: the accepted checkpoint 1 findings, with D4 rewritten | `6f25e00`, `f26a193` |
+| 7 | Builder | Milestone 3: LLM fallback resolver, cache, flags, stability script | `73c833d`, `eca02a7` |
+| 8 | Builder | Milestone 4: committed runs on both models, README, cleanup | `bbc4743` to `432bea9` |
+| 9 | Validator | Checkpoint 2: pre-submission review, every README number traced to a report | none |
+| 10 | Builder | Fix round 2: model-confirmed consents, brand-name anticoagulants, unparseable dates, regenerate runs | `87b36a6` to `4ce25e1` |
+| 11 | Builder | Generalization probes on the reviewers' strings, exposure statement | `082dd9d` to `fe48faa` |
+| 12 | Builder | Model-assisted anticoagulant recognition, regenerate runs | `4062c49` to `cb77da9` |
+| 13 | Planner | Transcripts, session roles, policy provenance | `dcb2903` |
+
+Between prompts 5 and 6, and again between 9 and 10, the planner triaged each validator finding with the owner; accepted findings became decisions in the next builder prompt, and rejected ones were recorded with reasons in `DESIGN.md` section 8.
+
 ## How to run
 
 **Setup.** Install [uv](https://docs.astral.sh/uv/) and confirm it works. Everything else is resolved by `uv run`.
