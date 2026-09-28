@@ -23,14 +23,17 @@ from core import Document, LabResult, PatientSubmission, TriageIssue, TriageIssu
 
 from .classify import (
     DocKind,
+    MedicationOutcome,
     Resolver,
     TextJudgment,
     TitleOutcome,
-    anticoagulant_generic,
+    classify_medication,
     classify_title,
     drug_name_re,
     judge_consent_signed,
     judge_plan_clear,
+    medication_identity,
+    normalize_medication_name,
 )
 from .normalize import (
     canonical_lab_code,
@@ -59,6 +62,7 @@ TEMPERATURE_LIMIT_F = 100.4  # exclusion when temperature > 100.4
 # D6: quoted in details when the structured date is null; never compared.
 _TARGET_DATE_RE = re.compile(r"procedure date target:\s*\d{4}-\d{2}-\d{2}", re.IGNORECASE)
 _ANTICOAG_WORD_RE = re.compile(r"\banticoag", re.IGNORECASE)
+_BY_MODEL_NOTE = " (not on the recognized anticoagulant list; identified as an anticoagulant by the model)"
 
 
 def _issue(category: str, description: str, source: str, details: str) -> TriageIssue:
@@ -370,25 +374,69 @@ def plan_candidates(
 
 def anticoagulant_medications(
     submission: PatientSubmission,
-) -> list[tuple[int, str, str, bool | None]]:
-    """Return (medication index, generic drug, full name, active) for every
-    medication naming an anticoagulant by generic or brand name."""
+    resolver: Resolver | None = None,
+    *,
+    force_llm: bool = False,
+) -> list[tuple[int, str, str, bool | None, bool]]:
+    """Return (index, drug, full name, active, by_model) for every anticoagulant.
+
+    Medications with ``active: false`` are never classified or sent. For the
+    rest, a KNOWN_ANTICOAG name is final and a KNOWN_OTHER name is final. An
+    UNKNOWN name goes to ``resolver`` (offline behavior when ``resolver`` is
+    None): a "yes" adds it, with its first word as the drug identity; a "no"
+    changes nothing. The model can add an anticoagulant but never remove one.
+    Under ``force_llm`` (measurement only) every name goes to the resolver and
+    its answer replaces the lists'. Each normalized name is asked once per call.
+    """
+
+    asked: dict[str, bool] = {}
+
+    def ask(name: str) -> bool:
+        key = normalize_medication_name(name)
+        if key not in asked:
+            asked[key] = resolver.resolve_is_anticoagulant(name)  # type: ignore[union-attr]
+        return asked[key]
 
     found = []
     for i, med in enumerate(submission.medications):
-        drug = anticoagulant_generic(med.name)
-        if drug is not None:
-            found.append((i, drug, med.name or drug, med.active))
+        if med.active is False:
+            continue
+        name = med.name or ""
+        if not normalize_medication_name(name):
+            continue
+        result = classify_medication(name)
+        known = result.outcome is MedicationOutcome.KNOWN_ANTICOAG
+        if force_llm and resolver is not None:
+            if not ask(name):
+                continue
+            drug = result.generic if known else medication_identity(name)
+            found.append((i, drug, name, med.active, not known))
+        elif known:
+            found.append((i, result.generic, name, med.active, False))  # type: ignore[arg-type]
+        elif result.outcome is MedicationOutcome.UNKNOWN and resolver is not None:
+            if ask(name):
+                found.append((i, medication_identity(name), name, med.active, True))
     return found
 
 
-def active_anticoagulants(submission: PatientSubmission) -> list[tuple[int, str, str]]:
-    """Return (medication index, generic drug, full name) for active anticoagulants.
+def active_anticoagulants(
+    submission: PatientSubmission,
+    resolver: Resolver | None = None,
+    *,
+    force_llm: bool = False,
+) -> list[tuple[int, str, str]]:
+    """Return (medication index, drug, full name) for active anticoagulants.
 
     The one definition shared by Rule 3 and the stability script.
     """
 
-    return [(i, drug, name) for i, drug, name, active in anticoagulant_medications(submission) if active]
+    return [
+        (i, drug, name)
+        for i, drug, name, active, _by_model in anticoagulant_medications(
+            submission, resolver, force_llm=force_llm
+        )
+        if active
+    ]
 
 
 def check_anticoagulation(
@@ -412,19 +460,22 @@ def check_anticoagulation(
     non-empty candidate goes to the resolver, including rule-NEGATIVE ones.
     """
 
+    medications = anticoagulant_medications(submission, resolver, force_llm=force_llm)
     issues: list[TriageIssue] = [
         _issue(
             "MISSING_REQUIRED_DATA",
             "Unknown anticoagulant active status",
             f"medications[{i}]",
-            f"Medication {name} has active=null; cannot determine if currently taking",
+            f"Medication {name} has active=null; cannot determine if currently taking"
+            + (_BY_MODEL_NOTE if by_model else ""),
         )
-        for i, _drug, name, is_active in anticoagulant_medications(submission)
+        for i, _drug, name, is_active, by_model in medications
         if is_active is None
     ]
 
     documents = submission.documents
-    for med_index, drug, full_name in active_anticoagulants(submission):
+    active = [(i, d, n, by_model) for i, d, n, a, by_model in medications if a]
+    for med_index, drug, full_name, by_model in active:
         text_candidates, title_only = plan_candidates(submission, kinds, drug)
 
         clear = False
@@ -451,6 +502,7 @@ def check_anticoagulation(
         details = (
             f"Active anticoagulant medication present (medications[{med_index}]: "
             f"{full_name}) but no clear perioperative plan document found"
+            + (_BY_MODEL_NOTE if by_model else "")
         )
         if cited is None:
             source = "documents"

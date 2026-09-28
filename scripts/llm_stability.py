@@ -19,9 +19,14 @@ candidate documents for each active anticoagulant. The rules' own label is
 recorded where the rules place the item (REQUIRED or KNOWN_OTHER titles;
 POSITIVE or NEGATIVE texts); UNKNOWN titles and UNPLACED texts have none.
 
+Medication items are every distinct medication name (by normalized name) with
+``active`` true or null, the ones Rule 3 classifies. Their rule label is true
+for a known anticoagulant, false for a known non-anticoagulant, and none for
+an unknown name.
+
 Each item is also flagged ``default_route`` when default mode actually sends
 it to the model: UNKNOWN titles, keyword-POSITIVE consents (confirmation) and
-UNPLACED consents, and UNPLACED plans.
+UNPLACED consents, UNPLACED plans, and UNKNOWN medication names.
 
 Uses its own resolver with ``no_cache`` and a private cache, so the engine's
 shared cache is never touched.
@@ -42,12 +47,15 @@ sys.path.insert(0, str(ROOT))
 from core import PatientSubmission  # noqa: E402
 from preop_triage.classify import (  # noqa: E402
     DocKind,
+    MedicationOutcome,
     OfflineResolver,
     TextJudgment,
     TitleOutcome,
+    classify_medication,
     classify_title,
     judge_consent_signed,
     judge_plan_clear,
+    normalize_medication_name,
 )
 from preop_triage.llm import FallbackCache, LLMResolver  # noqa: E402
 from preop_triage.rules import (  # noqa: E402
@@ -88,6 +96,7 @@ def collect_items(path: Path) -> list[dict[str, Any]]:
     titles: dict[str, set[str]] = {}
     consents: dict[str, set[str]] = {}
     plans: dict[tuple[str, str], set[str]] = {}
+    medications: dict[str, tuple[str, set[str]]] = {}
     offline = OfflineResolver()
 
     with path.open(encoding="utf-8") as handle:
@@ -103,6 +112,10 @@ def collect_items(path: Path) -> list[dict[str, Any]]:
                     titles.setdefault(doc.type, set()).add(case_id)
                 if kind is DocKind.CONSENT and doc.text and doc.text.strip():
                     consents.setdefault(doc.text, set()).add(case_id)
+            for med in submission.medications:
+                key = normalize_medication_name(med.name)
+                if med.active is not False and key:
+                    medications.setdefault(key, (med.name or key, set()))[1].add(case_id)
             for _, drug, _ in active_anticoagulants(submission):
                 by_text, by_title = plan_candidates(submission, kinds, drug)
                 for i in by_text + by_title:
@@ -151,6 +164,20 @@ def collect_items(path: Path) -> list[dict[str, Any]]:
                 "cases": sorted(cases),
             }
         )
+    for _key, (name, cases) in sorted(medications.items()):
+        outcome = classify_medication(name).outcome
+        items.append(
+            {
+                "question": "anticoag",
+                "text": name,
+                "rule_label": {
+                    MedicationOutcome.KNOWN_ANTICOAG: "true",
+                    MedicationOutcome.KNOWN_OTHER: "false",
+                }.get(outcome),
+                "default_route": outcome is MedicationOutcome.UNKNOWN,
+                "cases": sorted(cases),
+            }
+        )
     return items
 
 
@@ -160,6 +187,8 @@ def ask(resolver: LLMResolver, item: dict[str, Any]) -> str:
         label: str = resolver.resolve_title(item["text"]).value
     elif item["question"] == "consent":
         label = str(resolver.resolve_consent_signed(item["text"])).lower()
+    elif item["question"] == "anticoag":
+        label = str(resolver.resolve_is_anticoagulant(item["text"])).lower()
     else:
         label = str(resolver.resolve_plan_clear(item["text"], item["drug"])).lower()
     return ERROR if resolver.failures > before else label

@@ -81,6 +81,11 @@ class Resolver(Protocol):
         managed before and after the procedure. ``drug`` is the lowercase generic name."""
         ...
 
+    def resolve_is_anticoagulant(self, name: str) -> bool:
+        """Return True when an UNKNOWN medication name, as listed in the chart, is an
+        anticoagulant. Only called for names on neither medication list."""
+        ...
+
 
 # ---------------------------------------------------------------------------
 # Title patterns (D3). Matched against the normalized core only.
@@ -242,6 +247,73 @@ def drug_name_re(generic: str) -> re.Pattern[str]:
 
 
 # ---------------------------------------------------------------------------
+# Medication classification (D2), the same three outcomes as titles.
+# ---------------------------------------------------------------------------
+
+
+class MedicationOutcome(str, Enum):
+    """Result of matching a medication name against the two explicit lists."""
+
+    KNOWN_ANTICOAG = "KNOWN_ANTICOAG"
+    KNOWN_OTHER = "KNOWN_OTHER"
+    UNKNOWN = "UNKNOWN"
+
+
+@dataclass(frozen=True)
+class MedicationClassification:
+    """A medication's outcome, and its generic name when it is a known anticoagulant."""
+
+    outcome: MedicationOutcome
+    generic: str | None = None
+
+
+# Names the sample shows are not anticoagulants: lisinopril (case_00000),
+# metformin (case_00006). Deliberately only names seen in the data; this is
+# not a pharmacology list.
+KNOWN_OTHER_MEDICATIONS = ("lisinopril", "metformin")
+_KNOWN_OTHER_MED_RE = re.compile(
+    rf"\b(?:{_alternation(KNOWN_OTHER_MEDICATIONS)})\b", re.IGNORECASE
+)
+_FIRST_WORD_RE = re.compile(r"[a-z][a-z-]*")
+
+
+def normalize_medication_name(name: str | None) -> str:
+    """Lowercase a medication name and collapse whitespace (the cache text)."""
+
+    if not isinstance(name, str):
+        return ""
+    return re.sub(r"\s+", " ", name).strip().lower()
+
+
+def classify_medication(name: str | None) -> MedicationClassification:
+    """Classify a medication name as KNOWN_ANTICOAG (with generic), KNOWN_OTHER, or UNKNOWN.
+
+    Matching is by word, case-insensitive. The anticoagulant list wins if a
+    name somehow matches both. An empty name is UNKNOWN; callers must not send
+    it to a resolver.
+    """
+
+    generic = anticoagulant_generic(name)
+    if generic is not None:
+        return MedicationClassification(MedicationOutcome.KNOWN_ANTICOAG, generic)
+    if name and _KNOWN_OTHER_MED_RE.search(name):
+        return MedicationClassification(MedicationOutcome.KNOWN_OTHER)
+    return MedicationClassification(MedicationOutcome.UNKNOWN)
+
+
+def medication_identity(name: str | None) -> str:
+    """Drug identity for an unlisted medication the model confirmed: the first
+    alphabetic word of its normalized name ("tinzaparin 4500 IU" -> "tinzaparin").
+
+    Used for plan matching and the plan question. Known cost: a multi-word name
+    such as "low molecular weight heparin" reduces to its first word.
+    """
+
+    match = _FIRST_WORD_RE.search(normalize_medication_name(name))
+    return match.group(0) if match else normalize_medication_name(name)
+
+
+# ---------------------------------------------------------------------------
 # Text judgments (D4). Case-insensitive, word-boundary matching, per clause.
 # Clauses are split on ".", ";", and ":". A negative clause always wins.
 # ---------------------------------------------------------------------------
@@ -384,8 +456,9 @@ def judge_plan_clear(text: str | None, drug: str) -> TextJudgment:
 class OfflineResolver:
     """Resolver used when the LLM is disabled: UNKNOWN is OTHER, UNPLACED is negative.
 
-    Consequences: offline mode never finds an anticoagulation plan clear, and it
-    trusts keyword-POSITIVE consents (it is never asked to confirm them).
+    Consequences: offline mode never finds an anticoagulation plan clear, it
+    trusts keyword-POSITIVE consents (it is never asked to confirm them), and it
+    treats an unlisted medication as not an anticoagulant.
     """
 
     def resolve_title(self, title: str) -> DocKind:
@@ -395,4 +468,7 @@ class OfflineResolver:
         return False
 
     def resolve_plan_clear(self, text: str, drug: str) -> bool:
+        return False
+
+    def resolve_is_anticoagulant(self, name: str) -> bool:
         return False

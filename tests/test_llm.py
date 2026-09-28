@@ -429,3 +429,49 @@ def test_outage_on_consent_confirmation_keeps_the_keyword_answer(fake_client) ->
     submission["documents"][1]["text"] = "Consent reviewed with patient."
     output = _run(submission)
     assert "Surgical consent not clearly signed" in {i.description for i in output.issues}
+
+
+
+# --- Medication question -------------------------------------------------------------
+
+
+def test_medication_prompt_wording_and_ending() -> None:
+    prompt = llm.MEDICATION_PROMPT
+    assert "anticoagulant used to prevent or treat blood clots" in prompt
+    assert "Antiplatelet drugs, blood pressure drugs, and everything else are false." in prompt
+    assert prompt.endswith("Answer from the name alone; do not infer.")
+
+
+def test_medication_question_uses_strict_text_schema_and_normalized_cache_key(fake_client) -> None:  # type: ignore[no-untyped-def]
+    resolver = _resolver()
+    assert resolver.resolve_is_anticoagulant("Clopidogrel 75 mg") is False
+    assert resolver.resolve_is_anticoagulant("  clopidogrel   75 MG ") is False
+    (call,) = fake_client.calls
+    assert call["input"] == "Clopidogrel 75 mg"
+    assert call["text"]["format"]["schema"] == llm.TEXT_SCHEMA
+    assert call["text"]["format"]["strict"] is True
+    assert cache_stats()["misses_by_question"] == {"anticoag": 1}
+
+
+def test_medication_outage_yields_no_issue_and_does_not_raise(fake_client, dataset) -> None:  # type: ignore[no-untyped-def]
+    submission = copy.deepcopy(dataset[12]["submission"])  # READY offline
+    submission["medications"].append({"name": "Tinzaparin 4500 IU SC daily", "active": True})
+    fake_client.answer = lambda q, i: True if q == "anticoag" else fake_client.default_answer(q, i)
+    fake_client.fail_next = 1000
+    output = _run(submission)
+    assert output.decision == "READY"
+    assert output.issues == []
+    assert "LLM fallback unavailable" in output.explanation
+
+
+def test_force_llm_sends_known_medications_including_lisinopril(fake_client, dataset) -> None:  # type: ignore[no-untyped-def]
+    _run(dataset[0]["submission"], NO_CACHE)
+    assert fake_client.calls_for("anticoag") == []
+    _run(dataset[0]["submission"], FORCE)
+    assert [c["input"] for c in fake_client.calls_for("anticoag")] == ["lisinopril", "apixaban"]
+
+
+def test_default_mode_sends_no_medication_question_on_the_sample(fake_client, dataset) -> None:  # type: ignore[no-untyped-def]
+    for row in dataset:
+        _run(row["submission"], NO_CACHE)
+    assert fake_client.calls_for("anticoag") == []

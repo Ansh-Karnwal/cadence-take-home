@@ -12,9 +12,10 @@ State is process-scoped and in memory only:
   ten determinism calls in one process share the resolver and the cache.
 
 On an API error the resolver retries twice with a short backoff, then returns
-the offline answer for that item (title OTHER, plan not clear, and for a
-consent the caller's ``fallback``: the keyword answer, so a confirmation of a
-keyword-POSITIVE consent falls back to "signed"), writes one line to stderr,
+the offline answer for that item (title OTHER, plan not clear, medication not
+an anticoagulant, and for a consent the caller's ``fallback``: the keyword
+answer, so a confirmation of a keyword-POSITIVE consent falls back to
+"signed"), writes one line to stderr,
 and counts the failure so the engine can note it. It never raises.
 """
 
@@ -28,7 +29,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
-from .classify import DocKind
+from .classify import DocKind, normalize_medication_name
 from .settings import Settings
 
 # ---------------------------------------------------------------------------
@@ -70,6 +71,13 @@ Return true only if the text explicitly states how this drug is managed before t
 Deferral to another clinician, pending details, or management of a different drug means false.
 
 {_TEXT_ALONE}"""
+
+MEDICATION_PROMPT = """You read the name of one medication as it is listed in a patient's chart and decide whether it is an anticoagulant.
+
+Return true only if it is an anticoagulant used to prevent or treat blood clots.
+Antiplatelet drugs, blood pressure drugs, and everything else are false.
+
+Answer from the name alone; do not infer."""
 
 # ---------------------------------------------------------------------------
 # Response schemas. Hand-written flat JSON schemas for strict mode, mirroring
@@ -119,7 +127,7 @@ _SCHEMAS: dict[type[BaseModel], tuple[str, dict[str, Any]]] = {
 class FallbackCache:
     """In-memory cache of LLM answers keyed on (model, question, text).
 
-    ``question`` is ``title``, ``consent``, or ``plan:<drug>``. Only successful
+    ``question`` is ``title``, ``consent``, ``plan:<drug>``, or ``anticoag``. Only successful
     answers are stored, so an outage never sticks.
     """
 
@@ -235,6 +243,18 @@ class LLMResolver:
 
         user_input = f"Anticoagulant: {drug}\n\nDocument text:\n{text}"
         label = self._ask(f"plan:{drug}", text, PLAN_PROMPT, user_input, TextLabel)
+        return False if label is None else label.answer  # type: ignore[attr-defined]
+
+    def resolve_is_anticoagulant(self, name: str) -> bool:
+        """Ask the model whether an unlisted medication name is an anticoagulant.
+
+        The model sees the name as listed; the cache key is the normalized name.
+        Returns False (the offline answer) if the model cannot answer.
+        """
+
+        label = self._ask(
+            "anticoag", normalize_medication_name(name), MEDICATION_PROMPT, name, TextLabel
+        )
         return False if label is None else label.answer  # type: ignore[attr-defined]
 
     # -- internals -------------------------------------------------------------

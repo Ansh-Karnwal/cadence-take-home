@@ -249,8 +249,8 @@ def _probe_lines(results: Path) -> list[str]:
     lines += [
         "",
         f"Pre-fix rule errors: {first['prefix_wrongly_clears']} would wrongly clear a patient and "
-        f"{first['prefix_over_flags']} would over-flag. Medication names have no model question and "
-        "are excluded from the model's total.",
+        f"{first['prefix_over_flags']} would over-flag. The model answers medication names through "
+        "the medication question.",
         "",
     ]
     if notes:
@@ -311,7 +311,8 @@ def build_summary(results: Path = RESULTS) -> str:
             "Rules agreement is the share of rule-placed items whose most common model label",
             "equals the rule label. Default-mode items are the ones default mode actually",
             "sends to the model (unknown titles, consent confirmations and unplaced consents,",
-            "unplaced plans); the column counts how many were stable on every run.",
+            "unplaced plans, unknown medication names); the column counts how many were stable",
+            "on every run.",
             "",
             *_split_lines(results),
             *_cross_model_lines(results),

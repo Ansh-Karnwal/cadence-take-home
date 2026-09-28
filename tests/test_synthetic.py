@@ -86,6 +86,8 @@ class FakeResolver:
         self.title_calls: list[str] = []
         self.consent_calls: list[str] = []
         self.consent_answer = False
+        self.medication_calls: list[str] = []
+        self.anticoagulant_names: set[str] = set()
 
     def resolve_title(self, title: str) -> DocKind:
         self.title_calls.append(title)
@@ -98,6 +100,10 @@ class FakeResolver:
     def resolve_plan_clear(self, text: str, drug: str) -> bool:
         self.plan_calls.append((text, drug))
         return drug in self.clear_for
+
+    def resolve_is_anticoagulant(self, name: str) -> bool:
+        self.medication_calls.append(name)
+        return name in self.anticoagulant_names
 
 
 @pytest.fixture
@@ -866,3 +872,90 @@ def test_null_date_is_not_flagged_as_unparseable() -> None:
 def test_combined_surgical_and_anesthesia_consent_is_the_surgical_consent() -> None:
     documents = [HP_DOC, {"type": "Surgical and Anesthesia Consent", "date": "2026-02-21", "text": SIGNED}]
     assert run(make(documents=documents)).decision == "READY"
+
+
+# --- Model-assisted anticoagulant recognition ------------------------------------
+# A KNOWN_ANTICOAG or KNOWN_OTHER name is final. An UNKNOWN name goes to the
+# resolver in default mode; a "yes" adds it to Rule 3, a "no" changes nothing.
+
+TINZAPARIN = "Tinzaparin 4500 IU SC daily"
+
+
+def _meds(*entries: tuple[str, bool | None]) -> list[dict[str, Any]]:
+    return [{"name": "lisinopril", "active": True}] + [
+        {"name": n, "active": a} for n, a in entries
+    ]
+
+
+def test_unknown_drug_confirmed_by_resolver_raises_the_anticoagulation_issue(fake_resolver: FakeResolver) -> None:
+    fake_resolver.consent_answer = True
+    fake_resolver.anticoagulant_names = {TINZAPARIN}
+    submission = make(medications=_meds((TINZAPARIN, True)))
+    output = run_default(submission)
+    assert triples(output) == {
+        ("ANTICOAGULATION_MANAGEMENT", "documents", "Missing perioperative anticoagulation plan")
+    }
+    details = output.issues[0].evidence.details
+    assert TINZAPARIN in details and "identified as an anticoagulant by the model" in details
+    assert grounded(submission, output)
+
+
+def test_unknown_drug_rejected_by_resolver_changes_nothing(fake_resolver: FakeResolver) -> None:
+    fake_resolver.consent_answer = True
+    output = run_default(make(medications=_meds(("clopidogrel", True))))
+    assert output.issues == []
+    assert fake_resolver.medication_calls == ["clopidogrel"]
+
+
+def test_known_anticoagulant_never_calls_the_resolver(fake_resolver: FakeResolver) -> None:
+    fake_resolver.consent_answer = True
+    output = run_default(make(medications=_meds(("Eliquis 5 mg BID", True))))
+    assert "Missing perioperative anticoagulation plan" in {i.description for i in output.issues}
+    assert fake_resolver.medication_calls == []
+
+
+def test_known_other_never_calls_the_resolver(fake_resolver: FakeResolver) -> None:
+    fake_resolver.consent_answer = True
+    run_default(make(medications=[{"name": "lisinopril", "active": True}, {"name": "Metformin 500 mg", "active": True}]))
+    assert fake_resolver.medication_calls == []
+
+
+def test_inactive_medication_is_never_classified_or_sent(fake_resolver: FakeResolver) -> None:
+    fake_resolver.consent_answer = True
+    fake_resolver.anticoagulant_names = {TINZAPARIN}
+    output = run_default(make(medications=_meds((TINZAPARIN, False))))
+    assert output.issues == []
+    assert fake_resolver.medication_calls == []
+
+
+def test_null_status_unknown_confirmed_by_resolver_is_missing_data(fake_resolver: FakeResolver) -> None:
+    fake_resolver.consent_answer = True
+    fake_resolver.anticoagulant_names = {TINZAPARIN}
+    output = run_default(make(medications=_meds((TINZAPARIN, None))))
+    assert triples(output) == {
+        ("MISSING_REQUIRED_DATA", "medications[1]", "Unknown anticoagulant active status")
+    }
+
+
+def test_each_medication_name_is_asked_once_per_evaluation(fake_resolver: FakeResolver) -> None:
+    fake_resolver.consent_answer = True
+    run_default(make(medications=_meds(("clopidogrel", True), ("Clopidogrel", None), ("amlodipine", True))))
+    assert fake_resolver.medication_calls == ["clopidogrel", "amlodipine"]
+
+
+def test_confirmed_unknown_drug_uses_its_first_word_for_plan_matching(fake_resolver: FakeResolver) -> None:
+    fake_resolver.consent_answer = True
+    fake_resolver.anticoagulant_names = {TINZAPARIN}
+    fake_resolver.clear_for = {"tinzaparin"}
+    plan = "Hold tinzaparin 24 hours before surgery; resume tinzaparin 12 hours after."
+    documents = BASE["documents"] + [{"type": "Clinic Follow-up Note", "date": "2026-02-22", "text": plan}]
+    output = run_default(make(medications=_meds((TINZAPARIN, True)), documents=documents))
+    assert output.issues == []
+    assert fake_resolver.plan_calls == [(plan, "tinzaparin")]
+
+
+def test_offline_unknown_drug_is_not_an_anticoagulant_documented_limitation() -> None:
+    # Documented offline limitation: an unlisted anticoagulant is not
+    # recognized offline, so Rule 3 does not run for it.
+    output = run(make(medications=_meds((TINZAPARIN, True))))
+    assert output.issues == []

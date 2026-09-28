@@ -24,8 +24,8 @@ script reports three answers:
 A rules answer is graded by the decision offline mode would make: an UNPLACED
 consent is not signed, an UNPLACED plan is not clear, and an UNKNOWN title is
 OTHER. Deferrals are marked so a reader can see which answers come from that
-default rather than a keyword. Medication names have no model question, so the
-model column is n/a for them and they are excluded from the model's total.
+default rather than a keyword. Medication names are graded as "recognized as an
+anticoagulant" or not; the model answers them through the medication question.
 
     uv run scripts/probe_generalization.py --model gpt-4.1-mini --out results/probes-gpt-4.1-mini
 """
@@ -73,6 +73,11 @@ PROBES: list[tuple[str, str, str, str | None, str, str]] = [
     ("second", "consent", "Patient signed consent for left knee arthroscopy; new consent required for planned procedure.", None, "false", SECOND_REVIEW_PREFIX),
     ("second", "medication", "Eliquis 5 mg BID", None, "recognized", SECOND_REVIEW_PREFIX),
     ("second", "medication", "Xarelto 20 mg daily", None, "recognized", SECOND_REVIEW_PREFIX),
+    ("second", "medication", "Pradaxa 150 mg", None, "recognized", SECOND_REVIEW_PREFIX),
+    ("second", "medication", "Lovenox 40 mg SC daily", None, "recognized", SECOND_REVIEW_PREFIX),
+    ("second", "medication", "clopidogrel", None, "not recognized", SECOND_REVIEW_PREFIX),
+    ("second", "medication", "aspirin 81 mg", None, "not recognized", SECOND_REVIEW_PREFIX),
+    ("second", "medication", "amlodipine", None, "not recognized", SECOND_REVIEW_PREFIX),
     ("second", "title", "Surgical and Anesthesia Consent", None, "CONSENT", SECOND_REVIEW_PREFIX),
 ]
 
@@ -104,6 +109,10 @@ for p in probes:
         c = classify.classify_title(text)
         raw = c.outcome.value + (":" + c.kind.value if c.kind is not None else "")
         eff = c.kind.value if c.kind is not None else "OTHER"
+    elif hasattr(classify, "classify_medication"):
+        c = classify.classify_medication(text)
+        raw = c.outcome.value + (":" + c.generic if c.generic else "")
+        eff = "recognized" if c.outcome.value == "KNOWN_ANTICOAG" else "not recognized"
     else:
         found = med(text)
         raw = found or "none"
@@ -164,10 +173,10 @@ def model_answers(model: str, runs: int, probes: list[dict[str, Any]]) -> tuple[
     for run in range(runs):
         print(f"run {run + 1}/{runs}", file=sys.stderr)
         for i, p in enumerate(probes):
-            if p["kind"] == "medication":
-                continue
             before = resolver.failures
-            if p["kind"] == "title":
+            if p["kind"] == "medication":
+                label = "recognized" if resolver.resolve_is_anticoagulant(p["text"]) else "not recognized"
+            elif p["kind"] == "title":
                 label = resolver.resolve_title(p["text"]).value
             elif p["kind"] == "consent":
                 label = str(resolver.resolve_consent_signed(p["text"])).lower()
@@ -185,6 +194,7 @@ def direction(correct: str, answer: str) -> str:
     clears = {
         ("false", "true"),  # an unsigned consent or a vague plan accepted
         ("recognized", "not recognized"),  # an anticoagulant missed, so Rule 3 never runs
+        ("recognized", "ERROR"),
         ("OTHER", "CONSENT"),  # a withdrawn consent counted as the surgical consent
     }
     return "wrongly clears" if (correct, answer) in clears else "over-flags"
@@ -219,10 +229,6 @@ def main() -> None:
         p["prefix_direction"] = direction(p["correct"], prefix[i]["effective"])
         p["head_rules"] = head[i]
         p["head_correct"] = head[i]["effective"] == p["correct"]
-        if p["kind"] == "medication":
-            p["model"] = None
-            p["model_correct"] = None
-            continue
         dist = Counter(labels[i])
         majority = dist.most_common(1)[0][0]
         p["model"] = {"labels": labels[i], "split": dict(dist), "majority": majority}
@@ -298,8 +304,9 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
         "",
         "A rules answer is graded by the decision offline mode would make: an UNPLACED consent",
         "is not signed, an UNPLACED plan is not clear, an UNKNOWN title is OTHER. Deferred",
-        "answers are marked. Medication names have no model question and are excluded from",
-        "the model's total. The pre-fix rules come from a git worktree of the named commit.",
+        "answers are marked; an UNKNOWN medication is not recognized. The model answers",
+        "medication names through the medication question. The pre-fix rules come from a",
+        "git worktree of the named commit.",
         "",
     ]
     path.write_text("\n".join(lines))

@@ -114,8 +114,8 @@ MUTATIONS: list[tuple[str, str, str, str]] = [
     (
         "only the first anticoagulant checked",
         "preop_triage/rules.py",
-        "    for med_index, drug, full_name in active_anticoagulants(submission):",
-        "    for med_index, drug, full_name in active_anticoagulants(submission)[:1]:",
+        "    for med_index, drug, full_name, by_model in active:",
+        "    for med_index, drug, full_name, by_model in active[:1]:",
     ),
     (
         "anticoagulation details quote the matched word, not the full name",
@@ -140,6 +140,24 @@ MUTATIONS: list[tuple[str, str, str, str]] = [
         "preop_triage/rules.py",
         "fallback=keyword_positive)",
         "fallback=False)",
+    ),
+    (
+        "inactive medications classified and sent",
+        "preop_triage/rules.py",
+        "        if med.active is False:\n            continue\n",
+        "",
+    ),
+    (
+        "model 'yes' on an unknown medication ignored",
+        "preop_triage/rules.py",
+        "            if ask(name):\n                found.append((i, medication_identity(name), name, med.active, True))",
+        "            ask(name)",
+    ),
+    (
+        "known-other medications sent to the model",
+        "preop_triage/rules.py",
+        "        elif result.outcome is MedicationOutcome.UNKNOWN and resolver is not None:",
+        "        elif resolver is not None:",
     ),
     (
         "unparseable dates not flagged",

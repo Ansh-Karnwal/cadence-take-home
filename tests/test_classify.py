@@ -5,8 +5,13 @@ import re
 import pytest
 
 from preop_triage.classify import (
+    KNOWN_OTHER_MEDICATIONS,
     DocKind,
+    MedicationClassification,
+    MedicationOutcome,
     anticoagulant_generic,
+    classify_medication,
+    medication_identity,
     OfflineResolver,
     TextJudgment,
     TitleClassification,
@@ -389,3 +394,38 @@ def test_anticoagulant_generic(name: str | None, generic: str | None) -> None:
 
 def test_brand_name_anchors_a_plan_negative() -> None:
     assert judge_plan_clear("Eliquis dosing unclear.", "apixaban") is TextJudgment.NEGATIVE
+
+
+# --- Medication classification ----------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [
+        ("Pradaxa 150 mg", MedicationClassification(MedicationOutcome.KNOWN_ANTICOAG, "dabigatran")),
+        ("Lovenox 40 mg SC daily", MedicationClassification(MedicationOutcome.KNOWN_ANTICOAG, "enoxaparin")),
+        ("Eliquis 5 mg BID", MedicationClassification(MedicationOutcome.KNOWN_ANTICOAG, "apixaban")),
+        ("warfarin", MedicationClassification(MedicationOutcome.KNOWN_ANTICOAG, "warfarin")),
+        ("lisinopril", MedicationClassification(MedicationOutcome.KNOWN_OTHER)),
+        ("Metformin 500 mg", MedicationClassification(MedicationOutcome.KNOWN_OTHER)),
+        ("clopidogrel", MedicationClassification(MedicationOutcome.UNKNOWN)),
+        ("aspirin 81 mg", MedicationClassification(MedicationOutcome.UNKNOWN)),
+        ("amlodipine", MedicationClassification(MedicationOutcome.UNKNOWN)),
+        ("", MedicationClassification(MedicationOutcome.UNKNOWN)),
+        (None, MedicationClassification(MedicationOutcome.UNKNOWN)),
+    ],
+)
+def test_classify_medication(name: str | None, expected: MedicationClassification) -> None:
+    assert classify_medication(name) == expected
+
+
+def test_known_other_list_is_only_names_seen_in_the_sample() -> None:
+    assert KNOWN_OTHER_MEDICATIONS == ("lisinopril", "metformin")
+
+
+@pytest.mark.parametrize(
+    ("name", "identity"),
+    [("Tinzaparin 4500 IU SC daily", "tinzaparin"), ("  Bemiparin  ", "bemiparin"), ("low molecular weight heparin", "low")],
+)
+def test_medication_identity_is_the_first_word(name: str, identity: str) -> None:
+    assert medication_identity(name) == identity

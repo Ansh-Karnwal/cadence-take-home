@@ -10,6 +10,7 @@ from typing import Any
 import pytest
 
 from preop_triage import llm
+from preop_triage.classify import anticoagulant_generic
 from preop_triage.settings import ENV_FORCE_LLM, ENV_NO_CACHE, ENV_OFFLINE
 
 DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "patients_sample_50.jsonl"
@@ -58,19 +59,26 @@ class FakeClient:
     ``answer`` maps (question, input) to a label: question is "title",
     "consent", or "plan"; the label is a DocKind value for titles and a bool
     otherwise. Defaults: titles OTHER, consents True (a model that confirms
-    signed consents), plans False. ``fail_next`` makes the
+    signed consents), plans False, and medications True exactly when the name
+    is on the known anticoagulant list (a model that agrees with the list). ``fail_next`` makes the
     next N calls raise; ``reject_temperature`` makes calls carrying
     ``temperature`` raise the way the API does.
     """
 
     def __init__(self) -> None:
         self.calls: list[dict[str, Any]] = []
-        self.answer: Callable[[str, str], object] = lambda question, _input: (
-            "OTHER" if question == "title" else question == "consent"
-        )
+        self.answer: Callable[[str, str], object] = self.default_answer
         self.fail_next = 0
         self.reject_temperature = False
         self.responses = SimpleNamespace(create=self._create)
+
+    @staticmethod
+    def default_answer(question: str, user_input: str) -> object:
+        if question == "title":
+            return "OTHER"
+        if question == "anticoag":
+            return anticoagulant_generic(user_input) is not None
+        return question == "consent"
 
     @staticmethod
     def question_of(kwargs: dict[str, Any]) -> str:
@@ -80,6 +88,8 @@ class FakeClient:
             return "consent"
         if kwargs["instructions"] == llm.PLAN_PROMPT:
             return "plan"
+        if kwargs["instructions"] == llm.MEDICATION_PROMPT:
+            return "anticoag"
         raise AssertionError("unknown prompt")
 
     def calls_for(self, question: str) -> list[dict[str, Any]]:
