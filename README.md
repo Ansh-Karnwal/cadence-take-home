@@ -30,7 +30,6 @@ A fourth planner session drafted every prompt the other three received and triag
 | 10 | Builder | Fix round 2: model-confirmed consents, brand-name anticoagulants, unparseable dates, regenerate runs | `87b36a6` to `4ce25e1` |
 | 11 | Builder | Generalization probes on the reviewers' strings, exposure statement | `082dd9d` to `fe48faa` |
 | 12 | Builder | Model-assisted anticoagulant recognition, regenerate runs | `4062c49` to `cb77da9` |
-| 13 | Planner | Transcripts, session roles, policy provenance | `dcb2903` |
 
 Between prompts 5 and 6, and again between 9 and 10, the planner triaged each validator finding with the owner; accepted findings became decisions in the next builder prompt, and rejected ones were recorded with reasons in `DESIGN.md` section 8.
 
