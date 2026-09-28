@@ -249,6 +249,22 @@ def test_force_llm_routes_rule_placed_consent_text(fake_client, dataset) -> None
     assert "Surgical consent not clearly signed" in {i.description for i in output.issues}
 
 
+def test_force_llm_sends_rule_negative_consent_to_the_resolver(fake_client, dataset) -> None:  # type: ignore[no-untyped-def]
+    # case_00008's consent is keyword-NEGATIVE ("unsigned"): final in default
+    # mode, sent to the model only under force_llm.
+    submission = dataset[8]["submission"]
+    # Under force_llm the fake also labels every title; keep consents as consents.
+    fake_client.answer = lambda q, i: (
+        ("CONSENT" if "onsent" in i else "H_AND_P") if q == "title" else True
+    )
+    _run(submission, NO_CACHE)
+    assert fake_client.calls_for("consent") == []
+    _run(submission, FORCE)
+    consent_calls = fake_client.calls_for("consent")
+    assert len(consent_calls) == 1
+    assert "unsigned" in consent_calls[0]["input"]
+
+
 def test_force_llm_sends_rule_negative_plan_to_the_resolver(fake_client, dataset) -> None:  # type: ignore[no-untyped-def]
     # case_00004's plan is rule-NEGATIVE ("no clear hold/resume guidance").
     submission = dataset[4]["submission"]

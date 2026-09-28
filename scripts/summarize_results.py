@@ -74,6 +74,14 @@ def _run_rows(results: Path) -> tuple[list[str], list[str]]:
             ]
         )
         rows.append("| " + " | ".join(str(c) for c in cells) + " |")
+        failing = [
+            f"{r['case_id']} ({', '.join(k for k, v in r['metrics'].items() if not v)})"
+            for r in ev["records"]
+            if not all(r["metrics"].values())
+        ]
+        notes.append(
+            f"- `{folder.name}` failing cases: {'; '.join(failing) if failing else 'none'}."
+        )
         for r in outputs:
             if r["error"]:
                 notes.append(
@@ -109,6 +117,7 @@ def _stability_rows(results: Path) -> tuple[list[str], list[str]]:
                     report["api_calls"],
                     report["failures"],
                     report["temperature_accepted"],
+                    f"{s['default_route_stable']} of {s['default_route_items']}",
                     len(s["disagreements"]),
                 ]
             )
@@ -126,6 +135,59 @@ def _stability_rows(results: Path) -> tuple[list[str], list[str]]:
             )
         lists.append("")
     return rows, lists
+
+
+def _stability_reports(results: Path) -> dict[str, dict]:
+    return {
+        folder.name: _load(folder / "stability.json")
+        for folder in sorted(results.iterdir())
+        if folder.is_dir() and (folder / "stability.json").exists()
+    }
+
+
+def _split_lines(results: Path) -> list[str]:
+    """Items whose labels were not identical on every run, per stability run."""
+
+    lines = ["### Items with split labels", ""]
+    for name, report in _stability_reports(results).items():
+        split = [i for i in report["items"] if not i["self_agreement"]]
+        lines.append(f"`{name}`:")
+        lines.append("")
+        if not split:
+            lines.append("- None.")
+        for i in split:
+            labels = ", ".join(f"{k} x{v}" for k, v in sorted(i["distribution"].items()))
+            route = "sent in default mode" if i["default_route"] else "rule-placed, not sent in default mode"
+            lines.append(f"- {i['question']} \"{i['text']}\": {labels} ({route})")
+        lines.append("")
+    return lines
+
+
+def _cross_model_lines(results: Path) -> list[str]:
+    """Unknown titles (no rule label) whose modal model label differs between runs."""
+
+    reports = _stability_reports(results)
+    if len(reports) < 2:
+        return []
+    modal: dict[str, dict[str, str]] = {}
+    for name, report in reports.items():
+        for i in report["items"]:
+            if i["question"] == "title" and i["rule_label"] is None:
+                modal.setdefault(i["text"], {})[name] = i["modal_label"]
+    differing = {t: m for t, m in sorted(modal.items()) if len(set(m.values())) > 1}
+    lines = [
+        "### Unknown titles where the models disagree",
+        "",
+        f"{len(differing)} of {len(modal)} unknown titles get a different most common label "
+        "from different models.",
+        "",
+    ]
+    for title, labels in differing.items():
+        lines.append(
+            f"- \"{title}\": " + ", ".join(f"{n}: {l}" for n, l in sorted(labels.items()))
+        )
+    lines.append("")
+    return lines
 
 
 def build_summary(results: Path = RESULTS) -> str:
@@ -164,6 +226,7 @@ def build_summary(results: Path = RESULTS) -> str:
         "API calls",
         "Failures",
         "Temperature 0 accepted",
+        "Default-mode items stable",
         "Disagreements",
     ]
     stab_rows, lists = _stability_rows(results)
@@ -178,8 +241,12 @@ def build_summary(results: Path = RESULTS) -> str:
             "",
             "Self-agreement is the share of items whose label was identical on every run.",
             "Rules agreement is the share of rule-placed items whose most common model label",
-            "equals the rule label.",
+            "equals the rule label. Default-mode items are the ones default mode actually",
+            "sends to the model (unknown titles, consent confirmations and unplaced consents,",
+            "unplaced plans); the column counts how many were stable on every run.",
             "",
+            *_split_lines(results),
+            *_cross_model_lines(results),
             "### Disagreements with the rules",
             "",
             *lists,

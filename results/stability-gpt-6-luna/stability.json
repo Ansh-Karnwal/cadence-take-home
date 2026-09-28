@@ -5,8 +5,10 @@
   "api_calls": 601,
   "failures": 0,
   "summary": {
+    "default_route_items": 15,
+    "default_route_stable": 15,
     "items": 120,
-    "self_agreement_pct": 97.5,
+    "self_agreement_pct": 98.33,
     "rule_placed_items": 110,
     "rules_agreement_pct": 97.27,
     "by_question_type": {
@@ -14,19 +16,25 @@
         "items": 8,
         "stable": 8,
         "rule_placed": 8,
-        "rule_agree": 8
+        "rule_agree": 8,
+        "default_route": 5,
+        "default_route_stable": 5
       },
       "plan": {
         "items": 5,
         "stable": 5,
         "rule_placed": 4,
-        "rule_agree": 4
+        "rule_agree": 4,
+        "default_route": 1,
+        "default_route_stable": 1
       },
       "title": {
         "items": 107,
-        "stable": 104,
+        "stable": 105,
         "rule_placed": 98,
-        "rule_agree": 95
+        "rule_agree": 95,
+        "default_route": 9,
+        "default_route_stable": 9
       }
     },
     "disagreements": [
@@ -76,6 +84,7 @@
       "question": "title",
       "text": "Admission H&P - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00011"
       ],
@@ -96,6 +105,7 @@
       "question": "title",
       "text": "Anesthesia Pre-Assessment",
       "rule_label": "OTHER",
+      "default_route": false,
       "cases": [
         "case_00001",
         "case_00004",
@@ -132,6 +142,7 @@
       "question": "title",
       "text": "Anticoag Plan (scanned)",
       "rule_label": "ANTICOAG_PLAN",
+      "default_route": false,
       "cases": [
         "case_00004"
       ],
@@ -152,6 +163,7 @@
       "question": "title",
       "text": "Cardiology Progress Note - Anticoag",
       "rule_label": "ANTICOAG_PLAN",
+      "default_route": false,
       "cases": [
         "case_00021"
       ],
@@ -172,6 +184,7 @@
       "question": "title",
       "text": "Clinic Follow-up Note",
       "rule_label": "OTHER",
+      "default_route": false,
       "cases": [
         "case_00002",
         "case_00005",
@@ -207,6 +220,7 @@
       "question": "title",
       "text": "Clinic H&P - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00047"
       ],
@@ -227,6 +241,7 @@
       "question": "title",
       "text": "Consent - Elective Procedure",
       "rule_label": "CONSENT",
+      "default_route": false,
       "cases": [
         "case_00007",
         "case_00015",
@@ -252,6 +267,7 @@
       "question": "title",
       "text": "Consent Counseling Note",
       "rule_label": "CONSENT",
+      "default_route": false,
       "cases": [
         "case_00004",
         "case_00012",
@@ -277,6 +293,7 @@
       "question": "title",
       "text": "Consent for Surgery",
       "rule_label": "CONSENT",
+      "default_route": false,
       "cases": [
         "case_00002",
         "case_00010",
@@ -302,6 +319,7 @@
       "question": "title",
       "text": "Consult H&P (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00014"
       ],
@@ -322,6 +340,7 @@
       "question": "title",
       "text": "H and P (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00004"
       ],
@@ -342,6 +361,7 @@
       "question": "title",
       "text": "H&P Note",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00001",
         "case_00025"
@@ -363,14 +383,15 @@
       "question": "title",
       "text": "H&P Update",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00049"
       ],
       "labels": [
         "OTHER",
-        "OTHER",
-        "OTHER",
         "H_AND_P",
+        "OTHER",
+        "OTHER",
         "H_AND_P"
       ],
       "distribution": {
@@ -384,6 +405,7 @@
       "question": "title",
       "text": "H&P [PDF]",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00029"
       ],
@@ -404,6 +426,7 @@
       "question": "title",
       "text": "H+P (H&P) (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00015"
       ],
@@ -424,6 +447,7 @@
       "question": "title",
       "text": "H+P (H&P) (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00039"
       ],
@@ -444,6 +468,7 @@
       "question": "title",
       "text": "H/P (H&P) (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00040"
       ],
@@ -464,6 +489,7 @@
       "question": "title",
       "text": "Hist & Phys (H&P)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00042"
       ],
@@ -484,6 +510,7 @@
       "question": "title",
       "text": "History & Phsyical",
       "rule_label": null,
+      "default_route": true,
       "cases": [
         "case_00002"
       ],
@@ -504,6 +531,7 @@
       "question": "title",
       "text": "History & Physical (H&P)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00043"
       ],
@@ -524,6 +552,7 @@
       "question": "title",
       "text": "History & Physical Exam (H&P)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00032"
       ],
@@ -544,6 +573,7 @@
       "question": "title",
       "text": "History & Physical Exam (H&P) (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00008"
       ],
@@ -564,6 +594,7 @@
       "question": "title",
       "text": "History and Physical",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00000"
       ],
@@ -584,6 +615,7 @@
       "question": "title",
       "text": "History and Physical Examination - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00028"
       ],
@@ -604,6 +636,7 @@
       "question": "title",
       "text": "History/Physical (H&P)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00007"
       ],
@@ -624,6 +657,7 @@
       "question": "title",
       "text": "Hx & Physical (H&P) - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00005"
       ],
@@ -644,6 +678,7 @@
       "question": "title",
       "text": "Imported: Clinic H&P",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00048"
       ],
@@ -664,6 +699,7 @@
       "question": "title",
       "text": "Imported: Consult H&P",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00038"
       ],
@@ -684,6 +720,7 @@
       "question": "title",
       "text": "Imported: H&P (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00003"
       ],
@@ -704,6 +741,7 @@
       "question": "title",
       "text": "Imported: H/P (H&P) [PDF]",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00041"
       ],
@@ -724,6 +762,7 @@
       "question": "title",
       "text": "Imported: History & Physical (H&P) - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00017"
       ],
@@ -744,6 +783,7 @@
       "question": "title",
       "text": "Imported: History/Physical (H&P)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00031"
       ],
@@ -764,6 +804,7 @@
       "question": "title",
       "text": "Imported: Hx & Physical (H&P)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00006"
       ],
@@ -784,6 +825,7 @@
       "question": "title",
       "text": "Imported: Initial H&P (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00020"
       ],
@@ -804,6 +846,7 @@
       "question": "title",
       "text": "Imported: Pre-anesthesia H&P (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00010"
       ],
@@ -824,6 +867,7 @@
       "question": "title",
       "text": "Imported: Preop H&P - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00034"
       ],
@@ -844,6 +888,7 @@
       "question": "title",
       "text": "Imported: Preoperative Assessment [PDF]",
       "rule_label": null,
+      "default_route": true,
       "cases": [
         "case_00024"
       ],
@@ -864,6 +909,7 @@
       "question": "title",
       "text": "Imported: Surgical H&P (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00045"
       ],
@@ -884,6 +930,7 @@
       "question": "title",
       "text": "Initial H&P",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00019"
       ],
@@ -904,6 +951,7 @@
       "question": "title",
       "text": "Medical Clearance [PDF]",
       "rule_label": null,
+      "default_route": true,
       "cases": [
         "case_00012"
       ],
@@ -924,6 +972,7 @@
       "question": "title",
       "text": "Outpatient H&P (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00046"
       ],
@@ -944,6 +993,7 @@
       "question": "title",
       "text": "Outpatient H&P - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00022"
       ],
@@ -964,6 +1014,7 @@
       "question": "title",
       "text": "PREOP - Clinic H&P (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00022"
       ],
@@ -984,6 +1035,7 @@
       "question": "title",
       "text": "PREOP - Consult H&P (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00039"
       ],
@@ -1004,6 +1056,7 @@
       "question": "title",
       "text": "PREOP - H and P - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00029"
       ],
@@ -1024,6 +1077,7 @@
       "question": "title",
       "text": "PREOP - H&P - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00004"
       ],
@@ -1044,6 +1098,7 @@
       "question": "title",
       "text": "PREOP - H/P (H&P) (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00015"
       ],
@@ -1064,6 +1119,7 @@
       "question": "title",
       "text": "PREOP - History & Physical (H&P)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00018"
       ],
@@ -1084,6 +1140,7 @@
       "question": "title",
       "text": "PREOP - History and Physical",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00025"
       ],
@@ -1104,6 +1161,7 @@
       "question": "title",
       "text": "PREOP - History/Physical (H&P) (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00032"
       ],
@@ -1124,6 +1182,7 @@
       "question": "title",
       "text": "PREOP - Pre-anesthesia H&P [PDF]",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00011"
       ],
@@ -1144,6 +1203,7 @@
       "question": "title",
       "text": "PREOP - Pre-op H and P",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00001"
       ],
@@ -1164,6 +1224,7 @@
       "question": "title",
       "text": "PREOP - Preop H&P",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00008"
       ],
@@ -1184,6 +1245,7 @@
       "question": "title",
       "text": "PREOP - Preoperative History & Physical (H&P)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00043"
       ],
@@ -1204,6 +1266,7 @@
       "question": "title",
       "text": "PREOP - Surgical H&P - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00046"
       ],
@@ -1224,6 +1287,7 @@
       "question": "title",
       "text": "Perioperative Medication Plan",
       "rule_label": "ANTICOAG_PLAN",
+      "default_route": false,
       "cases": [
         "case_00000",
         "case_00006",
@@ -1246,20 +1310,21 @@
       "question": "title",
       "text": "Perioperative Medication Review",
       "rule_label": "ANTICOAG_PLAN",
+      "default_route": false,
       "cases": [
         "case_00026",
         "case_00038"
       ],
       "labels": [
         "OTHER",
-        "ANTICOAG_PLAN",
+        "OTHER",
         "ANTICOAG_PLAN",
         "ANTICOAG_PLAN",
         "ANTICOAG_PLAN"
       ],
       "distribution": {
-        "OTHER": 1,
-        "ANTICOAG_PLAN": 4
+        "OTHER": 2,
+        "ANTICOAG_PLAN": 3
       },
       "modal_label": "ANTICOAG_PLAN",
       "self_agreement": false
@@ -1268,6 +1333,7 @@
       "question": "title",
       "text": "Pre-op Admission H&P",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00037"
       ],
@@ -1288,6 +1354,7 @@
       "question": "title",
       "text": "Pre-op Clinic H&P [PDF]",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00023"
       ],
@@ -1308,6 +1375,7 @@
       "question": "title",
       "text": "Pre-op Consent Discussion",
       "rule_label": "CONSENT",
+      "default_route": false,
       "cases": [
         "case_00003",
         "case_00019",
@@ -1319,20 +1387,20 @@
         "CONSENT",
         "CONSENT",
         "CONSENT",
-        "OTHER",
+        "CONSENT",
         "CONSENT"
       ],
       "distribution": {
-        "CONSENT": 4,
-        "OTHER": 1
+        "CONSENT": 5
       },
       "modal_label": "CONSENT",
-      "self_agreement": false
+      "self_agreement": true
     },
     {
       "question": "title",
       "text": "Pre-op Evaluation [PDF]",
       "rule_label": null,
+      "default_route": true,
       "cases": [
         "case_00018"
       ],
@@ -1353,6 +1421,7 @@
       "question": "title",
       "text": "Pre-op H and P",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00026",
         "case_00030"
@@ -1374,6 +1443,7 @@
       "question": "title",
       "text": "Pre-op H&P [PDF]",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00035"
       ],
@@ -1394,6 +1464,7 @@
       "question": "title",
       "text": "Pre-op H/P (H&P) - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00016"
       ],
@@ -1414,6 +1485,7 @@
       "question": "title",
       "text": "Pre-op Hist & Phys (H&P) - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00041"
       ],
@@ -1434,6 +1506,7 @@
       "question": "title",
       "text": "Pre-op Nursing Intake",
       "rule_label": "OTHER",
+      "default_route": false,
       "cases": [
         "case_00000",
         "case_00003",
@@ -1470,6 +1543,7 @@
       "question": "title",
       "text": "Pre-op Pre-op Evaluation [PDF]",
       "rule_label": null,
+      "default_route": true,
       "cases": [
         "case_00048"
       ],
@@ -1490,6 +1564,7 @@
       "question": "title",
       "text": "Pre-op Pre-op H&P (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00034"
       ],
@@ -1510,6 +1585,7 @@
       "question": "title",
       "text": "Pre-op Preop H&P (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00009"
       ],
@@ -1530,6 +1606,7 @@
       "question": "title",
       "text": "Pre-op Preoperative History & Physical (H&P) (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00044"
       ],
@@ -1550,6 +1627,7 @@
       "question": "title",
       "text": "Pre-op Surgical Clearance Note [PDF]",
       "rule_label": null,
+      "default_route": true,
       "cases": [
         "case_00006"
       ],
@@ -1570,6 +1648,7 @@
       "question": "title",
       "text": "Pre-op Surgical H&P",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00020"
       ],
@@ -1590,6 +1669,7 @@
       "question": "title",
       "text": "Preop H&P (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00028"
       ],
@@ -1610,6 +1690,7 @@
       "question": "title",
       "text": "Preop H&P (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00033"
       ],
@@ -1630,6 +1711,7 @@
       "question": "title",
       "text": "Preop H&P Update",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00024"
       ],
@@ -1650,6 +1732,7 @@
       "question": "title",
       "text": "Preop H+P (H&P)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00014"
       ],
@@ -1670,6 +1753,7 @@
       "question": "title",
       "text": "Preop Hist & Phys (H&P) [PDF]",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00017"
       ],
@@ -1690,6 +1774,7 @@
       "question": "title",
       "text": "Preop History & Physical Exam (H&P)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00007"
       ],
@@ -1710,6 +1795,7 @@
       "question": "title",
       "text": "Preop History and Physical",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00049"
       ],
@@ -1730,6 +1816,7 @@
       "question": "title",
       "text": "Preop History and Physical Examination (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00003"
       ],
@@ -1750,6 +1837,7 @@
       "question": "title",
       "text": "Preop Hospitalist H&P (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00038"
       ],
@@ -1770,6 +1858,7 @@
       "question": "title",
       "text": "Preop Hx & Physical (H&P)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00031"
       ],
@@ -1790,6 +1879,7 @@
       "question": "title",
       "text": "Preop Initial H&P (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00045"
       ],
@@ -1810,6 +1900,7 @@
       "question": "title",
       "text": "Preop Medical Clearance [PDF]",
       "rule_label": null,
+      "default_route": true,
       "cases": [
         "case_00042"
       ],
@@ -1830,6 +1921,7 @@
       "question": "title",
       "text": "Preop Outpatient H&P (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00021"
       ],
@@ -1850,6 +1942,7 @@
       "question": "title",
       "text": "Preop Pre-anesthesia Evaluation [PDF]",
       "rule_label": null,
+      "default_route": true,
       "cases": [
         "case_00000"
       ],
@@ -1870,6 +1963,7 @@
       "question": "title",
       "text": "Preop Pre-anesthesia H&P - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00035"
       ],
@@ -1890,6 +1984,7 @@
       "question": "title",
       "text": "Preop Pre-op H&P - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00010"
       ],
@@ -1910,6 +2005,7 @@
       "question": "title",
       "text": "Procedure Consent Form",
       "rule_label": "CONSENT",
+      "default_route": false,
       "cases": [
         "case_00001",
         "case_00009",
@@ -1934,6 +2030,7 @@
       "question": "title",
       "text": "Procedure Consent Packet",
       "rule_label": "CONSENT",
+      "default_route": false,
       "cases": [
         "case_00005",
         "case_00013",
@@ -1959,6 +2056,7 @@
       "question": "title",
       "text": "Scanned Admission H&P",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00012"
       ],
@@ -1979,6 +2077,7 @@
       "question": "title",
       "text": "Scanned H and P [PDF]",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00005"
       ],
@@ -1999,6 +2098,7 @@
       "question": "title",
       "text": "Scanned H&P Note (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00026"
       ],
@@ -2019,6 +2119,7 @@
       "question": "title",
       "text": "Scanned H&P Update - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00023"
       ],
@@ -2039,6 +2140,7 @@
       "question": "title",
       "text": "Scanned H+P (H&P) - signed",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00040"
       ],
@@ -2059,6 +2161,7 @@
       "question": "title",
       "text": "Scanned Hist & Phys (H&P) (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00016"
       ],
@@ -2079,6 +2182,7 @@
       "question": "title",
       "text": "Scanned History & Physical Exam (H&P) (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00033"
       ],
@@ -2099,6 +2203,7 @@
       "question": "title",
       "text": "Scanned History and Physical Examination",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00002"
       ],
@@ -2119,6 +2224,7 @@
       "question": "title",
       "text": "Scanned Hospitalist H&P",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00037"
       ],
@@ -2139,6 +2245,7 @@
       "question": "title",
       "text": "Scanned Initial H&P",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00044"
       ],
@@ -2159,6 +2266,7 @@
       "question": "title",
       "text": "Scanned Outpatient H&P [PDF]",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00047"
       ],
@@ -2179,6 +2287,7 @@
       "question": "title",
       "text": "Scanned Pre-anesthesia Evaluation [PDF]",
       "rule_label": null,
+      "default_route": true,
       "cases": [
         "case_00030"
       ],
@@ -2199,6 +2308,7 @@
       "question": "title",
       "text": "Scanned Pre-op H&P (scanned)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00009"
       ],
@@ -2219,6 +2329,7 @@
       "question": "title",
       "text": "Scanned Preoperative History & Physical (H&P)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00019"
       ],
@@ -2239,6 +2350,7 @@
       "question": "title",
       "text": "Surgery Consent (scanned)",
       "rule_label": "CONSENT",
+      "default_route": false,
       "cases": [
         "case_00006",
         "case_00014",
@@ -2264,6 +2376,7 @@
       "question": "title",
       "text": "Surgical Consent",
       "rule_label": "CONSENT",
+      "default_route": false,
       "cases": [
         "case_00000",
         "case_00008",
@@ -2290,6 +2403,7 @@
       "question": "title",
       "text": "Surgical H&P (external)",
       "rule_label": "H_AND_P",
+      "default_route": false,
       "cases": [
         "case_00021"
       ],
@@ -2310,6 +2424,7 @@
       "question": "consent",
       "text": "Consent documented but unsigned; awaiting patient signature.",
       "rule_label": "false",
+      "default_route": false,
       "cases": [
         "case_00008"
       ],
@@ -2330,6 +2445,7 @@
       "question": "consent",
       "text": "Consent obtained and signed; documentation completed.",
       "rule_label": "true",
+      "default_route": true,
       "cases": [
         "case_00004",
         "case_00009",
@@ -2358,6 +2474,7 @@
       "question": "consent",
       "text": "Consent obtained; signature on file.",
       "rule_label": "true",
+      "default_route": true,
       "cases": [
         "case_00003",
         "case_00013",
@@ -2385,6 +2502,7 @@
       "question": "consent",
       "text": "Electronic consent obtained and signed by patient for procedure.",
       "rule_label": "true",
+      "default_route": true,
       "cases": [
         "case_00000",
         "case_00005",
@@ -2413,6 +2531,7 @@
       "question": "consent",
       "text": "Patient reviewed risks/benefits and signed surgical consent.",
       "rule_label": "true",
+      "default_route": true,
       "cases": [
         "case_00001",
         "case_00006",
@@ -2441,6 +2560,7 @@
       "question": "consent",
       "text": "Signed consent scanned and verified before scheduling.",
       "rule_label": "true",
+      "default_route": true,
       "cases": [
         "case_00002",
         "case_00007",
@@ -2469,6 +2589,7 @@
       "question": "consent",
       "text": "Unsigned consent noted; signature not yet on file.",
       "rule_label": "false",
+      "default_route": false,
       "cases": [
         "case_00044"
       ],
@@ -2489,6 +2610,7 @@
       "question": "consent",
       "text": "Unsigned consent on chart; provider requested signature before scheduling.",
       "rule_label": "false",
+      "default_route": false,
       "cases": [
         "case_00017"
       ],
@@ -2510,6 +2632,7 @@
       "text": "Anticoagulant noted in medication list; perioperative management details not yet documented.",
       "drug": "apixaban",
       "rule_label": "false",
+      "default_route": false,
       "cases": [
         "case_00006",
         "case_00021",
@@ -2533,6 +2656,7 @@
       "text": "Anticoagulation mentioned; no clear hold/resume guidance documented.",
       "drug": "apixaban",
       "rule_label": "false",
+      "default_route": false,
       "cases": [
         "case_00004"
       ],
@@ -2554,6 +2678,7 @@
       "text": "Apixaban listed; perioperative management plan to be finalized.",
       "drug": "apixaban",
       "rule_label": "false",
+      "default_route": false,
       "cases": [
         "case_00038"
       ],
@@ -2575,6 +2700,7 @@
       "text": "Discussed blood thinner use with patient; final plan pending specialist input.",
       "drug": "apixaban",
       "rule_label": "false",
+      "default_route": false,
       "cases": [
         "case_00042"
       ],
@@ -2596,6 +2722,7 @@
       "text": "Patient takes apixaban for atrial fibrillation. Follow up with cardiology for peri-op recommendations.",
       "drug": "apixaban",
       "rule_label": null,
+      "default_route": true,
       "cases": [
         "case_00000"
       ],

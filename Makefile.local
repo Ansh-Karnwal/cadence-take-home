@@ -5,6 +5,7 @@
 #   make -f Makefile.local final MODEL=gpt-4.1-mini [TAG=...]
 #   PREOP_OFFLINE=1 make -f Makefile.local final TAG=offline
 #   make -f Makefile.local stability MODEL=gpt-4.1-mini [RUNS=5]
+#   make -f Makefile.local mutation
 #
 # `final` and `stability` need OPENAI_API_KEY (`make evals` always creates a
 # remote OpenAI eval). PREOP_OFFLINE, PREOP_NO_CACHE, and PREOP_FORCE_LLM are
@@ -20,7 +21,7 @@ STABILITY_DIR = results/stability-$(MODEL)
 
 export PREOP_OFFLINE PREOP_NO_CACHE PREOP_FORCE_LLM
 
-.PHONY: score-offline final stability
+.PHONY: score-offline final stability mutation
 
 score-offline:
 	uv run score_offline.py \
@@ -41,3 +42,6 @@ stability:
 		--runs $(RUNS) \
 		--input $(INPUT) \
 		--out $(STABILITY_DIR)
+
+mutation:
+	uv run scripts/mutation_check.py --out results/mutation

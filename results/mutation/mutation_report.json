@@ -1,8 +1,19 @@
 {
-  "generated_at": "2026-09-28T02:36:46.904893+00:00",
-  "unmutated_suite": "313 passed in 0.30s",
-  "mutations": 20,
-  "caught": 20,
+  "generated_at": "2026-09-28T03:48:58.798619+00:00",
+  "unmutated_suite": "363 passed in 0.33s",
+  "tests_per_file": {
+    "tests/test_classify.py": 97,
+    "tests/test_contract.py": 10,
+    "tests/test_determinism.py": 1,
+    "tests/test_golden.py": 7,
+    "tests/test_llm.py": 35,
+    "tests/test_normalize.py": 69,
+    "tests/test_settings.py": 51,
+    "tests/test_synthetic.py": 93
+  },
+  "tests_total": 363,
+  "mutations": 26,
+  "caught": 26,
   "survived": 0,
   "not_applied": 0,
   "results": [
@@ -11,140 +22,182 @@
       "file": "preop_triage/normalize.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 146 passed in 0.22s"
+      "pytest_tail": "1 failed, 178 passed in 0.24s"
     },
     {
       "mutation": "tie goes to the earlier list index",
       "file": "preop_triage/normalize.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 185 passed in 0.24s"
+      "pytest_tail": "1 failed, 217 passed in 0.24s"
     },
     {
       "mutation": "offset converted to UTC for day arithmetic",
       "file": "preop_triage/normalize.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 122 passed in 0.22s"
+      "pytest_tail": "1 failed, 154 passed in 0.23s"
     },
     {
       "mutation": "plan negative 'no clear' removed",
       "file": "preop_triage/classify.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 9 passed in 0.13s"
+      "pytest_tail": "1 failed, 9 passed in 0.14s"
     },
     {
       "mutation": "consent clause splitting disabled",
       "file": "preop_triage/classify.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 27 passed in 0.13s"
+      "pytest_tail": "1 failed, 27 passed in 0.14s"
     },
     {
       "mutation": "consent title exclusions disabled",
       "file": "preop_triage/classify.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 59 passed in 0.14s"
+      "pytest_tail": "1 failed, 59 passed in 0.15s"
     },
     {
       "mutation": "systolic threshold made strict",
       "file": "preop_triage/rules.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 268 passed in 0.25s"
+      "pytest_tail": "1 failed, 300 passed in 0.27s"
     },
     {
       "mutation": "temperature threshold made inclusive",
       "file": "preop_triage/rules.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 272 passed in 0.25s"
+      "pytest_tail": "1 failed, 304 passed in 0.27s"
     },
     {
       "mutation": "BP exclusion details lose the date",
       "file": "preop_triage/rules.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 84 passed in 0.21s"
+      "pytest_tail": "1 failed, 114 passed in 0.23s"
     },
     {
       "mutation": "lab status filter removed",
       "file": "preop_triage/rules.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 303 passed in 0.28s"
+      "pytest_tail": "1 failed, 335 passed in 0.28s"
     },
     {
       "mutation": "oldest consent judged instead of newest",
       "file": "preop_triage/rules.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 297 passed in 0.26s"
+      "pytest_tail": "1 failed, 329 passed in 0.29s"
     },
     {
       "mutation": "only the first anticoagulant checked",
       "file": "preop_triage/rules.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 299 passed in 0.26s"
+      "pytest_tail": "1 failed, 331 passed in 0.30s"
     },
     {
       "mutation": "anticoagulation details quote the matched word, not the full name",
       "file": "preop_triage/rules.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 299 passed in 0.26s"
+      "pytest_tail": "1 failed, 331 passed in 0.33s"
     },
     {
       "mutation": "force_llm skips the consent text",
       "file": "preop_triage/rules.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 104 passed in 0.22s"
+      "pytest_tail": "1 failed, 135 passed in 0.23s"
+    },
+    {
+      "mutation": "keyword-positive consents not confirmed in default mode",
+      "file": "preop_triage/rules.py",
+      "outcome": "caught",
+      "test_status": "failed",
+      "pytest_tail": "1 failed, 131 passed in 0.22s"
+    },
+    {
+      "mutation": "failed consent confirmation ignores the keyword answer",
+      "file": "preop_triage/rules.py",
+      "outcome": "caught",
+      "test_status": "failed",
+      "pytest_tail": "1 failed, 142 passed in 0.23s"
+    },
+    {
+      "mutation": "unparseable dates not flagged",
+      "file": "preop_triage/rules.py",
+      "outcome": "caught",
+      "test_status": "failed",
+      "pytest_tail": "1 failed, 357 passed in 0.29s"
+    },
+    {
+      "mutation": "brand names ignored",
+      "file": "preop_triage/classify.py",
+      "outcome": "caught",
+      "test_status": "failed",
+      "pytest_tail": "1 failed, 81 passed in 0.16s"
+    },
+    {
+      "mutation": "consent title naming surgery still excluded",
+      "file": "preop_triage/classify.py",
+      "outcome": "caught",
+      "test_status": "failed",
+      "pytest_tail": "1 failed, 78 passed in 0.15s"
+    },
+    {
+      "mutation": "bare consent negative 'withdrew' removed",
+      "file": "preop_triage/classify.py",
+      "outcome": "caught",
+      "test_status": "failed",
+      "pytest_tail": "1 failed, 68 passed in 0.15s"
     },
     {
       "mutation": "force_llm skips rule-negative plans",
       "file": "preop_triage/rules.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 105 passed in 0.21s"
+      "pytest_tail": "1 failed, 136 passed in 0.23s"
     },
     {
       "mutation": "force_llm honored in offline mode",
       "file": "preop_triage/engine.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 106 passed in 0.22s"
+      "pytest_tail": "1 failed, 137 passed in 0.23s"
     },
     {
       "mutation": "strict schema turned off",
       "file": "preop_triage/llm.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 86 passed in 0.21s"
+      "pytest_tail": "1 failed, 116 passed in 0.22s"
     },
     {
       "mutation": "three retries instead of two",
       "file": "preop_triage/llm.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 107 passed in 0.21s"
+      "pytest_tail": "1 failed, 138 passed in 0.23s"
     },
     {
       "mutation": "cache never written",
       "file": "preop_triage/llm.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 95 passed in 0.21s"
+      "pytest_tail": "1 failed, 125 passed in 0.22s"
     },
     {
       "mutation": "temperature rejection not recorded",
       "file": "preop_triage/llm.py",
       "outcome": "caught",
       "test_status": "failed",
-      "pytest_tail": "1 failed, 113 passed in 0.21s"
+      "pytest_tail": "1 failed, 144 passed in 0.23s"
     }
   ]
 }

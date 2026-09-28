@@ -5,8 +5,10 @@ Model `gpt-6-luna`, 5 runs per item, cache off.
 | Measure | Value |
 |---|---|
 | Items | 120 |
-| Self-agreement (identical labels on every run) | 97.5% |
+| Self-agreement (identical labels on every run) | 98.33% |
 | Items the rules placed | 110 |
+| Items default mode sends to the model | 15 |
+| ...of which stable on every run | 15 |
 | Agreement with the rules (modal label equals rule label) | 97.27% |
 | Temperature 0 accepted | False |
 | API calls made | 601 |
@@ -14,11 +16,11 @@ Model `gpt-6-luna`, 5 runs per item, cache off.
 
 ## By question type
 
-| Question | Items | Stable | Rule-placed | Agree with rules |
-|---|---|---|---|---|
-| consent | 8 | 8 | 8 | 8 |
-| plan | 5 | 5 | 4 | 4 |
-| title | 107 | 104 | 98 | 95 |
+| Question | Items | Stable | Rule-placed | Agree with rules | Sent in default mode | ...stable |
+|---|---|---|---|---|---|---|
+| consent | 8 | 8 | 8 | 8 | 5 | 5 |
+| plan | 5 | 5 | 4 | 4 | 1 | 1 |
+| title | 107 | 105 | 98 | 95 | 9 | 9 |
 
 ## Disagreements with the rules
 
@@ -33,8 +35,7 @@ Model `gpt-6-luna`, 5 runs per item, cache off.
 | Question | Text | Labels |
 |---|---|---|
 | title | H&P Update | H_AND_P: 2, OTHER: 3 |
-| title | Perioperative Medication Review | ANTICOAG_PLAN: 4, OTHER: 1 |
-| title | Pre-op Consent Discussion | CONSENT: 4, OTHER: 1 |
+| title | Perioperative Medication Review | ANTICOAG_PLAN: 3, OTHER: 2 |
 
 Rules agreement counts only items the rules place: REQUIRED and KNOWN_OTHER
 titles, and POSITIVE or NEGATIVE texts. UNKNOWN titles and UNPLACED texts have

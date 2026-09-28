@@ -7,6 +7,8 @@ Model `gpt-4.1-mini`, 5 runs per item, cache off.
 | Items | 120 |
 | Self-agreement (identical labels on every run) | 99.17% |
 | Items the rules placed | 110 |
+| Items default mode sends to the model | 15 |
+| ...of which stable on every run | 14 |
 | Agreement with the rules (modal label equals rule label) | 98.18% |
 | Temperature 0 accepted | True |
 | API calls made | 600 |
@@ -14,11 +16,11 @@ Model `gpt-4.1-mini`, 5 runs per item, cache off.
 
 ## By question type
 
-| Question | Items | Stable | Rule-placed | Agree with rules |
-|---|---|---|---|---|
-| consent | 8 | 7 | 8 | 8 |
-| plan | 5 | 5 | 4 | 4 |
-| title | 107 | 107 | 98 | 96 |
+| Question | Items | Stable | Rule-placed | Agree with rules | Sent in default mode | ...stable |
+|---|---|---|---|---|---|---|
+| consent | 8 | 7 | 8 | 8 | 5 | 4 |
+| plan | 5 | 5 | 4 | 4 | 1 | 1 |
+| title | 107 | 107 | 98 | 96 | 9 | 9 |
 
 ## Disagreements with the rules
 

@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-28T02:36:08.406171+00:00",
+  "generated_at": "2026-09-28T03:48:01.839971+00:00",
   "mode": "eval",
   "primary_score": {
     "name": "aggregate_local_score_pct",
     "value_pct": 100.0,
     "goal": "maximize"
   },
-  "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
-  "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+  "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
+  "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
   "run_status": "completed",
-  "run_report_url": "https://platform.openai.com/evaluations/eval_6ab9d2911ebc8191b03c9dbf7346d583?project_id=proj_AXneXRz90wuPGx9tKtfxBGAs&run_id=evalrun_6ab9d291a5648191bf170f1f44b6463e",
+  "run_report_url": "https://platform.openai.com/evaluations/eval_6ab9e36ac19081919d5756aec71cb122?project_id=proj_AXneXRz90wuPGx9tKtfxBGAs&run_id=evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
   "run_result_counts": {
     "errored": 0,
     "failed": 0,
@@ -20,48 +20,48 @@
     {
       "failed": 0,
       "passed": 50,
-      "testing_criteria": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
-      "testing_criteria_id": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d"
+      "testing_criteria": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
+      "testing_criteria_id": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848"
     },
     {
       "failed": 0,
       "passed": 50,
-      "testing_criteria": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
-      "testing_criteria_id": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3"
+      "testing_criteria": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
+      "testing_criteria_id": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1"
     },
     {
       "failed": 0,
       "passed": 50,
-      "testing_criteria": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
-      "testing_criteria_id": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf"
+      "testing_criteria": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
+      "testing_criteria_id": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64"
     },
     {
       "failed": 0,
       "passed": 50,
-      "testing_criteria": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
-      "testing_criteria_id": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c"
+      "testing_criteria": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
+      "testing_criteria_id": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691"
     }
   ],
   "criteria_summary_from_output_items": {
-    "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d": {
+    "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848": {
       "passed": 50,
       "failed": 0,
       "total": 50,
       "pass_rate_pct": 100.0
     },
-    "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3": {
+    "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1": {
       "passed": 50,
       "failed": 0,
       "total": 50,
       "pass_rate_pct": 100.0
     },
-    "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf": {
+    "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64": {
       "passed": 50,
       "failed": 0,
       "total": 50,
       "pass_rate_pct": 100.0
     },
-    "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c": {
+    "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691": {
       "passed": 50,
       "failed": 0,
       "total": 50,
@@ -7743,8 +7743,8 @@
   ],
   "output_items": [
     {
-      "id": "outputitem_6ab9d296beb481919bf00fd4fbf507cf",
-      "created_at": 1790562966,
+      "id": "outputitem_6ab9e370a2bc8191bf654a97b9c1dd3e",
+      "created_at": 1790567280,
       "datasource_item": {
         "record_index": 49,
         "case_id": "case_00049",
@@ -7758,47 +7758,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 49,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "c6f52a5ca2d077ba72874d9c71bff596a537cc5f03619cfa0012bd324e3cd38c",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d296a8b48191931c19d9fe8250f0",
-      "created_at": 1790562966,
+      "id": "outputitem_6ab9e37078608191b3015d4163b12829",
+      "created_at": 1790567280,
       "datasource_item": {
         "record_index": 48,
         "case_id": "case_00048",
@@ -7812,47 +7812,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 48,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "d432e03d262bc371055266a2db3aef5fe08f4382784fdc43ca2e246f48c4ca5f",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d296932c81918badf50f3b860af2",
-      "created_at": 1790562966,
+      "id": "outputitem_6ab9e37063a881919cb3828b0fdd31cf",
+      "created_at": 1790567280,
       "datasource_item": {
         "record_index": 47,
         "case_id": "case_00047",
@@ -7866,47 +7866,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 47,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "3ef59ce313e757b0ebb98e876788f9b4f7463808a4d71f5ba077006155663563",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29680ac81919c83d81527bf44cd",
-      "created_at": 1790562966,
+      "id": "outputitem_6ab9e3705160819193b0e42bcbcd012e",
+      "created_at": 1790567280,
       "datasource_item": {
         "record_index": 46,
         "case_id": "case_00046",
@@ -7920,47 +7920,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 46,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "31e689b88515890d77cc4d8ce44d81bb9b6f3d8fb9c2ce719ec68f1671dd1db7",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d296708c819198e0d71f6365e84e",
-      "created_at": 1790562966,
+      "id": "outputitem_6ab9e3703dec81919bc2e65da3af3a3a",
+      "created_at": 1790567280,
       "datasource_item": {
         "record_index": 45,
         "case_id": "case_00045",
@@ -7974,47 +7974,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 45,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "9f545199a98e9cec9f3739b445648dfd041c4869d02c355e5846e72ddfaf3cd6",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d296495c8191b5d1f38b1f8782a3",
-      "created_at": 1790562966,
+      "id": "outputitem_6ab9e3702a588191946de9d4ef4f5718",
+      "created_at": 1790567280,
       "datasource_item": {
         "record_index": 44,
         "case_id": "case_00044",
@@ -8028,47 +8028,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 44,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "4940911e2ce0b244049d636792b8606ca60d3beb2684b3852c029333a2486538",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29637cc8191aebf141fb5df8f44",
-      "created_at": 1790562966,
+      "id": "outputitem_6ab9e37018ec81919be0c5d37b001e01",
+      "created_at": 1790567280,
       "datasource_item": {
         "record_index": 43,
         "case_id": "case_00043",
@@ -8082,47 +8082,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 43,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "ba6807d99b17f49646b2df7479612dd2a5b0359d14e46e6ab0763c3f143ad90f",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29627848191be82829e39defb51",
-      "created_at": 1790562966,
+      "id": "outputitem_6ab9e37001e4819191b6b886071f5d6e",
+      "created_at": 1790567280,
       "datasource_item": {
         "record_index": 42,
         "case_id": "case_00042",
@@ -8136,47 +8136,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 42,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "ee62600d18248b139a0dc296e04554c936440b893893f79a6826c733660c488d",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29615008191994c5f2f84d69ca3",
-      "created_at": 1790562966,
+      "id": "outputitem_6ab9e36feee081919f430aee51ff686c",
+      "created_at": 1790567279,
       "datasource_item": {
         "record_index": 41,
         "case_id": "case_00041",
@@ -8190,47 +8190,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 41,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "7cde6f236fc0e9d10be1912554204e49ef14211829f9324fbaadaa218c5f365d",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29603f881918486b8a7cf6af901",
-      "created_at": 1790562966,
+      "id": "outputitem_6ab9e36fdaf881919a566e47dc3bb5c3",
+      "created_at": 1790567279,
       "datasource_item": {
         "record_index": 40,
         "case_id": "case_00040",
@@ -8244,47 +8244,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 40,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "74a84f4bbf35e29fb652ccf16b7913d623d61380aa309035b76d84c2a087c319",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d295f1008191b4256d8e1ee607f1",
-      "created_at": 1790562965,
+      "id": "outputitem_6ab9e36fc67c81919e11f88e006336e1",
+      "created_at": 1790567279,
       "datasource_item": {
         "record_index": 39,
         "case_id": "case_00039",
@@ -8298,47 +8298,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 39,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "55086b999af1ef52ee781cedda6bad61b79ad986d0bd702c0cc7fd6d3a9fc678",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d295bf008191b783003d0a845770",
-      "created_at": 1790562965,
+      "id": "outputitem_6ab9e36fb19481919d878c2955ee7d32",
+      "created_at": 1790567279,
       "datasource_item": {
         "record_index": 38,
         "case_id": "case_00038",
@@ -8352,47 +8352,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 38,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "a9a8fcc2d805870a08700f818356f6ba873170c64e615b5ab7b590b24b25aa73",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d295ab2c8191aa99df16d868a478",
-      "created_at": 1790562965,
+      "id": "outputitem_6ab9e36f9fe08191a0c6c7a87d727e78",
+      "created_at": 1790567279,
       "datasource_item": {
         "record_index": 37,
         "case_id": "case_00037",
@@ -8406,47 +8406,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 37,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "ef2688d47dda9ca534877667f13ef4d8178a5b2d85c63b25d1a121f175edbd29",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29599e881918c9c46395572cd96",
-      "created_at": 1790562965,
+      "id": "outputitem_6ab9e36f8c6081919ae3bf4c7e37ae88",
+      "created_at": 1790567279,
       "datasource_item": {
         "record_index": 36,
         "case_id": "case_00036",
@@ -8460,47 +8460,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 36,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "ffda83ad7ef46e9e8b6117dea47e84915268009781b4f391f4efed8b306c2cd9",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29588c481918feeb3aa9aaf181c",
-      "created_at": 1790562965,
+      "id": "outputitem_6ab9e36f7a9481918fd5da8ebf229614",
+      "created_at": 1790567279,
       "datasource_item": {
         "record_index": 35,
         "case_id": "case_00035",
@@ -8514,47 +8514,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 35,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "507c65696ba2b9b9495ec0a60297cbaa4e52f5c02d292de99112e93fa4318020",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29573808191b8b8fd24057377df",
-      "created_at": 1790562965,
+      "id": "outputitem_6ab9e36f68c08191b99c08161256cab3",
+      "created_at": 1790567279,
       "datasource_item": {
         "record_index": 34,
         "case_id": "case_00034",
@@ -8568,47 +8568,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 34,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "f62e3917e5757759e66b25819484a55f320b479d18de929cdc1789668bdaf7ed",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29563408191ae28bd0ac9358b5c",
-      "created_at": 1790562965,
+      "id": "outputitem_6ab9e36f51788191bd4e7bd5b7d2ebea",
+      "created_at": 1790567279,
       "datasource_item": {
         "record_index": 33,
         "case_id": "case_00033",
@@ -8622,47 +8622,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 33,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "4a1683d21bdbe95a314ad0758044e8766a5006d536fbfcfa2ee08e5c1960d6ee",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d295250881918fce9c34d76cc939",
-      "created_at": 1790562965,
+      "id": "outputitem_6ab9e36f3eb48191ae3f3e2f0a5f90f7",
+      "created_at": 1790567279,
       "datasource_item": {
         "record_index": 32,
         "case_id": "case_00032",
@@ -8676,47 +8676,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 32,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "0da74325930c107e8f73d45bf2ebb0c7710a98f40bc7f6bc602e70bc9ebfb70e",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d295103481918d292a9241485429",
-      "created_at": 1790562965,
+      "id": "outputitem_6ab9e36f2cf88191a1299880dccce2e4",
+      "created_at": 1790567279,
       "datasource_item": {
         "record_index": 31,
         "case_id": "case_00031",
@@ -8730,47 +8730,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 31,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "780fec2f1ef533712a860615de3d91e04be8205b108fb289aaa79d59559b5316",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d294fe8c8191bd38b7266baa20e9",
-      "created_at": 1790562964,
+      "id": "outputitem_6ab9e36f19948191a875f9841b0e32bf",
+      "created_at": 1790567279,
       "datasource_item": {
         "record_index": 30,
         "case_id": "case_00030",
@@ -8784,47 +8784,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 30,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "e4cfae22951171c1ee5c44572f3929da7cda821d350a1e2109b99d9591f9542d",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d294ec6c81918c203c0c0fe61f21",
-      "created_at": 1790562964,
+      "id": "outputitem_6ab9e36f00c8819186bae2288341dd8c",
+      "created_at": 1790567279,
       "datasource_item": {
         "record_index": 29,
         "case_id": "case_00029",
@@ -8838,47 +8838,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 29,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "41f87b02edc14aff6e2002a79b326cb93843bc97271593bedd7f141cf71b7738",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d294d98881918c9be08059a6d035",
-      "created_at": 1790562964,
+      "id": "outputitem_6ab9e36eebfc8191b7f70d04d61090a5",
+      "created_at": 1790567278,
       "datasource_item": {
         "record_index": 28,
         "case_id": "case_00028",
@@ -8892,47 +8892,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 28,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "45d938c8ff9e658e331fda9bc477e26e955262bf4745d9f2ff90f4c61a026675",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d294c654819195379213c19ea137",
-      "created_at": 1790562964,
+      "id": "outputitem_6ab9e36ed984819191410d20d283c45f",
+      "created_at": 1790567278,
       "datasource_item": {
         "record_index": 27,
         "case_id": "case_00027",
@@ -8946,47 +8946,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 27,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "4b35acdf3dcd29d156dad070ab02cd730166b63f6959f271f40b9a5ce9469471",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d294b21c81918798c00fa361299a",
-      "created_at": 1790562964,
+      "id": "outputitem_6ab9e36ebf64819195d746e9324a83e7",
+      "created_at": 1790567278,
       "datasource_item": {
         "record_index": 26,
         "case_id": "case_00026",
@@ -9000,47 +9000,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 26,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "bab802ac335f11e1f15bd3b91dfa6f12fac3d7fdbf612e591f0dd72ba91e394b",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d2948fe081919294314dd91030ab",
-      "created_at": 1790562964,
+      "id": "outputitem_6ab9e36eac108191a0de8cf2ef3b7715",
+      "created_at": 1790567278,
       "datasource_item": {
         "record_index": 25,
         "case_id": "case_00025",
@@ -9054,47 +9054,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 25,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "462f3dd94742b6222b7b6f267f1d44631c61d13a03af7b0f968993c71eafc1ae",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29456e88191ad4a9c86c478f5c1",
-      "created_at": 1790562964,
+      "id": "outputitem_6ab9e36e8b7881919655d97e73c2da72",
+      "created_at": 1790567278,
       "datasource_item": {
         "record_index": 24,
         "case_id": "case_00024",
@@ -9108,47 +9108,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 24,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "ea8459f00426e6b8b244e1f3495856ec66ad2975541ff4d9c2153d8ea5bdf3b6",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d294462881918991cfc5f85c5680",
-      "created_at": 1790562964,
+      "id": "outputitem_6ab9e36e792c81919594499427aec5f3",
+      "created_at": 1790567278,
       "datasource_item": {
         "record_index": 23,
         "case_id": "case_00023",
@@ -9162,47 +9162,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 23,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "32f028e359b38906b042af8554c34d5ef4166c161619c8a1908c20d34d7aa981",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29435488191b5ccfdc25c722af2",
-      "created_at": 1790562964,
+      "id": "outputitem_6ab9e36e67f88191a797a1bd2002d846",
+      "created_at": 1790567278,
       "datasource_item": {
         "record_index": 22,
         "case_id": "case_00022",
@@ -9216,47 +9216,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 22,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "93a6f9ff368db00d9ab7be28931d3726ca2ed29f63642e15d543362175bd6ebb",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29422c08191a58783eb01b278ce",
-      "created_at": 1790562964,
+      "id": "outputitem_6ab9e36e3f788191a3cf6acf36ea95b6",
+      "created_at": 1790567278,
       "datasource_item": {
         "record_index": 21,
         "case_id": "case_00021",
@@ -9270,47 +9270,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 21,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "09768a94939a9f415fbceee93a6692956ca714f5ab989149e507aafa1e33235d",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29410008191906a10c381bfc6b7",
-      "created_at": 1790562964,
+      "id": "outputitem_6ab9e36e2c808191b47fd7d58392c696",
+      "created_at": 1790567278,
       "datasource_item": {
         "record_index": 20,
         "case_id": "case_00020",
@@ -9324,47 +9324,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 20,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "96c8d37528b09490c6d5717af7db62c6d85753f2add554800bd2b3a009653de1",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d293fba08191be5bebd5e033be68",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36e1a8881919e3af31acc0f41ee",
+      "created_at": 1790567278,
       "datasource_item": {
         "record_index": 19,
         "case_id": "case_00019",
@@ -9378,47 +9378,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 19,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "3dcef99ec8ee050b4fc2c0ae271d2953f78619e42f507fbeafee0fca231e662f",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d293e8a08191ab37c3054ab58590",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36e08f88191a524b643067eeb90",
+      "created_at": 1790567278,
       "datasource_item": {
         "record_index": 18,
         "case_id": "case_00018",
@@ -9432,47 +9432,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 18,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "9a9f5bbf68a006fc81d259fb41b952531938c47f513ff4ba8f52f5e8783e2178",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d293d3788191892553c31f1f9aae",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36ded1081918ba92a630b5a0e41",
+      "created_at": 1790567277,
       "datasource_item": {
         "record_index": 17,
         "case_id": "case_00017",
@@ -9486,47 +9486,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 17,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "c1d52d4f7c6badc5f17cd403059679d47df7bd5a1077c725dee5f9408f608f80",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d293c14c81919f8783e0a80b8425",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36dd8748191adc651b2ab25469c",
+      "created_at": 1790567277,
       "datasource_item": {
         "record_index": 16,
         "case_id": "case_00016",
@@ -9540,47 +9540,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 16,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "6d3246a4268b37718d5bbeea78a0742cd5bd478ba6c8ebda56bb4f63bbbbc10a",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d293aedc8191b3f4052f241be8a2",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36dc1a08191978ec8275e07c910",
+      "created_at": 1790567277,
       "datasource_item": {
         "record_index": 15,
         "case_id": "case_00015",
@@ -9594,47 +9594,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 15,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "d0c5f7d4800551b21b35fefd8ae5be66179ca5d32a6b417f402be5255263b6e7",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d2939d708191a79d309cf207fafb",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36daf7c8191b18adee759fb91c2",
+      "created_at": 1790567277,
       "datasource_item": {
         "record_index": 14,
         "case_id": "case_00014",
@@ -9648,47 +9648,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 14,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "399df54ee9f88313ad514b180b16155d1cb54b3bfd117c5e0e45e6805e3deb60",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d2938b988191b11a3a03434bd2f0",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36d9d2881919c2ffad445cc93b0",
+      "created_at": 1790567277,
       "datasource_item": {
         "record_index": 13,
         "case_id": "case_00013",
@@ -9702,47 +9702,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 13,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "3b5a4c20b561a42365d5f3e9f3a25ac73299651b9a638c1b21d6303239eff8d1",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d293791c8191a9b30d533b54b113",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36d1e64819197704de412bbe01c",
+      "created_at": 1790567277,
       "datasource_item": {
         "record_index": 12,
         "case_id": "case_00012",
@@ -9756,47 +9756,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 12,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "06d11f0670ab145c050ee81e4875ebd7df576a45814448c87467823af0bf9960",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d293677c81918a61a8a63d53880f",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36d0c048191b75cb51d0fecdf86",
+      "created_at": 1790567277,
       "datasource_item": {
         "record_index": 11,
         "case_id": "case_00011",
@@ -9810,47 +9810,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 11,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "7a2979e28e69e5fb6e6f15a172a9930f8d00402dbbcc57da3d84c347f44c4ac1",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29353ac8191a09b34c743a3e84d",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36cf9448191ba12c86b6e147d0d",
+      "created_at": 1790567276,
       "datasource_item": {
         "record_index": 10,
         "case_id": "case_00010",
@@ -9864,47 +9864,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 10,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "887c0da7f66540c59840ab10e9e0c91e0761e8eab10da024d507c0dfaa856c2a",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29342ec8191993ef0b8cdaa9d85",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36ce7208191b48afb47f37eac66",
+      "created_at": 1790567276,
       "datasource_item": {
         "record_index": 9,
         "case_id": "case_00009",
@@ -9918,47 +9918,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 9,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "2082264b2540c2b16277544641443c6757a16041fd82d6658039b308c3be1861",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d2932ebc81918efded1564152746",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36cd3148191b93661d7130dae3d",
+      "created_at": 1790567276,
       "datasource_item": {
         "record_index": 8,
         "case_id": "case_00008",
@@ -9972,47 +9972,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 8,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "74e32f00405fde1864b86372442e82d153ae3a19a5f2d0c54ee156a77ef0dca9",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d2931d548191b819c15efb700b45",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36cc0d481918a31c3b8f83c7c08",
+      "created_at": 1790567276,
       "datasource_item": {
         "record_index": 7,
         "case_id": "case_00007",
@@ -10026,47 +10026,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 7,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "f44825117186eb05f31fd07fb355e857a1fbab7a49aa41f15437a0b1c58f1fd0",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d2930a9c819189ded1e46450b627",
-      "created_at": 1790562963,
+      "id": "outputitem_6ab9e36c7adc8191bb5ce0ecc81cc5b0",
+      "created_at": 1790567276,
       "datasource_item": {
         "record_index": 6,
         "case_id": "case_00006",
@@ -10080,47 +10080,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 6,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "3421653023cad8a3ff6a60f08a133c1192ea294433596e419428d5d79cc89a1b",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d292f65081919e1eca167fcbf526",
-      "created_at": 1790562962,
+      "id": "outputitem_6ab9e36c69948191af6e1acd04fd3f4d",
+      "created_at": 1790567276,
       "datasource_item": {
         "record_index": 5,
         "case_id": "case_00005",
@@ -10134,47 +10134,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 5,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "1a1dcb8bbc7142300e298af80896386d508f693936fbea11a1cb380917e130ba",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d292e4448191b9b394caf7f1d777",
-      "created_at": 1790562962,
+      "id": "outputitem_6ab9e36c5660819198d00efc62ec8e11",
+      "created_at": 1790567276,
       "datasource_item": {
         "record_index": 4,
         "case_id": "case_00004",
@@ -10188,47 +10188,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 4,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "9d892ddc0f264a5e4688d83be237a88c3b78000d4a8d82c20bc8010406a6dccb",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d292d3fc819185816e5c7b8576ea",
-      "created_at": 1790562962,
+      "id": "outputitem_6ab9e36c43c8819185152fa054724278",
+      "created_at": 1790567276,
       "datasource_item": {
         "record_index": 3,
         "case_id": "case_00003",
@@ -10242,47 +10242,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 3,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "78439c0048939bd060dcccbe2e35e177958c64e4645323e68e49cb6921a08a41",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d292c28c819185d3da7e42e438bf",
-      "created_at": 1790562962,
+      "id": "outputitem_6ab9e36c1c888191bc60c75368f9a2fe",
+      "created_at": 1790567276,
       "datasource_item": {
         "record_index": 2,
         "case_id": "case_00002",
@@ -10296,47 +10296,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 2,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "309072fa7e040e827512e2950e132c8868e2d0ac7e9d04f7ef711d9107c6df4a",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d292b1608191b116af993ec0aba7",
-      "created_at": 1790562962,
+      "id": "outputitem_6ab9e36c0a508191a995674cda627575",
+      "created_at": 1790567276,
       "datasource_item": {
         "record_index": 1,
         "case_id": "case_00001",
@@ -10350,47 +10350,47 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 1,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "2b82ef0bad71da71415ebcd41c957f205e9f8a3b8c509e38b82825fba6104661",
       "available_includes": []
     },
     {
-      "id": "outputitem_6ab9d29278c48191a96239ad80953f84",
-      "created_at": 1790562962,
+      "id": "outputitem_6ab9e36bf1f08191863c3295e5c763c9",
+      "created_at": 1790567275,
       "datasource_item": {
         "record_index": 0,
         "case_id": "case_00000",
@@ -10404,39 +10404,39 @@
         "issues_value_grounding": "true"
       },
       "datasource_item_id": 0,
-      "eval_id": "eval_6ab9d2911ebc8191b03c9dbf7346d583",
+      "eval_id": "eval_6ab9e36ac19081919d5756aec71cb122",
       "object": "eval.run.output_item",
       "results": [
         {
-          "name": "decision_match_oracle-755728ec-0fd1-4334-902b-c6bed65ab11d",
+          "name": "decision_match_oracle-c0478fc2-9862-49f9-b88c-ae171e648848",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "json_schema_valid-aa1bbad2-367f-48dd-8db9-5c8062d48fc3",
+          "name": "json_schema_valid-6740ec96-5200-4a73-bd59-f4dd05fab1a1",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issues_value_grounding-4319c390-2cfc-4838-a7bc-5a97a0fd1fbf",
+          "name": "issues_value_grounding-0bc09d50-c2b1-4f49-a106-53c6b411cb64",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         },
         {
-          "name": "issue_categories_match_oracle-733da9e6-94cb-4c99-86fe-0e9efc60c78c",
+          "name": "issue_categories_match_oracle-e8ffce2e-eef8-4dda-b3df-e05cc1f1f691",
           "passed": true,
           "score": 1.0,
           "sample": null,
           "type": null
         }
       ],
-      "run_id": "evalrun_6ab9d291a5648191bf170f1f44b6463e",
+      "run_id": "evalrun_6ab9e36b1f288191ad1db1a667acf5b8",
       "sample": null,
       "status": "pass",
       "_datasource_item_content_hash": "c4574571eb59296b220beae6a0cecaadf673e172e73db93b470e98d55765e31a",

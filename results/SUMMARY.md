@@ -19,18 +19,46 @@ record 0 (case_00000), 10 calls in one process.
 
 Notes:
 
+- `naive` failing cases: case_00000 (issue_categories_match_oracle); case_00001 (issue_categories_match_oracle); case_00002 (issue_categories_match_oracle); case_00005 (issues_value_grounding); case_00007 (decision_match_oracle, issue_categories_match_oracle); case_00009 (issues_value_grounding); case_00011 (issues_value_grounding); case_00013 (issues_value_grounding); case_00014 (issue_categories_match_oracle, issues_value_grounding); case_00015 (decision_match_oracle, issue_categories_match_oracle); case_00016 (issues_value_grounding); case_00020 (issues_value_grounding); case_00023 (issue_categories_match_oracle); case_00025 (decision_match_oracle, issue_categories_match_oracle); case_00026 (issue_categories_match_oracle, issues_value_grounding); case_00027 (issues_value_grounding); case_00028 (issue_categories_match_oracle); case_00032 (issues_value_grounding); case_00033 (issues_value_grounding); case_00036 (issues_value_grounding); case_00037 (issue_categories_match_oracle); case_00040 (decision_match_oracle, issue_categories_match_oracle); case_00042 (issues_value_grounding); case_00045 (issues_value_grounding); case_00048 (decision_match_oracle, issue_categories_match_oracle); case_00049 (json_schema_valid, decision_match_oracle, issue_categories_match_oracle, issues_value_grounding).
 - `naive`: case_00049 returned a response that failed `TriageOutput` validation; the harness scored it as schema-invalid.
+- `naive-gpt-6-luna` failing cases: case_00002 (issue_categories_match_oracle); case_00003 (issues_value_grounding); case_00004 (issues_value_grounding); case_00005 (issues_value_grounding); case_00007 (issues_value_grounding); case_00011 (issues_value_grounding); case_00015 (issues_value_grounding); case_00016 (issues_value_grounding); case_00020 (issues_value_grounding); case_00021 (issues_value_grounding); case_00023 (issue_categories_match_oracle, issues_value_grounding); case_00033 (issues_value_grounding); case_00037 (issue_categories_match_oracle); case_00039 (issues_value_grounding); case_00040 (issues_value_grounding); case_00047 (issues_value_grounding); case_00048 (issues_value_grounding).
+- `final-offline` failing cases: none.
+- `final-gpt-4.1-mini` failing cases: case_00002 (issue_categories_match_oracle).
+- `final-gpt-6-luna` failing cases: case_00002 (issue_categories_match_oracle).
 
 ## LLM stability (cache off)
 
-| Run | Model | Items | Runs | Self-agreement (%) | Rules agreement (% of rule-placed items) | API calls | Failures | Temperature 0 accepted | Disagreements |
-|---|---|---|---|---|---|---|---|---|---|
-| stability-gpt-4.1-mini | gpt-4.1-mini | 120 | 5 | 99.17 | 98.18 of 110 | 600 | 0 | True | 2 |
-| stability-gpt-6-luna | gpt-6-luna | 120 | 5 | 97.5 | 97.27 of 110 | 601 | 0 | False | 3 |
+| Run | Model | Items | Runs | Self-agreement (%) | Rules agreement (% of rule-placed items) | API calls | Failures | Temperature 0 accepted | Default-mode items stable | Disagreements |
+|---|---|---|---|---|---|---|---|---|---|---|
+| stability-gpt-4.1-mini | gpt-4.1-mini | 120 | 5 | 99.17 | 98.18 of 110 | 600 | 0 | True | 14 of 15 | 2 |
+| stability-gpt-6-luna | gpt-6-luna | 120 | 5 | 98.33 | 97.27 of 110 | 601 | 0 | False | 15 of 15 | 3 |
 
 Self-agreement is the share of items whose label was identical on every run.
 Rules agreement is the share of rule-placed items whose most common model label
-equals the rule label.
+equals the rule label. Default-mode items are the ones default mode actually
+sends to the model (unknown titles, consent confirmations and unplaced consents,
+unplaced plans); the column counts how many were stable on every run.
+
+### Items with split labels
+
+`stability-gpt-4.1-mini`:
+
+- consent "Signed consent scanned and verified before scheduling.": false x1, true x4 (sent in default mode)
+
+`stability-gpt-6-luna`:
+
+- title "H&P Update": H_AND_P x2, OTHER x3 (rule-placed, not sent in default mode)
+- title "Perioperative Medication Review": ANTICOAG_PLAN x3, OTHER x2 (rule-placed, not sent in default mode)
+
+### Unknown titles where the models disagree
+
+5 of 9 unknown titles get a different most common label from different models.
+
+- "Imported: Preoperative Assessment [PDF]": stability-gpt-4.1-mini: H_AND_P, stability-gpt-6-luna: OTHER
+- "Pre-op Evaluation [PDF]": stability-gpt-4.1-mini: H_AND_P, stability-gpt-6-luna: OTHER
+- "Pre-op Pre-op Evaluation [PDF]": stability-gpt-4.1-mini: H_AND_P, stability-gpt-6-luna: OTHER
+- "Preop Pre-anesthesia Evaluation [PDF]": stability-gpt-4.1-mini: H_AND_P, stability-gpt-6-luna: OTHER
+- "Scanned Pre-anesthesia Evaluation [PDF]": stability-gpt-4.1-mini: H_AND_P, stability-gpt-6-luna: OTHER
 
 ### Disagreements with the rules
 
