@@ -4,8 +4,12 @@ Reference document for the hybrid rules-plus-LLM implementation of
 `triage_submission`. The Cadence Surgical Center Pre-Operative Scheduling
 Policy in the appendix of the take-home PDF is the only source of truth for
 rules. The starter's `BASELINE_SYSTEM_PROMPT` in `core.py` paraphrased it and
-was removed in milestone 4 once nothing referenced it; where they differed,
-the PDF won. Every data claim below was checked against
+was removed in milestone 4 once nothing referenced it. The paraphrase differed
+from the PDF only on Rule 3, where it dropped "the plan must clearly describe
+how the medication will be managed before and after the procedure" and "if
+the plan is incomplete or ambiguous"; those clauses are applied in D4. The
+planner and validator sessions had the PDF; the designer and builder sessions
+worked from the paraphrase and this document. Every data claim below was checked against
 `data/patients_sample_50.jsonl` and the scoring logic in `run_evals.py`.
 
 ## 1. Purpose and scope

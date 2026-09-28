@@ -4,6 +4,16 @@
 
 `triage_submission` decides whether a pre-operative submission package is `READY`, `NEEDS_FOLLOW_UP`, or `NOT_CLEARED` under the Cadence Surgical Center policy, and lists every blocking issue with evidence from the package. It is a deterministic Python rules engine with a narrow LLM layer for the few inputs keywords cannot settle, scored by the unmodified starter harness.
 
+## Transcripts
+
+The AI sessions that produced this repo are exported in full at the repo root:
+
+- [AI Transcript - Designer.md](AI%20Transcript%20-%20Designer.md): wrote [DESIGN.md](DESIGN.md) before any code, from the decisions in the first prompt.
+- [AI Transcript - Builder.md](AI%20Transcript%20-%20Builder.md): Opus 5.5 with Fable 5.1 as advisor, one prompt per milestone, every commit in this repo.
+- [AI Transcript - Validator.md](AI%20Transcript%20-%20Validator.md): Opus 5.5, one session run at two checkpoints, after the rules engine and before submission. It reported findings and never edited.
+
+A fourth planner session drafted every prompt the other three received and triaged the validator's findings; it has no separate export, and its prompts appear verbatim as the user turns in the three files. The exports come from Claude Code's `/export`, which records every prompt, reply, and tool command but not tool outputs, so those show as "(No output)"; the outputs live in this repo and under `results/`.
+
 ## How to run
 
 **Setup.** Install [uv](https://docs.astral.sh/uv/) and confirm it works. Everything else is resolved by `uv run`.
@@ -239,3 +249,5 @@ On an API error the resolver retries twice with a short backoff, then uses the o
 ## Process
 
 [DESIGN.md](DESIGN.md) was written and committed before any code, and it records every decision and the oracle conventions checked against the data. Each milestone was then built against it in its own commits: scaffold and baseline capture, rules engine, LLM layer, and evidence runs. A separate reviewer session verified the work at each checkpoint, and its findings, including the rejected ones, are recorded in `DESIGN.md`.
+
+**Policy provenance.** The starter's `BASELINE_SYSTEM_PROMPT` paraphrased the policy. It matched the PDF appendix on rules 1, 2, and 4 and on the final determination, but its Rule 3 dropped "the plan must clearly describe how the medication will be managed before and after the procedure" and "if the plan is incomplete or ambiguous." The designer and builder sessions did not have the PDF; they worked from that paraphrase and from `DESIGN.md`, and the builder's milestone 2 report described its comparison as "the PDF and DESIGN.md disagree" when it was comparing the paraphrase. The two dropped clauses reached the code through decision D4 in `DESIGN.md`, written by the planner from the PDF, and through `RULE_3_BULLETS` in `preop_triage/llm.py`, which quotes the PDF verbatim. The planner and validator sessions had the PDF, and the validator checked the code against it directly; its finding that the paraphrase drops the Rule 3 clause is recorded in `DESIGN.md`.
