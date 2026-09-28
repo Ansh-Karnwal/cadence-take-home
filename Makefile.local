@@ -1,12 +1,43 @@
-# Local-only targets. The harness Makefile is never modified.
-# Usage: make -f Makefile.local score-offline [INPUT=...] [OUTPUT=...]
+# Local-only targets. The harness Makefile is never modified; these targets
+# call it with overridden variables.
+#
+#   make -f Makefile.local score-offline [OUTPUT=...]
+#   make -f Makefile.local final MODEL=gpt-4.1-mini [TAG=...]
+#   PREOP_OFFLINE=1 make -f Makefile.local final TAG=offline
+#   make -f Makefile.local stability MODEL=gpt-4.1-mini [RUNS=5]
+#
+# `final` and `stability` need OPENAI_API_KEY (`make evals` always creates a
+# remote OpenAI eval). PREOP_OFFLINE, PREOP_NO_CACHE, and PREOP_FORCE_LLM are
+# passed through from the environment.
 
 INPUT ?= data/patients_sample_50.jsonl
 OUTPUT ?= data/baseline_outputs.jsonl
+MODEL ?= gpt-4.1-mini
+TAG ?= $(MODEL)
+RUNS ?= 5
+FINAL_DIR = results/final-$(TAG)
+STABILITY_DIR = results/stability-$(MODEL)
 
-.PHONY: score-offline
+export PREOP_OFFLINE PREOP_NO_CACHE PREOP_FORCE_LLM
+
+.PHONY: score-offline final stability
 
 score-offline:
 	uv run score_offline.py \
 		--input $(INPUT) \
 		--outputs $(OUTPUT)
+
+final:
+	$(MAKE) -f Makefile baseline INPUT=$(INPUT) MODEL=$(MODEL) OUTPUT=$(FINAL_DIR)/outputs.jsonl
+	$(MAKE) -f Makefile evals INPUT=$(INPUT) OUTPUT=$(FINAL_DIR)/outputs.jsonl \
+		REPORT=$(FINAL_DIR)/eval_report.json
+	$(MAKE) -f Makefile determinism INPUT=$(INPUT) MODEL=$(MODEL) \
+		DETERMINISM_REPORT=$(FINAL_DIR)/determinism_report.json
+	python3 -c 'import json, os, subprocess; json.dump({"tag": "$(TAG)", "model": "$(MODEL)", "preop_offline": os.environ.get("PREOP_OFFLINE", ""), "preop_no_cache": os.environ.get("PREOP_NO_CACHE", ""), "preop_force_llm": os.environ.get("PREOP_FORCE_LLM", ""), "commit": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()}, open("$(FINAL_DIR)/run_info.json", "w"), indent=2)'
+
+stability:
+	uv run scripts/llm_stability.py \
+		--model $(MODEL) \
+		--runs $(RUNS) \
+		--input $(INPUT) \
+		--out $(STABILITY_DIR)

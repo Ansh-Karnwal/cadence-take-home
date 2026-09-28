@@ -1,0 +1,2616 @@
+{
+  "model": "gpt-6-luna",
+  "runs": 5,
+  "temperature_accepted": false,
+  "api_calls": 601,
+  "failures": 0,
+  "summary": {
+    "items": 120,
+    "self_agreement_pct": 97.5,
+    "rule_placed_items": 110,
+    "rules_agreement_pct": 97.27,
+    "by_question_type": {
+      "consent": {
+        "items": 8,
+        "stable": 8,
+        "rule_placed": 8,
+        "rule_agree": 8
+      },
+      "plan": {
+        "items": 5,
+        "stable": 5,
+        "rule_placed": 4,
+        "rule_agree": 4
+      },
+      "title": {
+        "items": 107,
+        "stable": 104,
+        "rule_placed": 98,
+        "rule_agree": 95
+      }
+    },
+    "disagreements": [
+      {
+        "question": "title",
+        "text": "Cardiology Progress Note - Anticoag",
+        "rule_label": "ANTICOAG_PLAN",
+        "model_labels": {
+          "OTHER": 5
+        },
+        "cases": [
+          "case_00021"
+        ]
+      },
+      {
+        "question": "title",
+        "text": "Consent Counseling Note",
+        "rule_label": "CONSENT",
+        "model_labels": {
+          "OTHER": 5
+        },
+        "cases": [
+          "case_00004",
+          "case_00012",
+          "case_00020",
+          "case_00028",
+          "case_00036",
+          "case_00044"
+        ]
+      },
+      {
+        "question": "title",
+        "text": "H&P Update",
+        "rule_label": "H_AND_P",
+        "model_labels": {
+          "OTHER": 3,
+          "H_AND_P": 2
+        },
+        "cases": [
+          "case_00049"
+        ]
+      }
+    ]
+  },
+  "items": [
+    {
+      "question": "title",
+      "text": "Admission H&P - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00011"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Anesthesia Pre-Assessment",
+      "rule_label": "OTHER",
+      "cases": [
+        "case_00001",
+        "case_00004",
+        "case_00007",
+        "case_00010",
+        "case_00013",
+        "case_00016",
+        "case_00019",
+        "case_00022",
+        "case_00025",
+        "case_00028",
+        "case_00031",
+        "case_00034",
+        "case_00037",
+        "case_00040",
+        "case_00043",
+        "case_00046",
+        "case_00049"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "distribution": {
+        "OTHER": 5
+      },
+      "modal_label": "OTHER",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Anticoag Plan (scanned)",
+      "rule_label": "ANTICOAG_PLAN",
+      "cases": [
+        "case_00004"
+      ],
+      "labels": [
+        "ANTICOAG_PLAN",
+        "ANTICOAG_PLAN",
+        "ANTICOAG_PLAN",
+        "ANTICOAG_PLAN",
+        "ANTICOAG_PLAN"
+      ],
+      "distribution": {
+        "ANTICOAG_PLAN": 5
+      },
+      "modal_label": "ANTICOAG_PLAN",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Cardiology Progress Note - Anticoag",
+      "rule_label": "ANTICOAG_PLAN",
+      "cases": [
+        "case_00021"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "distribution": {
+        "OTHER": 5
+      },
+      "modal_label": "OTHER",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Clinic Follow-up Note",
+      "rule_label": "OTHER",
+      "cases": [
+        "case_00002",
+        "case_00005",
+        "case_00008",
+        "case_00011",
+        "case_00014",
+        "case_00017",
+        "case_00020",
+        "case_00023",
+        "case_00026",
+        "case_00029",
+        "case_00032",
+        "case_00035",
+        "case_00038",
+        "case_00041",
+        "case_00044",
+        "case_00047"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "distribution": {
+        "OTHER": 5
+      },
+      "modal_label": "OTHER",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Clinic H&P - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00047"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Consent - Elective Procedure",
+      "rule_label": "CONSENT",
+      "cases": [
+        "case_00007",
+        "case_00015",
+        "case_00023",
+        "case_00031",
+        "case_00039",
+        "case_00047"
+      ],
+      "labels": [
+        "CONSENT",
+        "CONSENT",
+        "CONSENT",
+        "CONSENT",
+        "CONSENT"
+      ],
+      "distribution": {
+        "CONSENT": 5
+      },
+      "modal_label": "CONSENT",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Consent Counseling Note",
+      "rule_label": "CONSENT",
+      "cases": [
+        "case_00004",
+        "case_00012",
+        "case_00020",
+        "case_00028",
+        "case_00036",
+        "case_00044"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "distribution": {
+        "OTHER": 5
+      },
+      "modal_label": "OTHER",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Consent for Surgery",
+      "rule_label": "CONSENT",
+      "cases": [
+        "case_00002",
+        "case_00010",
+        "case_00018",
+        "case_00026",
+        "case_00034",
+        "case_00042"
+      ],
+      "labels": [
+        "CONSENT",
+        "CONSENT",
+        "CONSENT",
+        "CONSENT",
+        "CONSENT"
+      ],
+      "distribution": {
+        "CONSENT": 5
+      },
+      "modal_label": "CONSENT",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Consult H&P (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00014"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "H and P (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00004"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "H&P Note",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00001",
+        "case_00025"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "H&P Update",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00049"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "OTHER": 3,
+        "H_AND_P": 2
+      },
+      "modal_label": "OTHER",
+      "self_agreement": false
+    },
+    {
+      "question": "title",
+      "text": "H&P [PDF]",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00029"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "H+P (H&P) (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00015"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "H+P (H&P) (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00039"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "H/P (H&P) (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00040"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Hist & Phys (H&P)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00042"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "History & Phsyical",
+      "rule_label": null,
+      "cases": [
+        "case_00002"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "History & Physical (H&P)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00043"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "History & Physical Exam (H&P)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00032"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "History & Physical Exam (H&P) (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00008"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "History and Physical",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00000"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "History and Physical Examination - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00028"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "History/Physical (H&P)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00007"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Hx & Physical (H&P) - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00005"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Imported: Clinic H&P",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00048"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Imported: Consult H&P",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00038"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Imported: H&P (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00003"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Imported: H/P (H&P) [PDF]",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00041"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Imported: History & Physical (H&P) - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00017"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Imported: History/Physical (H&P)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00031"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Imported: Hx & Physical (H&P)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00006"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Imported: Initial H&P (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00020"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Imported: Pre-anesthesia H&P (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00010"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Imported: Preop H&P - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00034"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Imported: Preoperative Assessment [PDF]",
+      "rule_label": null,
+      "cases": [
+        "case_00024"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "distribution": {
+        "OTHER": 5
+      },
+      "modal_label": "OTHER",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Imported: Surgical H&P (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00045"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Initial H&P",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00019"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Medical Clearance [PDF]",
+      "rule_label": null,
+      "cases": [
+        "case_00012"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "distribution": {
+        "OTHER": 5
+      },
+      "modal_label": "OTHER",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Outpatient H&P (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00046"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Outpatient H&P - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00022"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "PREOP - Clinic H&P (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00022"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "PREOP - Consult H&P (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00039"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "PREOP - H and P - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00029"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "PREOP - H&P - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00004"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "PREOP - H/P (H&P) (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00015"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "PREOP - History & Physical (H&P)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00018"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "PREOP - History and Physical",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00025"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "PREOP - History/Physical (H&P) (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00032"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "PREOP - Pre-anesthesia H&P [PDF]",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00011"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "PREOP - Pre-op H and P",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00001"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "PREOP - Preop H&P",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00008"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "PREOP - Preoperative History & Physical (H&P)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00043"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "PREOP - Surgical H&P - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00046"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Perioperative Medication Plan",
+      "rule_label": "ANTICOAG_PLAN",
+      "cases": [
+        "case_00000",
+        "case_00006",
+        "case_00042"
+      ],
+      "labels": [
+        "ANTICOAG_PLAN",
+        "ANTICOAG_PLAN",
+        "ANTICOAG_PLAN",
+        "ANTICOAG_PLAN",
+        "ANTICOAG_PLAN"
+      ],
+      "distribution": {
+        "ANTICOAG_PLAN": 5
+      },
+      "modal_label": "ANTICOAG_PLAN",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Perioperative Medication Review",
+      "rule_label": "ANTICOAG_PLAN",
+      "cases": [
+        "case_00026",
+        "case_00038"
+      ],
+      "labels": [
+        "OTHER",
+        "ANTICOAG_PLAN",
+        "ANTICOAG_PLAN",
+        "ANTICOAG_PLAN",
+        "ANTICOAG_PLAN"
+      ],
+      "distribution": {
+        "OTHER": 1,
+        "ANTICOAG_PLAN": 4
+      },
+      "modal_label": "ANTICOAG_PLAN",
+      "self_agreement": false
+    },
+    {
+      "question": "title",
+      "text": "Pre-op Admission H&P",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00037"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Pre-op Clinic H&P [PDF]",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00023"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Pre-op Consent Discussion",
+      "rule_label": "CONSENT",
+      "cases": [
+        "case_00003",
+        "case_00019",
+        "case_00027",
+        "case_00035",
+        "case_00043"
+      ],
+      "labels": [
+        "CONSENT",
+        "CONSENT",
+        "CONSENT",
+        "OTHER",
+        "CONSENT"
+      ],
+      "distribution": {
+        "CONSENT": 4,
+        "OTHER": 1
+      },
+      "modal_label": "CONSENT",
+      "self_agreement": false
+    },
+    {
+      "question": "title",
+      "text": "Pre-op Evaluation [PDF]",
+      "rule_label": null,
+      "cases": [
+        "case_00018"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "distribution": {
+        "OTHER": 5
+      },
+      "modal_label": "OTHER",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Pre-op H and P",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00026",
+        "case_00030"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Pre-op H&P [PDF]",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00035"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Pre-op H/P (H&P) - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00016"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Pre-op Hist & Phys (H&P) - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00041"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Pre-op Nursing Intake",
+      "rule_label": "OTHER",
+      "cases": [
+        "case_00000",
+        "case_00003",
+        "case_00006",
+        "case_00009",
+        "case_00012",
+        "case_00015",
+        "case_00018",
+        "case_00021",
+        "case_00024",
+        "case_00027",
+        "case_00030",
+        "case_00033",
+        "case_00036",
+        "case_00039",
+        "case_00042",
+        "case_00045",
+        "case_00048"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "distribution": {
+        "OTHER": 5
+      },
+      "modal_label": "OTHER",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Pre-op Pre-op Evaluation [PDF]",
+      "rule_label": null,
+      "cases": [
+        "case_00048"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "distribution": {
+        "OTHER": 5
+      },
+      "modal_label": "OTHER",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Pre-op Pre-op H&P (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00034"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Pre-op Preop H&P (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00009"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Pre-op Preoperative History & Physical (H&P) (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00044"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Pre-op Surgical Clearance Note [PDF]",
+      "rule_label": null,
+      "cases": [
+        "case_00006"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "distribution": {
+        "OTHER": 5
+      },
+      "modal_label": "OTHER",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Pre-op Surgical H&P",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00020"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop H&P (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00028"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop H&P (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00033"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop H&P Update",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00024"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop H+P (H&P)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00014"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop Hist & Phys (H&P) [PDF]",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00017"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop History & Physical Exam (H&P)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00007"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop History and Physical",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00049"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop History and Physical Examination (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00003"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop Hospitalist H&P (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00038"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop Hx & Physical (H&P)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00031"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop Initial H&P (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00045"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop Medical Clearance [PDF]",
+      "rule_label": null,
+      "cases": [
+        "case_00042"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "distribution": {
+        "OTHER": 5
+      },
+      "modal_label": "OTHER",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop Outpatient H&P (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00021"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop Pre-anesthesia Evaluation [PDF]",
+      "rule_label": null,
+      "cases": [
+        "case_00000"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "distribution": {
+        "OTHER": 5
+      },
+      "modal_label": "OTHER",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop Pre-anesthesia H&P - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00035"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Preop Pre-op H&P - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00010"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Procedure Consent Form",
+      "rule_label": "CONSENT",
+      "cases": [
+        "case_00001",
+        "case_00009",
+        "case_00017",
+        "case_00041",
+        "case_00049"
+      ],
+      "labels": [
+        "CONSENT",
+        "CONSENT",
+        "CONSENT",
+        "CONSENT",
+        "CONSENT"
+      ],
+      "distribution": {
+        "CONSENT": 5
+      },
+      "modal_label": "CONSENT",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Procedure Consent Packet",
+      "rule_label": "CONSENT",
+      "cases": [
+        "case_00005",
+        "case_00013",
+        "case_00021",
+        "case_00029",
+        "case_00037",
+        "case_00045"
+      ],
+      "labels": [
+        "CONSENT",
+        "CONSENT",
+        "CONSENT",
+        "CONSENT",
+        "CONSENT"
+      ],
+      "distribution": {
+        "CONSENT": 5
+      },
+      "modal_label": "CONSENT",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned Admission H&P",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00012"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned H and P [PDF]",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00005"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned H&P Note (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00026"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned H&P Update - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00023"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned H+P (H&P) - signed",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00040"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned Hist & Phys (H&P) (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00016"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned History & Physical Exam (H&P) (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00033"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned History and Physical Examination",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00002"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned Hospitalist H&P",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00037"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned Initial H&P",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00044"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned Outpatient H&P [PDF]",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00047"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned Pre-anesthesia Evaluation [PDF]",
+      "rule_label": null,
+      "cases": [
+        "case_00030"
+      ],
+      "labels": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "distribution": {
+        "OTHER": 5
+      },
+      "modal_label": "OTHER",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned Pre-op H&P (scanned)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00009"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Scanned Preoperative History & Physical (H&P)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00019"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Surgery Consent (scanned)",
+      "rule_label": "CONSENT",
+      "cases": [
+        "case_00006",
+        "case_00014",
+        "case_00022",
+        "case_00030",
+        "case_00038",
+        "case_00046"
+      ],
+      "labels": [
+        "CONSENT",
+        "CONSENT",
+        "CONSENT",
+        "CONSENT",
+        "CONSENT"
+      ],
+      "distribution": {
+        "CONSENT": 5
+      },
+      "modal_label": "CONSENT",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Surgical Consent",
+      "rule_label": "CONSENT",
+      "cases": [
+        "case_00000",
+        "case_00008",
+        "case_00016",
+        "case_00024",
+        "case_00032",
+        "case_00040",
+        "case_00048"
+      ],
+      "labels": [
+        "CONSENT",
+        "CONSENT",
+        "CONSENT",
+        "CONSENT",
+        "CONSENT"
+      ],
+      "distribution": {
+        "CONSENT": 5
+      },
+      "modal_label": "CONSENT",
+      "self_agreement": true
+    },
+    {
+      "question": "title",
+      "text": "Surgical H&P (external)",
+      "rule_label": "H_AND_P",
+      "cases": [
+        "case_00021"
+      ],
+      "labels": [
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P",
+        "H_AND_P"
+      ],
+      "distribution": {
+        "H_AND_P": 5
+      },
+      "modal_label": "H_AND_P",
+      "self_agreement": true
+    },
+    {
+      "question": "consent",
+      "text": "Consent documented but unsigned; awaiting patient signature.",
+      "rule_label": "false",
+      "cases": [
+        "case_00008"
+      ],
+      "labels": [
+        "false",
+        "false",
+        "false",
+        "false",
+        "false"
+      ],
+      "distribution": {
+        "false": 5
+      },
+      "modal_label": "false",
+      "self_agreement": true
+    },
+    {
+      "question": "consent",
+      "text": "Consent obtained and signed; documentation completed.",
+      "rule_label": "true",
+      "cases": [
+        "case_00004",
+        "case_00009",
+        "case_00014",
+        "case_00019",
+        "case_00024",
+        "case_00029",
+        "case_00034",
+        "case_00039",
+        "case_00049"
+      ],
+      "labels": [
+        "true",
+        "true",
+        "true",
+        "true",
+        "true"
+      ],
+      "distribution": {
+        "true": 5
+      },
+      "modal_label": "true",
+      "self_agreement": true
+    },
+    {
+      "question": "consent",
+      "text": "Consent obtained; signature on file.",
+      "rule_label": "true",
+      "cases": [
+        "case_00003",
+        "case_00013",
+        "case_00018",
+        "case_00023",
+        "case_00028",
+        "case_00038",
+        "case_00043",
+        "case_00048"
+      ],
+      "labels": [
+        "true",
+        "true",
+        "true",
+        "true",
+        "true"
+      ],
+      "distribution": {
+        "true": 5
+      },
+      "modal_label": "true",
+      "self_agreement": true
+    },
+    {
+      "question": "consent",
+      "text": "Electronic consent obtained and signed by patient for procedure.",
+      "rule_label": "true",
+      "cases": [
+        "case_00000",
+        "case_00005",
+        "case_00010",
+        "case_00015",
+        "case_00020",
+        "case_00030",
+        "case_00035",
+        "case_00040",
+        "case_00045"
+      ],
+      "labels": [
+        "true",
+        "true",
+        "true",
+        "true",
+        "true"
+      ],
+      "distribution": {
+        "true": 5
+      },
+      "modal_label": "true",
+      "self_agreement": true
+    },
+    {
+      "question": "consent",
+      "text": "Patient reviewed risks/benefits and signed surgical consent.",
+      "rule_label": "true",
+      "cases": [
+        "case_00001",
+        "case_00006",
+        "case_00016",
+        "case_00021",
+        "case_00026",
+        "case_00031",
+        "case_00036",
+        "case_00041",
+        "case_00046"
+      ],
+      "labels": [
+        "true",
+        "true",
+        "true",
+        "true",
+        "true"
+      ],
+      "distribution": {
+        "true": 5
+      },
+      "modal_label": "true",
+      "self_agreement": true
+    },
+    {
+      "question": "consent",
+      "text": "Signed consent scanned and verified before scheduling.",
+      "rule_label": "true",
+      "cases": [
+        "case_00002",
+        "case_00007",
+        "case_00012",
+        "case_00022",
+        "case_00027",
+        "case_00032",
+        "case_00037",
+        "case_00042",
+        "case_00047"
+      ],
+      "labels": [
+        "true",
+        "true",
+        "true",
+        "true",
+        "true"
+      ],
+      "distribution": {
+        "true": 5
+      },
+      "modal_label": "true",
+      "self_agreement": true
+    },
+    {
+      "question": "consent",
+      "text": "Unsigned consent noted; signature not yet on file.",
+      "rule_label": "false",
+      "cases": [
+        "case_00044"
+      ],
+      "labels": [
+        "false",
+        "false",
+        "false",
+        "false",
+        "false"
+      ],
+      "distribution": {
+        "false": 5
+      },
+      "modal_label": "false",
+      "self_agreement": true
+    },
+    {
+      "question": "consent",
+      "text": "Unsigned consent on chart; provider requested signature before scheduling.",
+      "rule_label": "false",
+      "cases": [
+        "case_00017"
+      ],
+      "labels": [
+        "false",
+        "false",
+        "false",
+        "false",
+        "false"
+      ],
+      "distribution": {
+        "false": 5
+      },
+      "modal_label": "false",
+      "self_agreement": true
+    },
+    {
+      "question": "plan:apixaban",
+      "text": "Anticoagulant noted in medication list; perioperative management details not yet documented.",
+      "drug": "apixaban",
+      "rule_label": "false",
+      "cases": [
+        "case_00006",
+        "case_00021",
+        "case_00026"
+      ],
+      "labels": [
+        "false",
+        "false",
+        "false",
+        "false",
+        "false"
+      ],
+      "distribution": {
+        "false": 5
+      },
+      "modal_label": "false",
+      "self_agreement": true
+    },
+    {
+      "question": "plan:apixaban",
+      "text": "Anticoagulation mentioned; no clear hold/resume guidance documented.",
+      "drug": "apixaban",
+      "rule_label": "false",
+      "cases": [
+        "case_00004"
+      ],
+      "labels": [
+        "false",
+        "false",
+        "false",
+        "false",
+        "false"
+      ],
+      "distribution": {
+        "false": 5
+      },
+      "modal_label": "false",
+      "self_agreement": true
+    },
+    {
+      "question": "plan:apixaban",
+      "text": "Apixaban listed; perioperative management plan to be finalized.",
+      "drug": "apixaban",
+      "rule_label": "false",
+      "cases": [
+        "case_00038"
+      ],
+      "labels": [
+        "false",
+        "false",
+        "false",
+        "false",
+        "false"
+      ],
+      "distribution": {
+        "false": 5
+      },
+      "modal_label": "false",
+      "self_agreement": true
+    },
+    {
+      "question": "plan:apixaban",
+      "text": "Discussed blood thinner use with patient; final plan pending specialist input.",
+      "drug": "apixaban",
+      "rule_label": "false",
+      "cases": [
+        "case_00042"
+      ],
+      "labels": [
+        "false",
+        "false",
+        "false",
+        "false",
+        "false"
+      ],
+      "distribution": {
+        "false": 5
+      },
+      "modal_label": "false",
+      "self_agreement": true
+    },
+    {
+      "question": "plan:apixaban",
+      "text": "Patient takes apixaban for atrial fibrillation. Follow up with cardiology for peri-op recommendations.",
+      "drug": "apixaban",
+      "rule_label": null,
+      "cases": [
+        "case_00000"
+      ],
+      "labels": [
+        "false",
+        "false",
+        "false",
+        "false",
+        "false"
+      ],
+      "distribution": {
+        "false": 5
+      },
+      "modal_label": "false",
+      "self_agreement": true
+    }
+  ]
+}
