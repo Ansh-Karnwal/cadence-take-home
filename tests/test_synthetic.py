@@ -13,7 +13,8 @@ from typing import Any
 import pytest
 
 from core import PatientSubmission, TriageOutput, triage_submission
-from preop_triage.classify import TextJudgment, judge_plan_clear
+from preop_triage import engine
+from preop_triage.classify import DocKind, TextJudgment, judge_plan_clear
 from preop_triage.settings import Settings
 from run_evals import _check_issues_value_grounding
 
@@ -73,17 +74,77 @@ def test_base_submission_is_ready() -> None:
 # --- Rule 3: anticoagulation ------------------------------------------------
 
 
-def test_complete_plan_with_hold_and_resume_is_positive_with_no_issue() -> None:
-    text = "Hold apixaban 48 hours before surgery; resume apixaban 24 hours after surgery."
-    assert judge_plan_clear(text) is TextJudgment.POSITIVE
-    documents = BASE["documents"] + [
-        {"type": "Perioperative Medication Plan", "date": "2026-02-22", "text": text}
-    ]
+COMPLETE_PLAN = "Hold apixaban 48 hours before surgery; resume apixaban 24 hours after surgery."
 
-    output = run(make(medications=APIXABAN_ACTIVE, documents=documents))
 
+class FakeResolver:
+    """A ``Resolver`` whose plan answers come from a per-drug table (injected for tests)."""
+
+    def __init__(self, clear_for: set[str]) -> None:
+        self.clear_for = clear_for
+        self.plan_calls: list[tuple[str, str]] = []
+        self.title_calls: list[str] = []
+
+    def resolve_title(self, title: str) -> DocKind:
+        self.title_calls.append(title)
+        return DocKind.OTHER
+
+    def resolve_consent_signed(self, text: str) -> bool:
+        return False
+
+    def resolve_plan_clear(self, text: str, drug: str) -> bool:
+        self.plan_calls.append((text, drug))
+        return drug in self.clear_for
+
+
+@pytest.fixture
+def fake_resolver(monkeypatch: pytest.MonkeyPatch):  # type: ignore[no-untyped-def]
+    """Install a FakeResolver in place of the engine's resolver; set ``clear_for`` per test."""
+
+    fake = FakeResolver(clear_for=set())
+    monkeypatch.setattr(engine, "build_resolver", lambda **_: fake)
+    return fake
+
+
+def _with_plan(text: str, title: str = "Perioperative Medication Plan") -> list[dict[str, Any]]:
+    return BASE["documents"] + [{"type": title, "date": "2026-02-22", "text": text}]
+
+
+def test_complete_plan_is_flagged_offline() -> None:
+    # Checkpoint 1 (D4): keywords never call a plan clear, and the offline
+    # resolver never does either. Offline never clears an active anticoagulant.
+    assert judge_plan_clear(COMPLETE_PLAN, "apixaban") is TextJudgment.UNPLACED
+    submission = make(medications=APIXABAN_ACTIVE, documents=_with_plan(COMPLETE_PLAN))
+    output = run(submission)
+    assert output.decision == "NEEDS_FOLLOW_UP"
+    assert triples(output) == {
+        ("ANTICOAGULATION_MANAGEMENT", "documents[2]", "Missing perioperative anticoagulation plan")
+    }
+
+
+def test_complete_plan_is_cleared_when_resolver_says_clear(fake_resolver: FakeResolver) -> None:
+    fake_resolver.clear_for = {"apixaban"}
+    output = run(make(medications=APIXABAN_ACTIVE, documents=_with_plan(COMPLETE_PLAN)))
     assert output.decision == "READY"
     assert output.issues == []
+    assert fake_resolver.plan_calls == [(COMPLETE_PLAN, "apixaban")]
+
+
+def test_negative_plan_never_reaches_resolver(fake_resolver: FakeResolver) -> None:
+    # A rule match is final (D2): a NEGATIVE plan is flagged without asking.
+    fake_resolver.clear_for = {"apixaban"}
+    text = "Cardiology to advise whether to hold or resume apixaban."
+    output = run(make(medications=APIXABAN_ACTIVE, documents=_with_plan(text)))
+    assert output.decision == "NEEDS_FOLLOW_UP"
+    assert fake_resolver.plan_calls == []
+
+
+def test_each_title_is_classified_once(fake_resolver: FakeResolver) -> None:
+    documents = _with_plan(COMPLETE_PLAN) + [
+        {"type": "Medical Clearance [PDF]", "date": "2026-02-10", "text": "Prior clearance."}
+    ]
+    run(make(medications=APIXABAN_ACTIVE, documents=documents))
+    assert fake_resolver.title_calls == ["Medical Clearance [PDF]"]
 
 
 def test_inactive_anticoagulant_produces_no_issue() -> None:
@@ -438,3 +499,226 @@ def test_issue_order_explanation_and_not_cleared_keeps_other_issues() -> None:
         "ANTICOAGULATION_MANAGEMENT: Missing perioperative anticoagulation plan | "
         "ACUTE_SAFETY_EXCLUSION: Blood pressure meets exclusion threshold"
     )
+
+
+# --- Verifier probes, end to end (checkpoint 1) --------------------------------
+# Only "Cardiology to advise whether to hold or resume apixaban." is the
+# verifier's verbatim string; the report was not available, so the other text
+# probes are reconstructed from the finding descriptions. Each must produce
+# NEEDS_FOLLOW_UP or NOT_CLEARED in offline mode.
+
+VAGUE_PLAN_PROBES = (
+    "Cardiology to advise whether to hold or resume apixaban.",  # verbatim
+    "Hold and resume apixaban as clinically indicated.",
+    "Plan to hold apixaban before surgery; resume timing TBD.",
+    "Hold apixaban per surgeon; resume date unclear.",
+)
+
+NEGATED_CONSENT_PROBES = (
+    "Consent not signed.",
+    "Patient has not signed the surgical consent.",
+    "Consent to be signed on the day of surgery.",
+    "Consent will be signed at the pre-op visit.",
+)
+
+HP_DOC = BASE["documents"][0]
+SIGNED = "Consent obtained and signed; documentation completed."
+
+
+@pytest.mark.parametrize("text", VAGUE_PLAN_PROBES)
+def test_probe_vague_plan_is_flagged(text: str) -> None:
+    submission = make(medications=APIXABAN_ACTIVE, documents=_with_plan(text))
+    output = run(submission)
+    assert output.decision == "NEEDS_FOLLOW_UP"
+    assert triples(output) == {
+        ("ANTICOAGULATION_MANAGEMENT", "documents[2]", "Missing perioperative anticoagulation plan")
+    }
+    assert grounded(submission, output)
+
+
+@pytest.mark.parametrize("text", NEGATED_CONSENT_PROBES)
+def test_probe_negated_consent_is_flagged(text: str) -> None:
+    documents = [HP_DOC, {"type": "Surgical Consent", "date": "2026-02-21", "text": text}]
+    submission = make(documents=documents)
+    output = run(submission)
+    assert output.decision == "NEEDS_FOLLOW_UP"
+    assert triples(output) == {
+        ("REQUIRED_DOCUMENTATION", "documents[1]", "Surgical consent not clearly signed")
+    }
+    assert grounded(submission, output)
+
+
+def test_probe_signed_anesthesia_consent_alone_is_not_surgical_consent() -> None:
+    documents = [HP_DOC, {"type": "Anesthesia Consent", "date": "2026-02-21", "text": SIGNED}]
+    output = run(make(documents=documents))
+    assert triples(output) == {
+        ("REQUIRED_DOCUMENTATION", "documents", "Signed surgical consent missing")
+    }
+
+
+def test_probe_signed_anesthesia_consent_beside_unsigned_surgical_consent() -> None:
+    documents = [
+        HP_DOC,
+        {"type": "Anesthesia Consent", "date": "2026-02-22", "text": SIGNED},
+        {"type": "Surgical Consent", "date": "2026-02-21", "text": "Unsigned consent on chart."},
+    ]
+    output = run(make(documents=documents))
+    assert triples(output) == {
+        ("REQUIRED_DOCUMENTATION", "documents[2]", "Surgical consent not clearly signed")
+    }
+
+
+def test_probe_consent_withdrawn_title_is_not_a_consent() -> None:
+    documents = [HP_DOC, {"type": "Consent Withdrawn", "date": "2026-02-21", "text": SIGNED}]
+    output = run(make(documents=documents))
+    assert triples(output) == {
+        ("REQUIRED_DOCUMENTATION", "documents", "Signed surgical consent missing")
+    }
+
+
+def test_probe_same_day_later_bp_listed_first_wins() -> None:
+    vitals = [
+        _bp(185, 95, "2026-02-24T16:00:00Z"),
+        _bp(120, 80, "2026-02-24T08:00:00Z"),
+        _temp(98.6),
+    ]
+    output = run(make(vitals=vitals))
+    assert output.decision == "NOT_CLEARED"
+    assert triples(output) == {
+        ("ACUTE_SAFETY_EXCLUSION", "vitals[0]", "Blood pressure meets exclusion threshold")
+    }
+
+
+def test_probe_same_day_later_temperature_listed_first_wins() -> None:
+    vitals = [
+        _bp(120, 80),
+        _temp(101.2, "2026-02-24T16:00:00Z"),
+        _temp(98.6, "2026-02-24T08:00:00Z"),
+    ]
+    output = run(make(vitals=vitals))
+    assert output.decision == "NOT_CLEARED"
+    assert triples(output) == {
+        ("ACUTE_SAFETY_EXCLUSION", "vitals[1]", "Temperature exceeds exclusion threshold")
+    }
+
+
+def test_probe_offset_lab_is_31_local_days_and_rejected() -> None:
+    labs = [{"code": "CBC", "display": "CBC", "effective_at": "2026-01-31T20:00:00-05:00", "status": "final"}]
+    submission = make(labs=labs)
+    output = run(submission)
+    assert triples(output) == {
+        ("REQUIRED_TESTING", "labs[0]", "CBC outside 30-day window for LOW risk procedure")
+    }
+    assert "31 days prior" in output.issues[0].evidence.details
+    assert grounded(submission, output)
+
+
+def test_probe_older_signed_consent_does_not_rescue_newer_unsigned() -> None:
+    documents = [
+        HP_DOC,
+        {"type": "Surgical Consent", "date": "2026-02-10", "text": SIGNED},
+        {"type": "Surgical Consent", "date": "2026-02-21", "text": "Consent not signed."},
+    ]
+    submission = make(documents=documents)
+    output = run(submission)
+    assert triples(output) == {
+        ("REQUIRED_DOCUMENTATION", "documents[2]", "Surgical consent not clearly signed")
+    }
+    assert grounded(submission, output)
+
+
+def test_newer_signed_consent_supersedes_older_unsigned() -> None:
+    documents = [
+        HP_DOC,
+        {"type": "Surgical Consent", "date": "2026-02-10", "text": "Consent not signed."},
+        {"type": "Surgical Consent", "date": "2026-02-21", "text": SIGNED},
+    ]
+    assert run(make(documents=documents)).issues == []
+
+
+def test_probe_two_anticoagulants_with_plan_for_one_offline() -> None:
+    meds = [{"name": "apixaban", "active": True}, {"name": "Enoxaparin 40 mg SC daily", "active": True}]
+    submission = make(medications=meds, documents=_with_plan(COMPLETE_PLAN))
+    output = run(submission)
+    # Offline: neither plan is ever clear; one issue per drug.
+    assert [i.category for i in output.issues] == ["ANTICOAGULATION_MANAGEMENT"] * 2
+    details = " ".join(i.evidence.details for i in output.issues)
+    assert "medications[0]: apixaban" in details
+    assert "medications[1]: Enoxaparin 40 mg SC daily" in details
+    assert grounded(submission, output)
+
+
+def test_probe_two_anticoagulants_with_plan_for_one_resolver(fake_resolver: FakeResolver) -> None:
+    fake_resolver.clear_for = {"apixaban"}
+    meds = [{"name": "apixaban", "active": True}, {"name": "warfarin", "active": True}]
+    output = run(make(medications=meds, documents=_with_plan(COMPLETE_PLAN)))
+    # Apixaban's plan is clear; warfarin still needs its own.
+    assert output.decision == "NEEDS_FOLLOW_UP"
+    assert len(output.issues) == 1
+    assert "medications[1]: warfarin" in output.issues[0].evidence.details
+    assert ("warfarin" in {drug for _, drug in fake_resolver.plan_calls})
+
+
+def test_probe_apixaban_with_dose_and_no_plan_grounds() -> None:
+    meds = [{"name": "lisinopril", "active": True}, {"name": "Apixaban 5 mg BID", "active": True}]
+    submission = make(medications=meds)
+    output = run(submission)
+    assert triples(output) == {
+        ("ANTICOAGULATION_MANAGEMENT", "documents", "Missing perioperative anticoagulation plan")
+    }
+    assert "Apixaban 5 mg BID" in output.issues[0].evidence.details
+    assert grounded(submission, output)
+
+
+def test_probe_cmp_outside_14_days() -> None:
+    procedure = {"procedure_risk": "HIGH", "procedure_date": PROCEDURE_DATE}
+    labs = [_lab("CBC", "2026-02-25"), _lab("CMP", "2026-02-16")]
+    submission = make(procedure=procedure, labs=labs)
+    output = run(submission)
+    assert triples(output) == {
+        ("REQUIRED_TESTING", "labs[1]", "CMP outside 14-day window for HIGH risk procedure")
+    }
+    assert grounded(submission, output)
+
+
+def test_probe_preliminary_lab_is_ignored() -> None:
+    labs = [{**_lab("CBC", "2026-02-25"), "status": "preliminary"}]
+    submission = make(labs=labs)
+    output = run(submission)
+    assert triples(output) == {("REQUIRED_TESTING", "labs", "CBC missing")}
+    assert "ignored" in output.issues[0].evidence.details
+    assert grounded(submission, output)
+
+
+def test_preliminary_newer_lab_falls_back_to_older_final() -> None:
+    labs = [
+        {**_lab("CBC", "2026-02-27"), "status": "preliminary"},
+        {**_lab("CBC", "2026-01-15"), "status": "final"},
+    ]
+    output = run(make(labs=labs))
+    assert triples(output) == {
+        ("REQUIRED_TESTING", "labs[1]", "CBC outside 30-day window for LOW risk procedure")
+    }
+
+
+@pytest.mark.parametrize("status", [None, "final", "Amended", "CORRECTED"])
+def test_counted_lab_statuses(status: str | None) -> None:
+    labs = [{**_lab("CBC", "2026-02-25"), "status": status}]
+    assert run(make(labs=labs)).issues == []
+
+
+def test_probe_anticoagulation_plan_title_with_vague_text_is_flagged() -> None:
+    text = "Discussed blood thinner use; plan pending."
+    output = run(make(medications=APIXABAN_ACTIVE, documents=_with_plan(text, "Anticoagulation Plan")))
+    assert triples(output) == {
+        ("ANTICOAGULATION_MANAGEMENT", "documents[2]", "Missing perioperative anticoagulation plan")
+    }
+
+
+@pytest.mark.parametrize("title", ["H & P", "Interval H&P", "H&P Addendum"])
+def test_probe_widened_hp_titles_count_as_hp(title: str) -> None:
+    # Classification probe: as the only H&P in an otherwise complete package,
+    # a recognized title correctly gives READY. Unrecognized, it would give
+    # "History and Physical document missing".
+    documents = [{**HP_DOC, "type": title}, BASE["documents"][1]]
+    assert run(make(documents=documents)).decision == "READY"

@@ -1,7 +1,10 @@
 """Input normalization (DESIGN.md section 2, "normalize").
 
-Dates are compared as calendar dates in UTC, ignoring time of day. Lab codes
-are aliased (``LAB-CBC`` to ``CBC``, ``LAB-CMP`` to ``CMP``). Document titles
+Day arithmetic uses each item's own local calendar date: an offset is
+dropped, not converted, because the procedure date is a local calendar date.
+Ordering ("most recent") uses the full instant: offsets are converted to UTC,
+date-only values are midnight UTC, and naive datetimes are taken as UTC. Lab
+codes are aliased (``LAB-CBC`` to ``CBC``, ``LAB-CMP`` to ``CMP``). Document titles
 are lowercased and stripped of known prefixes and suffixes, repeatedly, before
 classification.
 """
@@ -10,7 +13,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable, Sequence
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, time
 from typing import TypeVar
 
 T = TypeVar("T")
@@ -27,16 +30,11 @@ _TITLE_PREFIXES = ("imported:", "preop -", "pre-op", "preop", "scanned")
 _TITLE_SUFFIXES = ("[pdf]", "(scanned)", "(external)", "- signed")
 
 _WHITESPACE_RE = re.compile(r"\s+")
+# "h & p" and "H &P" become "h&p" before matching (checkpoint 1).
+_H_AND_P_SPACED_RE = re.compile(r"\bh\s*&\s*p\b")
 
 
-def parse_date(value: str | None) -> date | None:
-    """Parse an ISO date or datetime string to a UTC calendar date.
-
-    Accepts ``YYYY-MM-DD`` and ISO datetimes with ``Z`` or a UTC offset. An
-    aware datetime is converted to UTC before its date is taken; a naive one is
-    taken as-is. Returns None for a missing or unparseable value.
-    """
-
+def _parse(value: str | None) -> date | datetime | None:
     if not isinstance(value, str):
         return None
     text = value.strip()
@@ -45,12 +43,40 @@ def parse_date(value: str | None) -> date | None:
     try:
         if _DATE_ONLY_RE.match(text):
             return date.fromisoformat(text)
-        parsed = datetime.fromisoformat(text)
+        return datetime.fromisoformat(text)
     except ValueError:
         return None
-    if parsed.tzinfo is not None:
-        parsed = parsed.astimezone(UTC)
-    return parsed.date()
+
+
+def parse_date(value: str | None) -> date | None:
+    """Parse an ISO date or datetime string to its local calendar date.
+
+    Accepts ``YYYY-MM-DD`` and ISO datetimes with ``Z`` or a UTC offset. The
+    offset is dropped, not converted: ``2026-01-31T20:00:00-05:00`` is
+    2026-01-31. Returns None for a missing or unparseable value.
+    """
+
+    parsed = _parse(value)
+    if isinstance(parsed, datetime):
+        return parsed.date()
+    return parsed
+
+
+def parse_instant(value: str | None) -> datetime | None:
+    """Parse an ISO date or datetime string to an aware UTC instant, for ordering.
+
+    Offsets are converted to UTC. A date-only value is midnight UTC. A naive
+    datetime is taken as UTC. Returns None for a missing or unparseable value.
+    """
+
+    parsed = _parse(value)
+    if parsed is None:
+        return None
+    if not isinstance(parsed, datetime):
+        return datetime.combine(parsed, time.min, tzinfo=UTC)
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC)
 
 
 def days_before(item_date: date, procedure_date: date) -> int:
@@ -105,13 +131,14 @@ def _strip_suffix(title: str) -> str | None:
 def normalize_title(title: str | None) -> str:
     """Lowercase a document title and strip known prefixes and suffixes until none match.
 
-    Whitespace is collapsed first. Doubled prefixes such as
+    Whitespace is collapsed and "h & p" becomes "h&p" first. Doubled prefixes such as
     "Pre-op Pre-op Evaluation [PDF]" (case_00048) reduce to the core.
     """
 
     if not isinstance(title, str):
         return ""
     current = _WHITESPACE_RE.sub(" ", title).strip().lower()
+    current = _H_AND_P_SPACED_RE.sub("h&p", current)
     while True:
         stripped = _strip_prefix(current)
         if stripped is None:
@@ -122,22 +149,23 @@ def normalize_title(title: str | None) -> str:
 
 
 def most_recent(
-    items: Sequence[T], date_of: Callable[[T], date | None]
+    items: Sequence[T], instant_of: Callable[[T], datetime | None]
 ) -> tuple[int, T] | None:
-    """Return ``(index, item)`` for the item with the latest valid date, or None.
+    """Return ``(index, item)`` for the item with the latest valid instant, or None.
 
-    Items without a valid date are ignored. On a tie the later list index wins.
-    The index is the item's position in ``items`` so issues can cite
-    ``collection[i]``.
+    ``instant_of`` is normally ``parse_instant`` applied to the item's date
+    field. Items without a valid instant are ignored. On a tie the later list
+    index wins. The index is the item's position in ``items`` so issues can
+    cite ``collection[i]``.
     """
 
-    best: tuple[date, int] | None = None
+    best: tuple[datetime, int] | None = None
     for index, item in enumerate(items):
-        item_date = date_of(item)
-        if item_date is None:
+        instant = instant_of(item)
+        if instant is None:
             continue
-        if best is None or (item_date, index) >= best:
-            best = (item_date, index)
+        if best is None or (instant, index) >= best:
+            best = (instant, index)
     if best is None:
         return None
     return best[1], items[best[1]]

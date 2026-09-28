@@ -94,6 +94,51 @@ def test_every_expected_issue_is_emitted(
     assert used_exceptions == set(SOURCE_EXCEPTIONS)
 
 
+def test_every_emitted_issue_is_expected(
+    dataset: list[dict], outputs: dict[str, TriageOutput]
+) -> None:
+    """Reverse direction: no emitted issue lacks a matching oracle issue."""
+
+    # Map each exception to the source we emit, so the lookup is symmetric.
+    ours_to_oracle = {
+        (case_id, category, ours): oracle
+        for (case_id, category, oracle), (ours, _reason) in SOURCE_EXCEPTIONS.items()
+    }
+    unexpected = {}
+    used_exceptions = set()
+    for row in dataset:
+        case_id = row["case_id"]
+        expected = {
+            (issue["category"], issue["evidence"]["source"], issue["description"])
+            for issue in row["expected_output"]["issues"]
+        }
+        for issue in outputs[case_id].issues:
+            source = issue.evidence.source
+            key = (case_id, issue.category, source)
+            if key in ours_to_oracle:
+                source = ours_to_oracle[key]
+                used_exceptions.add(key)
+            if (issue.category, source, issue.description) not in expected:
+                unexpected.setdefault(case_id, []).append(
+                    (issue.category, issue.evidence.source, issue.description)
+                )
+    assert unexpected == {}
+    assert used_exceptions == set(ours_to_oracle)
+
+
+def test_emitted_issue_count_matches_oracle(
+    dataset: list[dict], outputs: dict[str, TriageOutput]
+) -> None:
+    """With both directions matching, counts must match too (no duplicates)."""
+
+    mismatches = {
+        row["case_id"]: (len(outputs[row["case_id"]].issues), len(row["expected_output"]["issues"]))
+        for row in dataset
+        if len(outputs[row["case_id"]].issues) != len(row["expected_output"]["issues"])
+    }
+    assert mismatches == {}
+
+
 def test_all_harness_metrics_pass(dataset: list[dict], outputs: dict[str, TriageOutput]) -> None:
     """The harness's own per-case scorer, including grounding, passes on every case."""
 

@@ -43,11 +43,15 @@ def evaluate(
         submission.procedure.procedure_date if submission.procedure else None
     )
 
+    # Each title is classified once; Rules 1 and 3 share the result, so the
+    # fallback resolver sees each UNKNOWN title at most once per evaluation.
+    kinds = rules.classify_documents(submission, resolver)
+
     issues = [
         *rules.check_missing_procedure_fields(submission),
-        *rules.check_documentation(submission, procedure_date, resolver),
+        *rules.check_documentation(submission, procedure_date, kinds, resolver),
         *rules.check_testing(submission, procedure_date),
-        *rules.check_anticoagulation(submission, resolver),
+        *rules.check_anticoagulation(submission, kinds, resolver),
         *rules.check_vitals(submission),
     ]
     issues.sort(key=lambda issue: CATEGORY_ORDER.index(issue.category))

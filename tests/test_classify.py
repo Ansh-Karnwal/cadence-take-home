@@ -96,13 +96,13 @@ def test_trap_unsigned_contains_signed() -> None:
 def test_trap_plan_to_be_finalized_contains_plan() -> None:
     # case_00038
     text = "Apixaban listed; perioperative management plan to be finalized."
-    assert judge_plan_clear(text) is TextJudgment.NEGATIVE
+    assert judge_plan_clear(text, "apixaban") is TextJudgment.NEGATIVE
 
 
 def test_trap_no_clear_beats_hold_and_resume() -> None:
     # case_00004
     text = "Anticoagulation mentioned; no clear hold/resume guidance documented."
-    assert judge_plan_clear(text) is TextJudgment.NEGATIVE
+    assert judge_plan_clear(text, "apixaban") is TextJudgment.NEGATIVE
 
 
 def test_case_00000_plan_text_is_unplaced() -> None:
@@ -110,7 +110,40 @@ def test_case_00000_plan_text_is_unplaced() -> None:
         "Patient takes apixaban for atrial fibrillation. "
         "Follow up with cardiology for peri-op recommendations."
     )
-    assert judge_plan_clear(text) is TextJudgment.UNPLACED
+    assert judge_plan_clear(text, "apixaban") is TextJudgment.UNPLACED
+
+
+# --- Verifier probes (checkpoint 1) ------------------------------------------
+# Only the first plan probe is the verifier's verbatim string; the verifier's
+# report was not available, so the others are reconstructed from the finding
+# descriptions. Every one of them was cleared or accepted by the milestone 2
+# keyword rules.
+
+VAGUE_PLAN_PROBES = {
+    # verbatim
+    "Cardiology to advise whether to hold or resume apixaban.": TextJudgment.NEGATIVE,
+    # reconstructed
+    "Hold and resume apixaban as clinically indicated.": TextJudgment.UNPLACED,
+    "Plan to hold apixaban before surgery; resume timing TBD.": TextJudgment.NEGATIVE,
+    "Hold apixaban per surgeon; resume date unclear.": TextJudgment.NEGATIVE,
+}
+
+NEGATED_CONSENT_PROBES = (  # reconstructed
+    "Consent not signed.",
+    "Patient has not signed the surgical consent.",
+    "Consent to be signed on the day of surgery.",
+    "Consent will be signed at the pre-op visit.",
+)
+
+
+@pytest.mark.parametrize(("text", "expected"), list(VAGUE_PLAN_PROBES.items()))
+def test_vague_plan_probes_are_never_positive(text: str, expected: TextJudgment) -> None:
+    assert judge_plan_clear(text, "apixaban") is expected
+
+
+@pytest.mark.parametrize("text", NEGATED_CONSENT_PROBES)
+def test_negated_consent_probes_are_negative(text: str) -> None:
+    assert judge_consent_signed(text) is TextJudgment.NEGATIVE
 
 
 # --- Consent judgments ----------------------------------------------------
@@ -142,9 +175,31 @@ def test_unsigned_consent_texts_are_negative(text: str) -> None:
     assert judge_consent_signed(text) is TextJudgment.NEGATIVE
 
 
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        # A negation in another clause does not cancel a signature.
+        ("Consent signed by patient; no complications noted.", TextJudgment.POSITIVE),
+        # A sign-word and a negation in one clause is negative.
+        ("Patient declined to sign consent.", TextJudgment.NEGATIVE),
+        ("Consent signed; witness signature missing.", TextJudgment.NEGATIVE),
+        ("Signature pending: consent reviewed.", TextJudgment.NEGATIVE),
+        ("Consent withdrawn after signature.", TextJudgment.NEGATIVE),
+        # "noted" does not match "no"; "unsigned" does not match "signed".
+        ("Consent noted and signed.", TextJudgment.POSITIVE),
+        # A negation with no sign-word in its clause is neutral.
+        ("Consent reviewed; no questions.", TextJudgment.UNPLACED),
+    ],
+)
+def test_consent_is_judged_per_clause(text: str, expected: TextJudgment) -> None:
+    assert judge_consent_signed(text) is expected
+
+
 def test_signature_alone_is_not_positive() -> None:
+    # Checkpoint 1: "awaiting" and "signature" are in different clauses, so the
+    # first text is no longer NEGATIVE. Neither text is POSITIVE.
     assert judge_consent_signed("Consent form awaiting review; signature line present.") is (
-        TextJudgment.NEGATIVE
+        TextJudgment.UNPLACED
     )
     assert judge_consent_signed("Consent reviewed with patient; signature line present.") is (
         TextJudgment.UNPLACED
@@ -154,47 +209,93 @@ def test_signature_alone_is_not_positive() -> None:
 @pytest.mark.parametrize("text", [None, "", "   "])
 def test_empty_text_is_negative_not_unplaced(text: str | None) -> None:
     assert judge_consent_signed(text) is TextJudgment.NEGATIVE
-    assert judge_plan_clear(text) is TextJudgment.NEGATIVE
+    assert judge_plan_clear(text, "apixaban") is TextJudgment.NEGATIVE
 
 
 # --- Plan judgments -------------------------------------------------------
 
 
+def test_vague_plan_with_anchor_is_negative() -> None:
+    # case_00042: "pending" beside "plan".
+    text = "Discussed blood thinner use with patient; final plan pending specialist input."
+    assert judge_plan_clear(text, "apixaban") is TextJudgment.NEGATIVE
+
+
+def test_negative_without_anchor_in_clause_is_unplaced() -> None:
+    # Cases 6, 21, 26: "not yet" sits in a clause with no drug, "anticoag",
+    # "hold", "resume", "bridge", or "plan", so it does not count (checkpoint 1).
+    text = (
+        "Anticoagulant noted in medication list; "
+        "perioperative management details not yet documented."
+    )
+    assert judge_plan_clear(text, "apixaban") is TextJudgment.UNPLACED
+
+
+def test_negative_counts_with_drug_name_as_anchor() -> None:
+    assert judge_plan_clear("Warfarin management unclear.", "warfarin") is TextJudgment.NEGATIVE
+    assert judge_plan_clear("Warfarin management unclear.", "apixaban") is TextJudgment.UNPLACED
+
+
 @pytest.mark.parametrize(
     "text",
     [
-        "Anticoagulant noted in medication list; perioperative management details not yet documented.",
-        "Discussed blood thinner use with patient; final plan pending specialist input.",
+        # Checkpoint 1: there is no positive keyword set. Even a complete plan
+        # is UNPLACED; only a resolver can call it clear.
+        "Hold apixaban 48 hours before surgery; resume 24 hours after if hemostasis secured.",
+        "Hold apixaban 48 hours before surgery.",
+        "Resume apixaban the day after surgery.",
+        "Perioperative anticoagulation plan documented.",
     ],
 )
-def test_vague_plan_texts_are_negative(text: str) -> None:
-    assert judge_plan_clear(text) is TextJudgment.NEGATIVE
-
-
-def test_hold_and_resume_is_positive() -> None:
-    text = "Hold apixaban 48 hours before surgery; resume 24 hours after if hemostasis secured."
-    assert judge_plan_clear(text) is TextJudgment.POSITIVE
-
-
-@pytest.mark.parametrize(
-    "text",
-    [
-        "Hold apixaban 48 hours before surgery.",  # hold only
-        "Resume apixaban the day after surgery.",  # resume only
-        "Perioperative anticoagulation plan documented.",  # "plan" alone
-    ],
-)
-def test_partial_plan_is_unplaced(text: str) -> None:
-    assert judge_plan_clear(text) is TextJudgment.UNPLACED
+def test_plan_text_is_never_positive(text: str) -> None:
+    assert judge_plan_clear(text, "apixaban") is TextJudgment.UNPLACED
 
 
 def test_word_boundaries_apply() -> None:
-    # "household" and "threshold" contain "hold"; "presumed" contains "resume" letters.
-    assert judge_plan_clear("Household threshold presumed stable.") is TextJudgment.UNPLACED
+    # "household" and "threshold" contain "hold"; "undetermined" is not a token.
+    assert judge_plan_clear("Household threshold pending review.", "apixaban") is (
+        TextJudgment.UNPLACED
+    )
 
 
 def test_offline_resolver_defaults() -> None:
     resolver = OfflineResolver()
     assert resolver.resolve_title("Medical Clearance [PDF]") is DocKind.OTHER
     assert resolver.resolve_consent_signed("anything") is False
-    assert resolver.resolve_plan_clear("anything") is False
+    assert resolver.resolve_plan_clear("anything", "apixaban") is False
+
+
+# --- Titles widened at checkpoint 1 -------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("title", "kind"),
+    [
+        ("Anticoagulation Plan", DocKind.ANTICOAG_PLAN),
+        ("Anticoagulation Management Note", DocKind.ANTICOAG_PLAN),
+        ("Perioperative Medication Instructions", DocKind.ANTICOAG_PLAN),
+        ("H & P", DocKind.H_AND_P),
+        ("Interval H&P", DocKind.H_AND_P),
+        ("H&P Addendum", DocKind.H_AND_P),
+        ("Pre-op Interval History and Physical Addendum - signed", DocKind.H_AND_P),
+    ],
+)
+def test_widened_titles_are_required(title: str, kind: DocKind) -> None:
+    assert classify_title(title) == TitleClassification(TitleOutcome.REQUIRED, kind)
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Anesthesia Consent",
+        "Anaesthesia Consent Form",
+        "Research Consent",
+        "Blood Transfusion Consent",
+        "Photography Consent",
+        "Consent Withdrawn",
+        "Consent Refused",
+        "Consent Revoked",
+    ],
+)
+def test_other_consent_kinds_are_known_other(title: str) -> None:
+    assert classify_title(title) == TitleClassification(TitleOutcome.KNOWN_OTHER)

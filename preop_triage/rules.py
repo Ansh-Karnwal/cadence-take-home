@@ -2,12 +2,16 @@
 
 Each function returns the issues it raises. Rules write every issue
 themselves; a ``Resolver`` only answers the title and text questions the
-keyword layer left open (D2).
+keyword layer left open (D2). Document titles are classified once per
+evaluation by ``classify_documents`` and the result is passed to Rules 1 and 3.
 
 Descriptions are the oracle's exact strings. Details follow the oracle's shape
 plus the builder extension in the DESIGN.md section 4 table, so that every
 non-missing issue cites a concrete value the grounding metric can find. Every
 ``source`` matches ``^[a-z_]+(\\[\\d+\\])?(\\.[a-z_]\\w*)?$``.
+
+Day arithmetic uses local calendar dates (``parse_date``); "most recent" uses
+full instants (``parse_instant``).
 """
 
 from __future__ import annotations
@@ -31,6 +35,7 @@ from .normalize import (
     days_before,
     most_recent,
     parse_date,
+    parse_instant,
     within_window,
 )
 
@@ -41,13 +46,31 @@ TESTING_REQUIREMENTS: dict[str, tuple[int, tuple[str, ...]]] = {
     "MODERATE": (30, ("CBC",)),
     "HIGH": (14, ("CBC", "CMP")),
 }
+# A lab counts only with one of these statuses, or no status (checkpoint 1).
+# All 150 sample labs are "final".
+COUNTED_LAB_STATUSES = frozenset({"final", "amended", "corrected"})
 SYSTOLIC_LIMIT = 180  # exclusion when systolic >= 180
 DIASTOLIC_LIMIT = 110  # exclusion when diastolic >= 110
 TEMPERATURE_LIMIT_F = 100.4  # exclusion when temperature > 100.4
 
-# The only anticoagulants in the sample: apixaban (case_00000), warfarin
-# (case_00001). Lisinopril and metformin are not anticoagulants.
-ANTICOAGULANTS = ("apixaban", "warfarin")
+# Anticoagulants (checkpoint 1). The policy does not define the class, so this
+# list is ours. The sample has apixaban (case_00000) and warfarin (case_00001);
+# lisinopril and metformin are not anticoagulants. Matched by word inside the
+# medication name, case-insensitive, so "Apixaban 5 mg BID" matches.
+ANTICOAGULANTS = (
+    "apixaban",
+    "rivaroxaban",
+    "edoxaban",
+    "dabigatran",
+    "warfarin",
+    "enoxaparin",
+    "dalteparin",
+    "fondaparinux",
+    "heparin",
+)
+_ANTICOAGULANT_RE = re.compile(
+    r"\b(" + "|".join(re.escape(drug) for drug in ANTICOAGULANTS) + r")\b", re.IGNORECASE
+)
 
 # D6: quoted in details when the structured date is null; never compared.
 _TARGET_DATE_RE = re.compile(r"procedure date target:\s*\d{4}-\d{2}-\d{2}", re.IGNORECASE)
@@ -69,8 +92,8 @@ def _gap_phrase(item_date: date, procedure_date: date, window: int) -> str:
     return f"({-gap} days after the procedure; must be within {window} days prior)"
 
 
-def _document_kinds(submission: PatientSubmission, resolver: Resolver) -> list[DocKind]:
-    """Classify every document title. Only non-empty UNKNOWN titles reach the resolver."""
+def classify_documents(submission: PatientSubmission, resolver: Resolver) -> list[DocKind]:
+    """Classify every document title once. Only non-empty UNKNOWN titles reach the resolver."""
 
     kinds: list[DocKind] = []
     for doc in submission.documents:
@@ -94,15 +117,27 @@ def _documents_present(documents: list[Document]) -> str:
     return f"Documents present: {listed}."
 
 
+def _lab_counts(lab: LabResult) -> bool:
+    return lab.status is None or lab.status.strip().lower() in COUNTED_LAB_STATUSES
+
+
 def _labs_present(labs: list[LabResult]) -> str:
     if not labs:
         return "Labs present: none."
     listed = "; ".join(
         f"labs[{i}] {lab.code or 'unknown'} ({lab.display or 'no display'}) "
-        f"effective_at {lab.effective_at or 'unknown'}"
+        f"effective_at {lab.effective_at or 'unknown'} status {lab.status or 'none'}"
+        + ("" if _lab_counts(lab) else " (ignored: status not final/amended/corrected)")
         for i, lab in enumerate(labs)
     )
     return f"Labs present: {listed}."
+
+
+def _latest_document(documents: list[Document], indexes: list[int]) -> int | None:
+    """Most recent of ``indexes`` by document date; None when none has a valid date."""
+
+    found = most_recent(indexes, lambda i: parse_instant(documents[i].date))
+    return None if found is None else found[1]
 
 
 def check_missing_procedure_fields(submission: PatientSubmission) -> list[TriageIssue]:
@@ -152,22 +187,24 @@ def check_missing_procedure_fields(submission: PatientSubmission) -> list[Triage
 def check_documentation(
     submission: PatientSubmission,
     procedure_date: date | None,
+    kinds: list[DocKind],
     resolver: Resolver,
 ) -> list[TriageIssue]:
     """Rule 1: a recent H&P (within 30 days) and a signed surgical consent.
 
-    With a null procedure date, only the presence checks run. An H&P counts
-    only with a valid date; a consent counts whatever its date.
+    ``kinds`` is ``classify_documents`` output, one entry per document. With a
+    null procedure date, only the presence checks run. An H&P counts only with
+    a valid date. A consent counts as present whatever its date; the most
+    recent consent is the one judged (the last listed when none is dated), so
+    an older signed consent does not rescue a newer unsigned one.
     """
 
     documents = submission.documents
-    kinds = _document_kinds(submission, resolver)
     issues: list[TriageIssue] = []
 
-    # H&P: the most recent recognized H&P by date.
     hp_indexes = [i for i, kind in enumerate(kinds) if kind is DocKind.H_AND_P]
-    hp = most_recent(hp_indexes, lambda i: parse_date(documents[i].date))
-    if hp is None:
+    hp_index = _latest_document(documents, hp_indexes)
+    if hp_index is None:
         issues.append(
             _issue(
                 "REQUIRED_DOCUMENTATION",
@@ -178,8 +215,7 @@ def check_documentation(
             )
         )
     elif procedure_date is not None:
-        index = hp[1]
-        doc = documents[index]
+        doc = documents[hp_index]
         hp_date = parse_date(doc.date)
         assert hp_date is not None
         if not within_window(hp_date, procedure_date, H_AND_P_WINDOW_DAYS):
@@ -187,13 +223,12 @@ def check_documentation(
                 _issue(
                     "REQUIRED_DOCUMENTATION",
                     "H&P outside 30-day window",
-                    f"documents[{index}]",
+                    f"documents[{hp_index}]",
                     f"H&P date {doc.date} vs procedure_date {procedure_date.isoformat()} "
                     + _gap_phrase(hp_date, procedure_date, H_AND_P_WINDOW_DAYS),
                 )
             )
 
-    # Consent: present if any consent document exists; signed if any is signed.
     consent_indexes = [i for i, kind in enumerate(kinds) if kind is DocKind.CONSENT]
     if not consent_indexes:
         issues.append(
@@ -204,39 +239,39 @@ def check_documentation(
                 "No Surgical Consent document found. " + _documents_present(documents),
             )
         )
+        return issues
+
+    index = _latest_document(documents, consent_indexes)
+    if index is None:
+        index = consent_indexes[-1]
+    doc = documents[index]
+    judgment = judge_consent_signed(doc.text)
+    if judgment is TextJudgment.UNPLACED:
+        signed = resolver.resolve_consent_signed(doc.text or "")
     else:
-        signed = False
-        for i in consent_indexes:
-            text = documents[i].text
-            judgment = judge_consent_signed(text)
-            if judgment is TextJudgment.UNPLACED:
-                signed = resolver.resolve_consent_signed(text or "")
-            else:
-                signed = judgment is TextJudgment.POSITIVE
-            if signed:
-                break
-        if not signed:
-            latest = most_recent(consent_indexes, lambda i: parse_date(documents[i].date))
-            index = latest[1] if latest is not None else consent_indexes[-1]
-            doc = documents[index]
-            if doc.text and doc.text.strip():
-                details = (
-                    "Consent document text does not clearly indicate signed consent: "
-                    + doc.text
-                )
-            else:
-                details = (
-                    "Consent document has no text to indicate signed consent: "
-                    f"'{doc.type or ''}' dated {doc.date or 'unknown'}"
-                )
-            issues.append(
-                _issue(
-                    "REQUIRED_DOCUMENTATION",
-                    "Surgical consent not clearly signed",
-                    f"documents[{index}]",
-                    details,
-                )
+        signed = judgment is TextJudgment.POSITIVE
+    if not signed:
+        if doc.text and doc.text.strip():
+            details = "Consent document text does not clearly indicate signed consent: " + doc.text
+        else:
+            details = (
+                "Consent document has no text to indicate signed consent: "
+                f"'{doc.type or ''}' dated {doc.date or 'unknown'}"
             )
+        if len(consent_indexes) > 1:
+            details += (
+                f" (most recent of {len(consent_indexes)} consent documents: "
+                + ", ".join(f"documents[{i}]" for i in consent_indexes)
+                + ")"
+            )
+        issues.append(
+            _issue(
+                "REQUIRED_DOCUMENTATION",
+                "Surgical consent not clearly signed",
+                f"documents[{index}]",
+                details,
+            )
+        )
     return issues
 
 
@@ -247,7 +282,9 @@ def check_testing(
     """Rule 2: CBC (and CMP for HIGH risk) within the risk-dependent window.
 
     Skipped entirely when procedure risk is null. With a null procedure date,
-    only the presence checks run. Only the most recent result per test counts.
+    only the presence checks run. Only the most recent counted result per test
+    is judged; labs whose status is not final, amended, corrected, or null are
+    ignored.
     """
 
     procedure = submission.procedure
@@ -259,8 +296,12 @@ def check_testing(
     labs = submission.labs
     issues: list[TriageIssue] = []
     for code in required:
-        matching = [i for i, lab in enumerate(labs) if canonical_lab_code(lab.code) == code]
-        latest = most_recent(matching, lambda i: parse_date(labs[i].effective_at))
+        matching = [
+            i
+            for i, lab in enumerate(labs)
+            if canonical_lab_code(lab.code) == code and _lab_counts(lab)
+        ]
+        latest = most_recent(matching, lambda i: parse_instant(labs[i].effective_at))
         if latest is None:
             issues.append(
                 _issue(
@@ -292,36 +333,37 @@ def check_testing(
     return issues
 
 
-def _anticoagulant_name(name: str | None) -> str | None:
+def anticoagulant_in(name: str | None) -> str | None:
+    """Return the lowercase anticoagulant named in a medication ``name``, or None."""
+
     if not name:
         return None
-    lowered = name.lower()
-    for drug in ANTICOAGULANTS:
-        if re.search(rf"\b{drug}\b", lowered):
-            return drug
-    return None
+    match = _ANTICOAGULANT_RE.search(name)
+    return match.group(1).lower() if match else None
 
 
 def check_anticoagulation(
     submission: PatientSubmission,
+    kinds: list[DocKind],
     resolver: Resolver,
 ) -> list[TriageIssue]:
-    """Rule 3: an active anticoagulant needs a clear perioperative plan.
+    """Rule 3, once per active anticoagulant: each needs its own clear plan.
 
     An anticoagulant with unknown active status raises a missing-data issue
-    instead. An inactive anticoagulant raises nothing.
+    instead; an inactive one raises nothing.
 
-    Plan documents are located by text (section 4): a document whose text names
-    an active anticoagulant or says "anticoag". Documents whose title
-    classifies as a plan are also candidates. Any clear candidate satisfies the
-    rule. Otherwise the issue cites the most recent text-located candidate,
-    else the most recent title-only candidate, else ``documents``.
+    Candidates for a drug: documents whose text names that drug by word or
+    says "anticoag" (text candidates), then documents whose title classifies
+    as a plan (title candidates). Keywords can only rule a plan NEGATIVE or
+    leave it UNPLACED (D4); a plan is clear only if the resolver says so. For
+    each unmet drug the issue cites its most recent text candidate, else its
+    most recent title candidate, else ``documents``.
     """
 
     issues: list[TriageIssue] = []
-    active: list[tuple[int, str]] = []
+    active: list[tuple[int, str, str]] = []  # (medication index, drug, full name)
     for i, med in enumerate(submission.medications):
-        drug = _anticoagulant_name(med.name)
+        drug = anticoagulant_in(med.name)
         if drug is None:
             continue
         if med.active is None:
@@ -335,65 +377,61 @@ def check_anticoagulation(
                 )
             )
         elif med.active:
-            active.append((i, drug))
-
-    if not active:
-        return issues
+            active.append((i, drug, med.name or drug))
 
     documents = submission.documents
-    drug_res = [re.compile(rf"\b{re.escape(drug)}\b", re.IGNORECASE) for _, drug in active]
-    by_text = [
-        i
-        for i, doc in enumerate(documents)
-        if doc.text
-        and (_ANTICOAG_WORD_RE.search(doc.text) or any(rx.search(doc.text) for rx in drug_res))
-    ]
-    kinds = _document_kinds(submission, resolver)
-    by_title = [
-        i for i, kind in enumerate(kinds) if kind is DocKind.ANTICOAG_PLAN and i not in by_text
-    ]
+    title_candidates = [i for i, kind in enumerate(kinds) if kind is DocKind.ANTICOAG_PLAN]
 
-    for i in by_text + by_title:
-        text = documents[i].text
-        judgment = judge_plan_clear(text)
-        if judgment is TextJudgment.POSITIVE:
-            return issues
-        if judgment is TextJudgment.UNPLACED and resolver.resolve_plan_clear(text or ""):
-            return issues
+    for med_index, drug, full_name in active:
+        drug_re = re.compile(rf"\b{re.escape(drug)}\b", re.IGNORECASE)
+        text_candidates = [
+            i
+            for i, doc in enumerate(documents)
+            if doc.text and (_ANTICOAG_WORD_RE.search(doc.text) or drug_re.search(doc.text))
+        ]
+        title_only = [i for i in title_candidates if i not in text_candidates]
 
-    def cite(indexes: list[int]) -> int | None:
-        if not indexes:
-            return None
-        latest = most_recent(indexes, lambda i: parse_date(documents[i].date))
-        return latest[1] if latest is not None else indexes[-1]
+        clear = False
+        for i in text_candidates + title_only:
+            text = documents[i].text
+            if judge_plan_clear(text, drug) is TextJudgment.UNPLACED and (
+                resolver.resolve_plan_clear(text or "", drug)
+            ):
+                clear = True
+                break
+        if clear:
+            continue
 
-    cited = cite(by_text)
-    if cited is None:
-        cited = cite(by_title)
+        cited = None
+        for group in (text_candidates, title_only):
+            if group:
+                cited = _latest_document(documents, group)
+                if cited is None:
+                    cited = group[-1]
+                break
 
-    meds = ", ".join(f"medications[{i}]: {drug}" for i, drug in active)
-    details = (
-        f"Active anticoagulant medication present ({meds}) but no clear "
-        "perioperative plan document found"
-    )
-    if cited is None:
-        source = "documents"
-        details += ". No document mentions the anticoagulant or a perioperative plan."
-    else:
-        source = f"documents[{cited}]"
-        doc = documents[cited]
-        details += (
-            f". documents[{cited}] '{doc.type or ''}' dated {doc.date or 'unknown'}: "
-            f"{doc.text or '(no text)'}"
+        details = (
+            f"Active anticoagulant medication present (medications[{med_index}]: "
+            f"{full_name}) but no clear perioperative plan document found"
         )
-    issues.append(
-        _issue(
-            "ANTICOAGULATION_MANAGEMENT",
-            "Missing perioperative anticoagulation plan",
-            source,
-            details,
+        if cited is None:
+            source = "documents"
+            details += f". No document mentions {drug} or anticoagulation."
+        else:
+            source = f"documents[{cited}]"
+            doc = documents[cited]
+            details += (
+                f". documents[{cited}] '{doc.type or ''}' dated {doc.date or 'unknown'}: "
+                f"{doc.text or '(no text)'}"
+            )
+        issues.append(
+            _issue(
+                "ANTICOAGULATION_MANAGEMENT",
+                "Missing perioperative anticoagulation plan",
+                source,
+                details,
+            )
         )
-    )
     return issues
 
 
@@ -401,9 +439,10 @@ def check_vitals(submission: PatientSubmission) -> list[TriageIssue]:
     """Rule 4: safety exclusions on the most recent BP and temperature, or missing-vitals issues.
 
     BP and temperature are judged separately, each on its most recent reading
-    with a valid date (ties go to the later list index). An exclusion fires on
-    any value over its threshold. When the latest reading lacks a value that
-    is needed and nothing excludes, a missing-data issue is raised.
+    by full instant (ties go to the later list index). There is no age limit:
+    the policy sets no window for "the time of pre-operative review". An
+    exclusion fires on any value over its threshold. When the latest reading
+    lacks a needed value and nothing excludes, a missing-data issue is raised.
     """
 
     vitals = submission.vitals
@@ -413,7 +452,7 @@ def check_vitals(submission: PatientSubmission) -> list[TriageIssue]:
         indexes = [
             i for i, v in enumerate(vitals) if (v.type or "").strip().lower() == vital_type
         ]
-        found = most_recent(indexes, lambda i: parse_date(vitals[i].date))
+        found = most_recent(indexes, lambda i: parse_instant(vitals[i].date))
         return None if found is None else (found[1], vitals[found[1]])
 
     bp = latest_of("blood_pressure")

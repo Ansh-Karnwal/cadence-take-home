@@ -70,7 +70,8 @@ class LLMResolver:
 
         raise NotImplementedError
 
-    def resolve_plan_clear(self, text: str) -> bool:
-        """Ask the model whether plan ``text`` gives clear hold and resume guidance."""
+    def resolve_plan_clear(self, text: str, drug: str) -> bool:
+        """Ask the model whether plan ``text`` clearly describes how ``drug`` is
+        managed before and after the procedure."""
 
         raise NotImplementedError
