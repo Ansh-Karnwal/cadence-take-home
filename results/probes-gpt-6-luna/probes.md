@@ -12,32 +12,32 @@ Pre-fix errors that wrongly clear a patient: 18. Pre-fix errors that over-flag: 
 
 | Review | Kind | String | Correct | Pre-fix rules (commit) | HEAD rules | Model majority (split) |
 |---|---|---|---|---|---|---|
-| first | plan | Home meds reviewed incl. apixaban. Hold metformin morning of surgery; resume diet after. [drug: apixaban] | false | true (POSITIVE) WRONG (b3940c6) | false (UNPLACED, deferred) ok | false (false x5) ok |
-| first | plan | Cardiology to advise whether to hold or resume apixaban. [drug: apixaban] | false | true (POSITIVE) WRONG (b3940c6) | false (NEGATIVE) ok | false (false x5) ok |
-| first | plan | Unclear whether to hold apixaban; will resume later. [drug: apixaban] | false | true (POSITIVE) WRONG (b3940c6) | false (NEGATIVE) ok | false (false x5) ok |
-| first | plan | Patient on apixaban. Hold and resume per cardiology. [drug: apixaban] | false | true (POSITIVE) WRONG (b3940c6) | false (UNPLACED, deferred) ok | false (false x5) ok |
-| first | consent | Consent not signed. | false | true (POSITIVE) WRONG (b3940c6) | false (NEGATIVE) ok | false (false x5) ok |
-| first | consent | Patient has not signed consent. | false | true (POSITIVE) WRONG (b3940c6) | false (NEGATIVE) ok | false (false x5) ok |
-| first | consent | Consent to be signed on day of surgery. | false | true (POSITIVE) WRONG (b3940c6) | false (NEGATIVE) ok | false (false x5) ok |
-| first | consent | Consent form signed by witness; patient signature missing. | false | true (POSITIVE) WRONG (b3940c6) | false (NEGATIVE) ok | false (false x5) ok |
-| first | title | Anticoagulation Plan | ANTICOAG_PLAN | OTHER (UNKNOWN, deferred) WRONG (b3940c6) | ANTICOAG_PLAN (REQUIRED:ANTICOAG_PLAN) ok | ANTICOAG_PLAN (ANTICOAG_PLAN x5) ok |
-| first | title | H & P | H_AND_P | OTHER (UNKNOWN, deferred) WRONG (b3940c6) | H_AND_P (REQUIRED:H_AND_P) ok | H_AND_P (H_AND_P x5) ok |
-| first | title | Interval H&P | H_AND_P | OTHER (UNKNOWN, deferred) WRONG (b3940c6) | H_AND_P (REQUIRED:H_AND_P) ok | H_AND_P (H_AND_P x5) ok |
-| first | title | H&P Addendum | H_AND_P | OTHER (UNKNOWN, deferred) WRONG (b3940c6) | H_AND_P (REQUIRED:H_AND_P) ok | H_AND_P (H_AND_P x5) ok |
-| first | title | Consent Withdrawn | OTHER | CONSENT (REQUIRED:CONSENT) WRONG (b3940c6) | OTHER (KNOWN_OTHER) ok | OTHER (CONSENT x1, OTHER x4) ok |
-| second | consent | Consent form signed by surgeon; patient signature outstanding. | false | true (POSITIVE) WRONG (432bea9) | false (NEGATIVE) ok | false (false x5) ok |
-| second | consent | Consent signed by patient. Patient later withdrew consent. | false | true (POSITIVE) WRONG (432bea9) | false (NEGATIVE) ok | false (false x5) ok |
-| second | consent | Signed consent rescinded by patient on 2026-02-22. | false | true (POSITIVE) WRONG (432bea9) | false (NEGATIVE) ok | false (false x5) ok |
-| second | consent | Patient consent form. Signed: ______________ Date: ________ | false | true (POSITIVE) WRONG (432bea9) | false (NEGATIVE) ok | false (false x5) ok |
-| second | consent | Patient signed consent for left knee arthroscopy; new consent required for planned procedure. | false | true (POSITIVE) WRONG (432bea9) | false (NEGATIVE) ok | true (true x5) WRONG |
-| second | medication | Eliquis 5 mg BID | recognized | not recognized (none) WRONG (432bea9) | recognized (KNOWN_ANTICOAG:apixaban) ok | recognized (recognized x5) ok |
-| second | medication | Xarelto 20 mg daily | recognized | not recognized (none) WRONG (432bea9) | recognized (KNOWN_ANTICOAG:rivaroxaban) ok | recognized (recognized x5) ok |
-| second | medication | Pradaxa 150 mg | recognized | not recognized (none) WRONG (432bea9) | recognized (KNOWN_ANTICOAG:dabigatran) ok | recognized (recognized x5) ok |
-| second | medication | Lovenox 40 mg SC daily | recognized | not recognized (none) WRONG (432bea9) | recognized (KNOWN_ANTICOAG:enoxaparin) ok | recognized (recognized x5) ok |
-| second | medication | clopidogrel | not recognized | not recognized (none) ok (432bea9) | not recognized (UNKNOWN, deferred) ok | not recognized (not recognized x5) ok |
-| second | medication | aspirin 81 mg | not recognized | not recognized (none) ok (432bea9) | not recognized (UNKNOWN, deferred) ok | not recognized (not recognized x5) ok |
-| second | medication | amlodipine | not recognized | not recognized (none) ok (432bea9) | not recognized (UNKNOWN, deferred) ok | not recognized (not recognized x5) ok |
-| second | title | Surgical and Anesthesia Consent | CONSENT | OTHER (KNOWN_OTHER) WRONG (432bea9) | CONSENT (REQUIRED:CONSENT) ok | CONSENT (CONSENT x5) ok |
+| first | plan | Home meds reviewed incl. apixaban. Hold metformin morning of surgery; resume diet after. [drug: apixaban] | false | true (POSITIVE) WRONG (1cdbe1a) | false (UNPLACED, deferred) ok | false (false x5) ok |
+| first | plan | Cardiology to advise whether to hold or resume apixaban. [drug: apixaban] | false | true (POSITIVE) WRONG (1cdbe1a) | false (NEGATIVE) ok | false (false x5) ok |
+| first | plan | Unclear whether to hold apixaban; will resume later. [drug: apixaban] | false | true (POSITIVE) WRONG (1cdbe1a) | false (NEGATIVE) ok | false (false x5) ok |
+| first | plan | Patient on apixaban. Hold and resume per cardiology. [drug: apixaban] | false | true (POSITIVE) WRONG (1cdbe1a) | false (UNPLACED, deferred) ok | false (false x5) ok |
+| first | consent | Consent not signed. | false | true (POSITIVE) WRONG (1cdbe1a) | false (NEGATIVE) ok | false (false x5) ok |
+| first | consent | Patient has not signed consent. | false | true (POSITIVE) WRONG (1cdbe1a) | false (NEGATIVE) ok | false (false x5) ok |
+| first | consent | Consent to be signed on day of surgery. | false | true (POSITIVE) WRONG (1cdbe1a) | false (NEGATIVE) ok | false (false x5) ok |
+| first | consent | Consent form signed by witness; patient signature missing. | false | true (POSITIVE) WRONG (1cdbe1a) | false (NEGATIVE) ok | false (false x5) ok |
+| first | title | Anticoagulation Plan | ANTICOAG_PLAN | OTHER (UNKNOWN, deferred) WRONG (1cdbe1a) | ANTICOAG_PLAN (REQUIRED:ANTICOAG_PLAN) ok | ANTICOAG_PLAN (ANTICOAG_PLAN x5) ok |
+| first | title | H & P | H_AND_P | OTHER (UNKNOWN, deferred) WRONG (1cdbe1a) | H_AND_P (REQUIRED:H_AND_P) ok | H_AND_P (H_AND_P x5) ok |
+| first | title | Interval H&P | H_AND_P | OTHER (UNKNOWN, deferred) WRONG (1cdbe1a) | H_AND_P (REQUIRED:H_AND_P) ok | H_AND_P (H_AND_P x5) ok |
+| first | title | H&P Addendum | H_AND_P | OTHER (UNKNOWN, deferred) WRONG (1cdbe1a) | H_AND_P (REQUIRED:H_AND_P) ok | H_AND_P (H_AND_P x5) ok |
+| first | title | Consent Withdrawn | OTHER | CONSENT (REQUIRED:CONSENT) WRONG (1cdbe1a) | OTHER (KNOWN_OTHER) ok | OTHER (CONSENT x1, OTHER x4) ok |
+| second | consent | Consent form signed by surgeon; patient signature outstanding. | false | true (POSITIVE) WRONG (00cddbe) | false (NEGATIVE) ok | false (false x5) ok |
+| second | consent | Consent signed by patient. Patient later withdrew consent. | false | true (POSITIVE) WRONG (00cddbe) | false (NEGATIVE) ok | false (false x5) ok |
+| second | consent | Signed consent rescinded by patient on 2026-02-22. | false | true (POSITIVE) WRONG (00cddbe) | false (NEGATIVE) ok | false (false x5) ok |
+| second | consent | Patient consent form. Signed: ______________ Date: ________ | false | true (POSITIVE) WRONG (00cddbe) | false (NEGATIVE) ok | false (false x5) ok |
+| second | consent | Patient signed consent for left knee arthroscopy; new consent required for planned procedure. | false | true (POSITIVE) WRONG (00cddbe) | false (NEGATIVE) ok | true (true x5) WRONG |
+| second | medication | Eliquis 5 mg BID | recognized | not recognized (none) WRONG (00cddbe) | recognized (KNOWN_ANTICOAG:apixaban) ok | recognized (recognized x5) ok |
+| second | medication | Xarelto 20 mg daily | recognized | not recognized (none) WRONG (00cddbe) | recognized (KNOWN_ANTICOAG:rivaroxaban) ok | recognized (recognized x5) ok |
+| second | medication | Pradaxa 150 mg | recognized | not recognized (none) WRONG (00cddbe) | recognized (KNOWN_ANTICOAG:dabigatran) ok | recognized (recognized x5) ok |
+| second | medication | Lovenox 40 mg SC daily | recognized | not recognized (none) WRONG (00cddbe) | recognized (KNOWN_ANTICOAG:enoxaparin) ok | recognized (recognized x5) ok |
+| second | medication | clopidogrel | not recognized | not recognized (none) ok (00cddbe) | not recognized (UNKNOWN, deferred) ok | not recognized (not recognized x5) ok |
+| second | medication | aspirin 81 mg | not recognized | not recognized (none) ok (00cddbe) | not recognized (UNKNOWN, deferred) ok | not recognized (not recognized x5) ok |
+| second | medication | amlodipine | not recognized | not recognized (none) ok (00cddbe) | not recognized (UNKNOWN, deferred) ok | not recognized (not recognized x5) ok |
+| second | title | Surgical and Anesthesia Consent | CONSENT | OTHER (KNOWN_OTHER) WRONG (00cddbe) | CONSENT (REQUIRED:CONSENT) ok | CONSENT (CONSENT x5) ok |
 
 A rules answer is graded by the decision offline mode would make: an UNPLACED consent
 is not signed, an UNPLACED plan is not clear, an UNKNOWN title is OTHER. Deferred

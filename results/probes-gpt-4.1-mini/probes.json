@@ -20,7 +20,7 @@
       "text": "Home meds reviewed incl. apixaban. Hold metformin morning of surgery; resume diet after.",
       "drug": "apixaban",
       "correct": "false",
-      "prefix_commit": "b3940c6",
+      "prefix_commit": "1cdbe1a",
       "prefix_rules": {
         "raw": "POSITIVE",
         "effective": "true",
@@ -55,7 +55,7 @@
       "text": "Cardiology to advise whether to hold or resume apixaban.",
       "drug": "apixaban",
       "correct": "false",
-      "prefix_commit": "b3940c6",
+      "prefix_commit": "1cdbe1a",
       "prefix_rules": {
         "raw": "POSITIVE",
         "effective": "true",
@@ -90,7 +90,7 @@
       "text": "Unclear whether to hold apixaban; will resume later.",
       "drug": "apixaban",
       "correct": "false",
-      "prefix_commit": "b3940c6",
+      "prefix_commit": "1cdbe1a",
       "prefix_rules": {
         "raw": "POSITIVE",
         "effective": "true",
@@ -125,7 +125,7 @@
       "text": "Patient on apixaban. Hold and resume per cardiology.",
       "drug": "apixaban",
       "correct": "false",
-      "prefix_commit": "b3940c6",
+      "prefix_commit": "1cdbe1a",
       "prefix_rules": {
         "raw": "POSITIVE",
         "effective": "true",
@@ -160,7 +160,7 @@
       "text": "Consent not signed.",
       "drug": null,
       "correct": "false",
-      "prefix_commit": "b3940c6",
+      "prefix_commit": "1cdbe1a",
       "prefix_rules": {
         "raw": "POSITIVE",
         "effective": "true",
@@ -195,7 +195,7 @@
       "text": "Patient has not signed consent.",
       "drug": null,
       "correct": "false",
-      "prefix_commit": "b3940c6",
+      "prefix_commit": "1cdbe1a",
       "prefix_rules": {
         "raw": "POSITIVE",
         "effective": "true",
@@ -230,7 +230,7 @@
       "text": "Consent to be signed on day of surgery.",
       "drug": null,
       "correct": "false",
-      "prefix_commit": "b3940c6",
+      "prefix_commit": "1cdbe1a",
       "prefix_rules": {
         "raw": "POSITIVE",
         "effective": "true",
@@ -265,7 +265,7 @@
       "text": "Consent form signed by witness; patient signature missing.",
       "drug": null,
       "correct": "false",
-      "prefix_commit": "b3940c6",
+      "prefix_commit": "1cdbe1a",
       "prefix_rules": {
         "raw": "POSITIVE",
         "effective": "true",
@@ -300,7 +300,7 @@
       "text": "Anticoagulation Plan",
       "drug": null,
       "correct": "ANTICOAG_PLAN",
-      "prefix_commit": "b3940c6",
+      "prefix_commit": "1cdbe1a",
       "prefix_rules": {
         "raw": "UNKNOWN",
         "effective": "OTHER",
@@ -335,7 +335,7 @@
       "text": "H & P",
       "drug": null,
       "correct": "H_AND_P",
-      "prefix_commit": "b3940c6",
+      "prefix_commit": "1cdbe1a",
       "prefix_rules": {
         "raw": "UNKNOWN",
         "effective": "OTHER",
@@ -370,7 +370,7 @@
       "text": "Interval H&P",
       "drug": null,
       "correct": "H_AND_P",
-      "prefix_commit": "b3940c6",
+      "prefix_commit": "1cdbe1a",
       "prefix_rules": {
         "raw": "UNKNOWN",
         "effective": "OTHER",
@@ -405,7 +405,7 @@
       "text": "H&P Addendum",
       "drug": null,
       "correct": "H_AND_P",
-      "prefix_commit": "b3940c6",
+      "prefix_commit": "1cdbe1a",
       "prefix_rules": {
         "raw": "UNKNOWN",
         "effective": "OTHER",
@@ -440,7 +440,7 @@
       "text": "Consent Withdrawn",
       "drug": null,
       "correct": "OTHER",
-      "prefix_commit": "b3940c6",
+      "prefix_commit": "1cdbe1a",
       "prefix_rules": {
         "raw": "REQUIRED:CONSENT",
         "effective": "CONSENT",
@@ -475,7 +475,7 @@
       "text": "Consent form signed by surgeon; patient signature outstanding.",
       "drug": null,
       "correct": "false",
-      "prefix_commit": "432bea9",
+      "prefix_commit": "00cddbe",
       "prefix_rules": {
         "raw": "POSITIVE",
         "effective": "true",
@@ -510,7 +510,7 @@
       "text": "Consent signed by patient. Patient later withdrew consent.",
       "drug": null,
       "correct": "false",
-      "prefix_commit": "432bea9",
+      "prefix_commit": "00cddbe",
       "prefix_rules": {
         "raw": "POSITIVE",
         "effective": "true",
@@ -546,7 +546,7 @@
       "text": "Signed consent rescinded by patient on 2026-02-22.",
       "drug": null,
       "correct": "false",
-      "prefix_commit": "432bea9",
+      "prefix_commit": "00cddbe",
       "prefix_rules": {
         "raw": "POSITIVE",
         "effective": "true",
@@ -581,7 +581,7 @@
       "text": "Patient consent form. Signed: ______________ Date: ________",
       "drug": null,
       "correct": "false",
-      "prefix_commit": "432bea9",
+      "prefix_commit": "00cddbe",
       "prefix_rules": {
         "raw": "POSITIVE",
         "effective": "true",
@@ -616,7 +616,7 @@
       "text": "Patient signed consent for left knee arthroscopy; new consent required for planned procedure.",
       "drug": null,
       "correct": "false",
-      "prefix_commit": "432bea9",
+      "prefix_commit": "00cddbe",
       "prefix_rules": {
         "raw": "POSITIVE",
         "effective": "true",
@@ -652,7 +652,7 @@
       "text": "Eliquis 5 mg BID",
       "drug": null,
       "correct": "recognized",
-      "prefix_commit": "432bea9",
+      "prefix_commit": "00cddbe",
       "prefix_rules": {
         "raw": "none",
         "effective": "not recognized",
@@ -687,7 +687,7 @@
       "text": "Xarelto 20 mg daily",
       "drug": null,
       "correct": "recognized",
-      "prefix_commit": "432bea9",
+      "prefix_commit": "00cddbe",
       "prefix_rules": {
         "raw": "none",
         "effective": "not recognized",
@@ -722,7 +722,7 @@
       "text": "Pradaxa 150 mg",
       "drug": null,
       "correct": "recognized",
-      "prefix_commit": "432bea9",
+      "prefix_commit": "00cddbe",
       "prefix_rules": {
         "raw": "none",
         "effective": "not recognized",
@@ -757,7 +757,7 @@
       "text": "Lovenox 40 mg SC daily",
       "drug": null,
       "correct": "recognized",
-      "prefix_commit": "432bea9",
+      "prefix_commit": "00cddbe",
       "prefix_rules": {
         "raw": "none",
         "effective": "not recognized",
@@ -792,7 +792,7 @@
       "text": "clopidogrel",
       "drug": null,
       "correct": "not recognized",
-      "prefix_commit": "432bea9",
+      "prefix_commit": "00cddbe",
       "prefix_rules": {
         "raw": "none",
         "effective": "not recognized",
@@ -827,7 +827,7 @@
       "text": "aspirin 81 mg",
       "drug": null,
       "correct": "not recognized",
-      "prefix_commit": "432bea9",
+      "prefix_commit": "00cddbe",
       "prefix_rules": {
         "raw": "none",
         "effective": "not recognized",
@@ -862,7 +862,7 @@
       "text": "amlodipine",
       "drug": null,
       "correct": "not recognized",
-      "prefix_commit": "432bea9",
+      "prefix_commit": "00cddbe",
       "prefix_rules": {
         "raw": "none",
         "effective": "not recognized",
@@ -897,7 +897,7 @@
       "text": "Surgical and Anesthesia Consent",
       "drug": null,
       "correct": "CONSENT",
-      "prefix_commit": "432bea9",
+      "prefix_commit": "00cddbe",
       "prefix_rules": {
         "raw": "KNOWN_OTHER",
         "effective": "OTHER",
