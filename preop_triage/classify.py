@@ -226,7 +226,20 @@ PLAN_NEGATIVE = (
     "tbd",
 )
 # A plan negative counts only in a clause that also names the drug or one of these.
-PLAN_ANCHORS = ("anticoag", "hold", "resume", "bridge", "plan")
+# "management", "perioperative", "peri-op", "periop" added after checkpoint 1 so
+# the "perioperative management details not yet documented" texts (cases 6, 21,
+# 26) are rule-decided NEGATIVE.
+PLAN_ANCHORS = (
+    "anticoag",
+    "hold",
+    "resume",
+    "bridge",
+    "plan",
+    "management",
+    "perioperative",
+    "peri-op",
+    "periop",
+)
 
 
 def _phrase_re(phrases: tuple[str, ...]) -> re.Pattern[str]:
@@ -239,7 +252,9 @@ _CONSENT_BARE_NEGATIVE_RE = _phrase_re(CONSENT_BARE_NEGATIVE)
 _CONSENT_POSITIVE_RE = _phrase_re(CONSENT_POSITIVE)
 _PLAN_NEGATIVE_RE = _phrase_re(PLAN_NEGATIVE)
 # "anticoag" is a word prefix (anticoagulant, anticoagulation); the rest are words.
-_PLAN_ANCHOR_RE = re.compile(r"\banticoag\w*|\b(?:hold|resume|bridge|plan)\b", re.IGNORECASE)
+_PLAN_ANCHOR_RE = re.compile(
+    r"\banticoag\w*|\b(?:" + _alternation(PLAN_ANCHORS[1:]) + r")\b", re.IGNORECASE
+)
 
 
 def _clauses(text: str) -> list[str]:
@@ -273,9 +288,9 @@ def judge_consent_signed(text: str | None) -> TextJudgment:
 def judge_plan_clear(text: str | None, drug: str) -> TextJudgment:
     """Judge plan text for ``drug``: NEGATIVE or UNPLACED, never POSITIVE.
 
-    A negative token counts only in a clause that also names ``drug`` by word,
-    "anticoag", "hold", "resume", "bridge", or "plan". Empty or missing text is
-    NEGATIVE. Only a resolver can find a plan clear.
+    A negative token counts only in a clause that also names ``drug`` by word
+    or one of ``PLAN_ANCHORS``. Empty or missing text is NEGATIVE. Only a
+    resolver can find a plan clear.
     """
 
     if not text or not text.strip():

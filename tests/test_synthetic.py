@@ -501,33 +501,34 @@ def test_issue_order_explanation_and_not_cleared_keeps_other_issues() -> None:
     )
 
 
-# --- Verifier probes, end to end (checkpoint 1) --------------------------------
-# Only "Cardiology to advise whether to hold or resume apixaban." is the
-# verifier's verbatim string; the report was not available, so the other text
-# probes are reconstructed from the finding descriptions. Each must produce
-# NEEDS_FOLLOW_UP or NOT_CLEARED in offline mode.
+# --- Verifier probes, end to end (checkpoint 1), verbatim -----------------------
+# Each must produce NEEDS_FOLLOW_UP or NOT_CLEARED in offline mode. Plan probes
+# are (document type, text), each added with active apixaban.
 
 VAGUE_PLAN_PROBES = (
-    "Cardiology to advise whether to hold or resume apixaban.",  # verbatim
-    "Hold and resume apixaban as clinically indicated.",
-    "Plan to hold apixaban before surgery; resume timing TBD.",
-    "Hold apixaban per surgeon; resume date unclear.",
+    (
+        "Pre-op Nursing Intake",
+        "Home meds reviewed incl. apixaban. Hold metformin morning of surgery; resume diet after.",
+    ),
+    ("Clinic Follow-up Note", "Cardiology to advise whether to hold or resume apixaban."),
+    ("Clinic Follow-up Note", "Unclear whether to hold apixaban; will resume later."),
+    ("H&P Note", "Patient on apixaban. Hold and resume per cardiology."),
 )
 
 NEGATED_CONSENT_PROBES = (
     "Consent not signed.",
-    "Patient has not signed the surgical consent.",
-    "Consent to be signed on the day of surgery.",
-    "Consent will be signed at the pre-op visit.",
+    "Patient has not signed consent.",
+    "Consent to be signed on day of surgery.",
+    "Consent form signed by witness; patient signature missing.",
 )
 
 HP_DOC = BASE["documents"][0]
 SIGNED = "Consent obtained and signed; documentation completed."
 
 
-@pytest.mark.parametrize("text", VAGUE_PLAN_PROBES)
-def test_probe_vague_plan_is_flagged(text: str) -> None:
-    submission = make(medications=APIXABAN_ACTIVE, documents=_with_plan(text))
+@pytest.mark.parametrize(("doc_type", "text"), VAGUE_PLAN_PROBES)
+def test_probe_vague_plan_is_flagged(doc_type: str, text: str) -> None:
+    submission = make(medications=APIXABAN_ACTIVE, documents=_with_plan(text, doc_type))
     output = run(submission)
     assert output.decision == "NEEDS_FOLLOW_UP"
     assert triples(output) == {

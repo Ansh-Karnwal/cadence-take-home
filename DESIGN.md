@@ -185,7 +185,10 @@ in default mode, never in offline mode.
 - Negative tokens: `no clear`, `not yet`, `to be finalized`, `pending`,
   `unclear`, `whether`, `awaiting`, `tbd`.
 - A negative token counts only in a clause that also mentions the drug by
-  word, `anticoag`, `hold`, `resume`, `bridge`, or `plan`.
+  word, `anticoag`, `hold`, `resume`, `bridge`, `plan`, `management`,
+  `perioperative`, `peri-op`, or `periop`. The last four were added after
+  checkpoint 1 so that "perioperative management details not yet
+  documented" is rule-decided.
 - Any counted negative makes the text NEGATIVE. Otherwise it is UNPLACED.
   Empty or missing text is NEGATIVE without a resolver call.
 
@@ -207,15 +210,14 @@ negative-wins handles all three):
   contains both "hold" and "resume" (case_00004). The negative phrase
   "no clear" must win.
 
-Effect of scoping on the seven sample plan texts: three resolve NEGATIVE
-(case_00004 "no clear" beside "hold"; case_00038 "to be finalized" beside
-"plan"; case_00042 "pending" beside "plan"). Four go UNPLACED: case_00000
-("Follow up with cardiology for peri-op recommendations.") and the three
-"Anticoagulant noted in medication list; perioperative management details
-not yet documented." texts (cases 6, 21, 26), whose "not yet" clause names
-none of the anchor words. Offline mode flags all seven. In default mode four
-of the seven anticoagulation outcomes rest on the LLM's answer. "follow up"
-and "recommendations" are not negative keywords (section 8).
+Effect of scoping on the seven sample plan texts: six resolve NEGATIVE
+(case_00004 "no clear" beside "hold"; cases 6, 21, 26 "not yet" beside
+"perioperative management"; case_00038 "to be finalized" beside "plan";
+case_00042 "pending" beside "plan"). One goes UNPLACED: case_00000 ("Follow
+up with cardiology for peri-op recommendations."), which has no negative
+token. Offline mode flags all seven. In default mode one of the seven
+anticoagulation outcomes rests on the LLM's answer. "follow up" and
+"recommendations" are not negative keywords (section 8).
 
 The three unsigned sample consents all contain "unsigned". "signature" alone
 appears in both positive and negative sample texts and is never positive on
@@ -513,9 +515,9 @@ The LLM can:
 - Turn an UNPLACED text into POSITIVE or NEGATIVE. This can add or remove a
   "consent not clearly signed" issue or an anticoagulation issue.
 - Declare a plan clear for a drug. Under D4 this is the only way any
-  anticoagulation issue is ever removed. On this dataset four of the seven
-  plan texts are UNPLACED (case_00000 and cases 6, 21, 26), so four
-  anticoagulation outcomes rest on the LLM's answer in default mode.
+  anticoagulation issue is ever removed. On this dataset one of the seven
+  plan texts is UNPLACED (case_00000), so one anticoagulation outcome rests
+  on the LLM's answer in default mode.
 
 The LLM cannot:
 

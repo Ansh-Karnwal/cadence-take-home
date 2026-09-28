@@ -113,26 +113,25 @@ def test_case_00000_plan_text_is_unplaced() -> None:
     assert judge_plan_clear(text, "apixaban") is TextJudgment.UNPLACED
 
 
-# --- Verifier probes (checkpoint 1) ------------------------------------------
-# Only the first plan probe is the verifier's verbatim string; the verifier's
-# report was not available, so the others are reconstructed from the finding
-# descriptions. Every one of them was cleared or accepted by the milestone 2
-# keyword rules.
+# --- Verifier probes (checkpoint 1), verbatim ----------------------------------
+# Every one of these was cleared or accepted by the milestone 2 keyword rules.
+# None may be rule-POSITIVE. UNPLACED plans reach the resolver; offline they
+# resolve not-clear.
 
 VAGUE_PLAN_PROBES = {
-    # verbatim
+    "Home meds reviewed incl. apixaban. Hold metformin morning of surgery; resume diet after.": (
+        TextJudgment.UNPLACED
+    ),
     "Cardiology to advise whether to hold or resume apixaban.": TextJudgment.NEGATIVE,
-    # reconstructed
-    "Hold and resume apixaban as clinically indicated.": TextJudgment.UNPLACED,
-    "Plan to hold apixaban before surgery; resume timing TBD.": TextJudgment.NEGATIVE,
-    "Hold apixaban per surgeon; resume date unclear.": TextJudgment.NEGATIVE,
+    "Unclear whether to hold apixaban; will resume later.": TextJudgment.NEGATIVE,
+    "Patient on apixaban. Hold and resume per cardiology.": TextJudgment.UNPLACED,
 }
 
-NEGATED_CONSENT_PROBES = (  # reconstructed
+NEGATED_CONSENT_PROBES = (
     "Consent not signed.",
-    "Patient has not signed the surgical consent.",
-    "Consent to be signed on the day of surgery.",
-    "Consent will be signed at the pre-op visit.",
+    "Patient has not signed consent.",
+    "Consent to be signed on day of surgery.",
+    "Consent form signed by witness; patient signature missing.",
 )
 
 
@@ -221,19 +220,31 @@ def test_vague_plan_with_anchor_is_negative() -> None:
     assert judge_plan_clear(text, "apixaban") is TextJudgment.NEGATIVE
 
 
-def test_negative_without_anchor_in_clause_is_unplaced() -> None:
-    # Cases 6, 21, 26: "not yet" sits in a clause with no drug, "anticoag",
-    # "hold", "resume", "bridge", or "plan", so it does not count (checkpoint 1).
+def test_perioperative_management_not_yet_is_negative() -> None:
+    # Cases 6, 21, 26: "not yet" sits beside "perioperative management", which
+    # are scope words since the checkpoint 1 carry-over.
     text = (
         "Anticoagulant noted in medication list; "
         "perioperative management details not yet documented."
     )
+    assert judge_plan_clear(text, "apixaban") is TextJudgment.NEGATIVE
+
+
+@pytest.mark.parametrize("anchor", ["management", "perioperative", "peri-op", "periop"])
+def test_widened_scope_words_count(anchor: str) -> None:
+    assert judge_plan_clear(f"Details of {anchor} not yet documented.", "apixaban") is (
+        TextJudgment.NEGATIVE
+    )
+
+
+def test_negative_without_any_scope_word_is_unplaced() -> None:
+    text = "Anticoagulant noted in medication list; cardiology note not yet received."
     assert judge_plan_clear(text, "apixaban") is TextJudgment.UNPLACED
 
 
 def test_negative_counts_with_drug_name_as_anchor() -> None:
-    assert judge_plan_clear("Warfarin management unclear.", "warfarin") is TextJudgment.NEGATIVE
-    assert judge_plan_clear("Warfarin management unclear.", "apixaban") is TextJudgment.UNPLACED
+    assert judge_plan_clear("Warfarin dosing unclear.", "warfarin") is TextJudgment.NEGATIVE
+    assert judge_plan_clear("Warfarin dosing unclear.", "apixaban") is TextJudgment.UNPLACED
 
 
 @pytest.mark.parametrize(
